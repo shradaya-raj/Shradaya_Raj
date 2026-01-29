@@ -28,41 +28,40 @@ export default function Home() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
   const [isMounted, setIsMounted] = useState(false)
 
+  const [dynamicProjects, setDynamicProjects] = useState<any[]>([])
+
   useEffect(() => {
     setIsMounted(true)
     const handleMouseMove = (e: MouseEvent) => {
       setMousePosition({ x: e.clientX, y: e.clientY })
     }
 
+    const fetchFeatured = async () => {
+      try {
+        const res = await fetch('/api/featured')
+        const data = await res.json()
+        if (Array.isArray(data)) {
+          setDynamicProjects(data)
+        }
+      } catch (err) {
+        console.error('Failed to fetch featured projects', err)
+      }
+    }
+
     window.addEventListener('mousemove', handleMouseMove)
+    fetchFeatured()
     return () => window.removeEventListener('mousemove', handleMouseMove)
   }, [])
 
-  const projects = [
-    {
-      title: "Utility Management System",
-      description: "Developed a WebGIS Utility Management System Integrated with Metric House Number",
-      image: "/images/UMS/webportal.png",
-      imageWidth: 1920,
-      imageHeight: 1080,
-      tags: ["QGIS", "Python", "FMTM", "WebGIS", "MAPTILER","Metric House Number"],
-      link: "/projects/utility-management-system"
-    },
-    {
-      title: "Deurali Basic School Project", 
-      description: "Infrastructure development project focused on improving educational facilities and learning environment",
-      image: "/images/deurali-basic-school/deurali-basic-school.png",
-      tags: ["Education", "Community Development", "Infrastructure", "Social Impact"],
-      link: "/projects/deurali-basic-school"
-    },
-    {
-      title: "Drone Mapping",
-      description: "Aerial surveying and mapping project using UAV technology for precision agriculture",
-      image: "/images/drone-mapping.jpg",
-      tags: ["UAV", "Photogrammetry", "Remote Sensing", "Agriculture"],
-      link: "/projects/drone-mapping"
-    }
-  ]
+  const projects = dynamicProjects.map(p => ({
+    title: p.title,
+    description: p.description,
+    image: p.images?.[0]?.startsWith('/')
+      ? p.images[0]
+      : p.images?.[0] ? `/images/${p.category}/${p.slug}/${p.images[0]}` : '/images/project-placeholder.jpg',
+    tags: p.tags,
+    link: `/${p.category}/${p.slug}`
+  }));
 
 
   // Generate static positions for floating shapes
@@ -87,7 +86,7 @@ export default function Home() {
         {/* Hero Section */}
         <section className="h-screen flex items-center justify-center relative overflow-hidden bg-gradient-to-b from-black via-blue-900/20 to-black">
           {/* Dynamic gradient background that follows mouse */}
-          <div 
+          <div
             className="absolute inset-0 z-0"
             style={{
               background: `radial-gradient(circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(59, 130, 246, 0.3), transparent 40%)`
@@ -134,7 +133,7 @@ export default function Home() {
               <div className="w-40 h-40 md:w-48 md:h-48 mx-auto relative group">
                 {/* Outer glow effect */}
                 <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 opacity-75 blur-md group-hover:blur-xl transition-all duration-300"></div>
-                
+
                 {/* Main image container */}
                 <div className="relative w-full h-full rounded-full overflow-hidden ring-4 ring-blue-500 ring-offset-8 ring-offset-black shadow-[0_0_20px_rgba(59,130,246,0.5)] group-hover:ring-purple-500 group-hover:shadow-[0_0_30px_rgba(168,85,247,0.5)] transition-all duration-300 mt-8">
                   <Image
@@ -148,13 +147,13 @@ export default function Home() {
                 </div>
               </div>
             </motion.div>
-            
+
             { /* Updated name and designation section with new background */}
             <div className="relative mt-6 max-w-5xl w-full mx-auto px-6 sm:px-12 py-10 flex flex-col items-center gap-6">
               {/* Animated background for name, designation, and actions */}
               <div className="absolute inset-0 bg-gradient-to-r from-blue-900/25 via-purple-900/25 to-blue-900/25 backdrop-blur-sm rounded-[28px] transform rotate-[0.4deg] shadow-[0_18px_60px_rgba(59,130,246,0.25)]"></div>
               <div className="absolute inset-0 bg-gradient-to-r from-blue-900/15 via-purple-900/15 to-blue-900/15 backdrop-blur-sm rounded-[28px] transform -rotate-[0.4deg] border border-blue-500/25"></div>
-              
+
               <h1 className="text-5xl md:text-7xl font-bold relative text-center">
                 <motion.span
                   initial={{ opacity: 0, y: 20 }}
@@ -168,7 +167,7 @@ export default function Home() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ ...smoothTransition, delay: 0.4 }}
-                  className="block bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400 relative z-10 text-4xl md:text-6xl" 
+                  className="block bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400 relative z-10 text-4xl md:text-6xl"
                 >
                   Geomatics Engineer
                 </motion.span>
@@ -217,7 +216,7 @@ export default function Home() {
 
           {/* Animated Background */}
           <div className="absolute inset-0 -z-9">
-            <div  className="bg-transparent border-4 mb-2 border-blue-500 text-white px-8 py-3 rounded-full text-lg font-semibold transition-all hover:bg-blue-500/10" />
+            <div className="bg-transparent border-4 mb-2 border-blue-500 text-white px-8 py-3 rounded-full text-lg font-semibold transition-all hover:bg-blue-500/10" />
           </div>
         </section>
 
@@ -246,7 +245,7 @@ export default function Home() {
             {/* Key Stats */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-10 mb-6">
               {[
-                { number: "1+", label: "Years of Experience", className: "flex flex-col items-center justify-center" },
+                { number: "10+", label: "Months of Experience", className: "flex flex-col items-center justify-center" },
                 { number: "5+", label: "Projects Completed", className: "flex flex-col items-center justify-center" },
                 { number: "5+", label: "Training Attended", className: "flex flex-col items-center justify-center" },
                 { number: "1", label: "Artical Published", className: "flex flex-col items-center justify-center" }
@@ -290,13 +289,13 @@ export default function Home() {
                 { title: 'Surveying', items: ['Total Station', 'Drones (Mavic 3E, Phantom 4 RTK)', 'DJI FlightHub2', 'DRTK', 'DGPS', 'Kobo Collect', 'ODK Collect'] },
                 { title: 'Designing', items: ['Revit', 'Canva'] },
                 { title: 'GNSS Data Processing', items: ['RTKLIB', 'U-Center'] },
-                { title: 'Virtual Tour Mapping', items: ['3D Vista', 'Insta 360 Pro 2','PanoX'] },
+                { title: 'Virtual Tour Mapping', items: ['3D Vista', 'Insta 360 Pro 2', 'PanoX'] },
               ].map((category, idx) => (
                 <motion.div
                   key={category.title}
                   variants={fadeInUp}
                   className="relative overflow-hidden rounded-2xl border border-blue-900/40 bg-gradient-to-br from-gray-900/90 via-gray-900/70 to-gray-950 shadow-[0_20px_60px_rgba(0,0,0,0.35)]"
-                    transition={{ ...smoothTransition, delay: idx * 0.05 }}
+                  transition={{ ...smoothTransition, delay: idx * 0.05 }}
                 >
                   <div className="absolute inset-px rounded-[18px] border border-blue-500/10" />
                   <div className="absolute -right-10 -top-12 w-44 h-44 bg-gradient-to-br from-blue-500/25 via-purple-500/20 to-pink-500/10 blur-3xl opacity-60 group-hover:opacity-80 transition-opacity" />
@@ -365,7 +364,7 @@ export default function Home() {
                       src={project.image}
                       alt={project.title}
                       sizes="(max-width: 768px) 100vw, 33vw"
-                      style={{objectFit: 'cover'}}
+                      style={{ objectFit: 'cover' }}
                       fill
                       className="group-hover:scale-110 transition-transform duration-500"
                     />
@@ -379,7 +378,7 @@ export default function Home() {
                       {project.description}
                     </p>
                     <div className="flex flex-wrap gap-2">
-                      {project.tags.map(tag => (
+                      {project.tags.map((tag: string) => (
                         <span
                           key={tag}
                           className="px-3 py-1 bg-blue-900/50 text-blue-300 rounded-full text-sm font-medium"
@@ -392,27 +391,6 @@ export default function Home() {
                 </motion.div>
               ))}
             </div>
-          </motion.div>
-        </section>
-
-        {/* Call to Action */}
-        <section className="py-24 bg-gradient-to-b from-black to-black">
-          <motion.div
-            initial="initial"
-            whileInView="animate"
-            viewport={{ once: true }}
-            variants={fadeInUp}
-            className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8"
-          >
-            <Link href="/contact">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-12 py-5 rounded-full text-xl font-semibold transition-all hover:shadow-lg hover:shadow-blue-500/25"
-              >
-                Connect with me
-              </motion.button>
-            </Link>
           </motion.div>
         </section>
       </main>

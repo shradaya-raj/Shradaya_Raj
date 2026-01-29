@@ -1,0 +1,18 @@
+{
+    "slug": "gis-mapping",
+    "title": "GIS Mapping System",
+    "description": "A comprehensive GIS mapping system developed for urban planning using QGIS and Python.",
+    "fullText": "A comprehensive GIS mapping system developed for urban planning using QGIS and Python. This project demonstrates the integration of various spatial data sources and analysis techniques to support informed urban development decisions.\n\nThe system combines multiple data layers including land use, transportation networks, and demographic information to create interactive maps that aid in urban planning decision-making processes.",
+    "date": "2023-01-01",
+    "tags": [
+        "QGIS",
+        "Python",
+        "PostGIS",
+        "Spatial Analysis"
+    ],
+    "featured": true,
+    "category": "projects",
+    "images": [
+        "/images/gis-mapping.jpg"
+    ]
+}

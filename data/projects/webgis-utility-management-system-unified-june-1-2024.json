@@ -1,0 +1,20 @@
+{
+  "slug": "webgis-utility-management-system-unified-june-1-2024",
+  "title": "WebGIS Utility Management System (Unified)",
+  "description": "Developed a WebGIS Utility Management System Integrated with Metric House Number",
+  "fullText": "This project developed a WebGIS-based utility management system integrated with metric house numbering for Ward No. 8, Shuklagandaki Municipality (Nepal). It supports better planning and service delivery by centralizing verified field data and making it easy to explore, query, and update.",
+  "date": "2024-06-01",
+  "tags": [
+    "QGIS",
+    "Python",
+    "FMTM",
+    "WebGIS",
+    "MAPTILER",
+    "Metric House Number"
+  ],
+  "featured": true,
+  "category": "projects",
+  "images": [
+    "/images/UMS/webportal.png"
+  ]
+}

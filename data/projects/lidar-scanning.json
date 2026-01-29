@@ -1,0 +1,17 @@
+{
+    "slug": "lidar-scanning",
+    "title": "3D LiDAR Scanning",
+    "description": "High-precision 3D scanning and modeling of historical buildings using LiDAR technology.",
+    "fullText": "High-precision 3D scanning and modeling of historical buildings using LiDAR technology. This project showcases the application of advanced scanning techniques for heritage preservation and documentation.\n\nUsing state-of-the-art LiDAR equipment, we captured detailed point cloud data of historical structures, which was then processed into accurate 3D models for preservation, restoration planning, and documentation purposes.",
+    "date": "2023-05-20",
+    "tags": [
+        "LiDAR",
+        "3D Modeling",
+        "Point Cloud"
+    ],
+    "featured": false,
+    "category": "projects",
+    "images": [
+        "/images/lidar-scanning.jpg"
+    ]
+}

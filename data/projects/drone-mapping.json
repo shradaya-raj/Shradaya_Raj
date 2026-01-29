@@ -1,0 +1,18 @@
+{
+    "slug": "drone-mapping",
+    "title": "Drone Mapping",
+    "description": "Aerial surveying and mapping project using UAV technology for precision agriculture.",
+    "fullText": "Aerial surveying and mapping project using UAV technology for precision agriculture. This project demonstrates the application of drone technology and photogrammetry for agricultural planning and monitoring.\n\nUsing advanced UAV equipment and photogrammetry software, we created high-resolution orthomosaics and elevation models to help farmers optimize crop management and resource allocation through precise spatial data.",
+    "date": "2023-03-15",
+    "tags": [
+        "UAV",
+        "Photogrammetry",
+        "Remote Sensing",
+        "Agriculture"
+    ],
+    "featured": true,
+    "category": "projects",
+    "images": [
+        "/images/drone-mapping.jpg"
+    ]
+}

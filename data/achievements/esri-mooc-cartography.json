@@ -1,0 +1,20 @@
+{
+    "slug": "esri-mooc-cartography",
+    "title": "Esri MOOC: Cartography",
+    "description": "Advanced cartography with ArcGIS Pro, symbology, projections, 3D & animation.",
+    "fullText": "Completed Esri’s prestigious 6-week MOOC on Cartography, mastering symbology standards, projection systems, and 3D terrain modeling. Built animated, data-rich map visualizations using ArcGIS Pro and refined spatial analysis workflows. Applying these skills to produce clear, compelling maps that communicate complex spatial stories.",
+    "date": "2023-10-01",
+    "tags": [
+        "Cartography",
+        "GIS",
+        "Esri",
+        "ArcGISPro",
+        "ProfessionalGrowth",
+        "GeospatialExcell"
+    ],
+    "featured": false,
+    "category": "achievements",
+    "images": [
+        "/images/certificates/Esri_cartography_page-0001.jpg"
+    ]
+}

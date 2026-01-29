@@ -1,0 +1,20 @@
+{
+    "slug": "humanitarian-use-of-osm-data",
+    "title": "Humanitarian Use of OSM Data",
+    "description": "HOTOSM course on QGIS, uMap, OpenRouteService, and Disaster Ninja.",
+    "fullText": "Completed the “Humanitarian Use of OpenStreetMap Data” course by HOTOSM. Strengthened practical use of QGIS, uMap, OpenRouteService, and Disaster Ninja for humanitarian initiatives. Thanks to Sam Colchester and the HOTOSM team for comprehensive materials and guidance.",
+    "date": "2024-06-01",
+    "tags": [
+        "OpenData",
+        "HumanitarianMapping",
+        "OSM",
+        "QGIS",
+        "DisasterManagement",
+        "GIS"
+    ],
+    "featured": false,
+    "category": "achievements",
+    "images": [
+        "/images/certificates/osm.jpeg"
+    ]
+}

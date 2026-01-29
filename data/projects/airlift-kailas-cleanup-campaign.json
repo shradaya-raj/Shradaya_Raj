@@ -1,0 +1,18 @@
+{
+    "slug": "airlift-kailas-cleanup-campaign",
+    "title": "Airlift Kailas Cleanup Campaign",
+    "description": "High-altitude drone logistics and environmental reconnaissance at Mt. Manaslu.",
+    "fullText": "The Airlift Kailas Cleanup Campaign (September 4–27, 2025) advanced high-altitude drone logistics and environmental reconnaissance at Mt. Manaslu (8,163 m). Deliverables include detailed terrain mapping, validated operational envelopes, and geospatial datasets for autonomous logistics missions in extreme environments.",
+    "date": "2025-09-04",
+    "tags": [
+        "Drone Logistics",
+        "High-Altitude UAV",
+        "Climate Monitoring",
+        "Geospatial Analysis"
+    ],
+    "featured": true,
+    "category": "projects",
+    "images": [
+        "/images/Manaslu/Mount Manaslu.jpg"
+    ]
+}

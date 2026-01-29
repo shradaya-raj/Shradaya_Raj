@@ -78,7 +78,20 @@ export default function UtilityManagementProject() {
       <main className="min-h-screen bg-black text-white pt-20 pb-16">
         <div className="max-w-6xl mx-auto px-4">
           {/* Top actions */}
- 
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+            <Link href="/" className="text-blue-300 hover:text-blue-200 inline-flex items-center gap-2 w-fit">
+              <span aria-hidden>←</span> Back to Home
+            </Link>
+            <button
+              onClick={() => setIsImageOpen(true)}
+              className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full bg-blue-500/15 border border-blue-500/30 text-blue-50 text-sm hover:bg-blue-500/20 transition-colors w-fit"
+            >
+              View Poster
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </button>
+          </div>
 
           {/* Hero */}
           <section className={`${sectionShell} mb-10`}>
@@ -89,13 +102,13 @@ export default function UtilityManagementProject() {
                 className="relative lg:col-span-3 aspect-[16/10] lg:aspect-auto lg:h-[420px] w-full overflow-hidden rounded-2xl lg:rounded-r-none focus:outline-none"
                 aria-label="Open project poster"
               >
-                <Image
+            <Image
                   src="/images/UMS/Poster for ums.png"
                   alt="WebGIS Utility Management System poster"
-                  fill
-                  className="object-cover"
-                  priority
-                />
+              fill
+              className="object-cover"
+              priority
+            />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
                 <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between">
                   <span className="px-3 py-1 rounded-full bg-black/55 border border-white/10 text-xs text-gray-100 backdrop-blur">
@@ -165,7 +178,7 @@ export default function UtilityManagementProject() {
                   <p>Total Population: 6,586</p>
                   <p>Males: 3,095 | Females: 3,491</p>
                 </div>
-              </div>
+                </div>
               </div>
             </section>
 
@@ -222,9 +235,9 @@ export default function UtilityManagementProject() {
                     <div className="w-full md:w-1/2 relative aspect-[16/9] rounded-xl overflow-hidden bg-gray-900/50 p-4">
                       <RoofTypesChart />
                     </div>
+                    </div>
                   </div>
                 </div>
-              </div>
               </div>
             </section>
 
@@ -269,9 +282,9 @@ export default function UtilityManagementProject() {
                         </li>
                       </ul>
                     </div>
+                    </div>
                   </div>
                 </div>
-              </div>
               </div>
             </section>
 
@@ -333,8 +346,8 @@ export default function UtilityManagementProject() {
                       Sample implementation of the metric house numbering system showing distance-based addressing along roads
                     </p>
                   </div>
+                  </div>
                 </div>
-              </div>
               </div>
             </section>
 
@@ -442,9 +455,9 @@ export default function UtilityManagementProject() {
                         className="object-contain"
                       />
                     </div>
+                    </div>
                   </div>
                 </div>
-              </div>
               </div>
             </section>
 
@@ -480,10 +493,10 @@ export default function UtilityManagementProject() {
                         <span className="text-green-400 text-2xl">✓</span>
                         <span className="text-gray-300 text-lg">Demonstrated 92.9% internet access readiness</span>
                       </div>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
               </div>
             </section>
 
@@ -662,9 +675,9 @@ export default function UtilityManagementProject() {
                     <div className="w-full md:w-1/2 bg-gray-900/50 p-6 rounded-xl">
                       <EducationChart />
                     </div>
+                    </div>
                   </div>
                 </div>
-              </div>
               </div>
             </section>
 
@@ -691,7 +704,7 @@ export default function UtilityManagementProject() {
                     Open poster in full screen
                   </button>
                 </div>
-              </div>
+                </div>
               </div>
             </section>
 
@@ -706,7 +719,7 @@ export default function UtilityManagementProject() {
                     This project serves as a replicable model for smart ward-level governance in Nepal, with potential for scaling across all 753 municipalities. Aligned with the Digital Nepal Framework and UN Sustainable Development Goals, it demonstrates how spatial intelligence and community engagement can revolutionize local governance and urban planning.
                   </p>
                 </div>
-              </div>
+                </div>
               </div>
             </section>
           </div>

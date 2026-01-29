@@ -12,24 +12,26 @@ export interface Project {
 
 export async function getProjects(): Promise<Project[]> {
   'use server'
-  
+
   try {
     const projectsDirectory = join(process.cwd(), 'src/app/projects')
-    const projectFolders = readdirSync(projectsDirectory)
+    const projectFolders = readdirSync(projectsDirectory).filter(folder =>
+      !folder.startsWith('[') && !folder.startsWith('.') && folder !== 'page.tsx'
+    )
 
     const projects = projectFolders.map((folder) => {
       const projectPath = join(projectsDirectory, folder)
       const pageFilePath = join(projectPath, 'page.tsx')
-      
+
       if (!existsSync(pageFilePath)) {
         return null
       }
 
       const content = readFileSync(pageFilePath, 'utf8')
-      
+
       // Extract title from h1 tag
       const titleMatch = content.match(/<h1[^>]*>([^<]+)<\/h1>/)
-      const title = titleMatch ? titleMatch[1].trim() : folder.split('-').map(word => 
+      const title = titleMatch ? titleMatch[1].trim() : folder.split('-').map(word =>
         word.charAt(0).toUpperCase() + word.slice(1)
       ).join(' ')
 
@@ -39,10 +41,10 @@ export async function getProjects(): Promise<Project[]> {
 
       // Extract technologies from the tags array
       const techMatch = content.match(/\[([^\]]+)\]\.map\(tag/)
-      const technologies = techMatch 
-        ? techMatch[1].split(',').map(tech => 
-            tech.trim().replace(/['"]/g, '')
-          )
+      const technologies = techMatch
+        ? techMatch[1].split(',').map(tech =>
+          tech.trim().replace(/['"]/g, '')
+        )
         : []
 
       // Get image path

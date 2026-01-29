@@ -1,0 +1,26 @@
+{
+    "slug": "utokyo-icg-gnss-training",
+    "title": "UTOKYO / ICG GNSS Training",
+    "description": "Hands-on GNSS data logging and RTKLIB processing in Kathmandu.",
+    "fullText": "Participated in UTOKYO/ICG Global Navigation Satellite Systems (GNSS) training in Kathmandu, Nepal. Covered latest GNSS developments with global service providers; practiced u-center for data logging and RTKLIB for precise processing. Connected with international technical experts to exchange GNSS applications and insights. Special thanks to Dr. Dinesh Manandhar (CSIS, University of Tokyo) and hosts NAST and Tribhuvan University (IOE, CSSGS).",
+    "date": "2025-01-27",
+    "tags": [
+        "GNSS",
+        "GeospatialTechnology",
+        "uCenter",
+        "RTKLIB",
+        "SatelliteNavigation",
+        "GeomaticsEngineering",
+        "InternationalCollaboration",
+        "Networking",
+        "UTokyo",
+        "UNOOSA",
+        "ICG",
+        "Nepal"
+    ],
+    "featured": true,
+    "category": "achievements",
+    "images": [
+        "/images/certificates/Gnss_Training_2025.jpg"
+    ]
+}
