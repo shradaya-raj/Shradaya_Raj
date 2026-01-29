@@ -136,3 +136,66 @@ export async function POST(req: Request) {
         }, { status: 500 });
     }
 }
+
+export async function DELETE(
+  req: Request,
+  { params }: { params: { category: string; slug: string } }
+) {
+  try {
+    const { category, slug } = params;
+
+    if (!category || !slug) {
+      return NextResponse.json(
+        { error: 'Invalid request' },
+        { status: 400 }
+      );
+    }
+
+    // Path to JSON data
+    const dataPath = path.join(
+      process.cwd(),
+      'data',
+      category,
+      `${slug}.json`
+    );
+
+    // Check if file exists
+    try {
+      await fs.access(dataPath);
+    } catch {
+      return NextResponse.json(
+        { error: 'Item not found' },
+        { status: 404 }
+      );
+    }
+
+    // Delete JSON file
+    await fs.unlink(dataPath);
+
+    // Delete associated images folder (if exists)
+    const imagesDir = path.join(
+      process.cwd(),
+      'public',
+      'images',
+      category,
+      slug
+    );
+
+    try {
+      await fs.rm(imagesDir, { recursive: true, force: true });
+    } catch {
+      // Ignore if folder doesn't exist
+    }
+
+    return NextResponse.json(
+      { success: true },
+      { status: 200 }
+    );
+  } catch (err: any) {
+    console.error('Delete error:', err);
+    return NextResponse.json(
+      { error: 'Server error', details: err.message },
+      { status: 500 }
+    );
+  }
+}
