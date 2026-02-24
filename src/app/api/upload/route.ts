@@ -17,6 +17,8 @@ export async function POST(req: Request) {
         const date = (formData.get('date') as string) ?? new Date().toISOString();
         const tagsRaw = (formData.get('tags') as string) ?? '';
         const featured = (formData.get('featured') as string) === 'true';
+        const importanceRaw = (formData.get('importance') as string) ?? '0';
+        const importance = Number.isNaN(Number(importanceRaw)) ? 0 : Number(importanceRaw);
         const editSlug = formData.get('editSlug') as string | null;
         const oldCategory = formData.get('oldCategory') as string | null;
 
@@ -58,33 +60,6 @@ export async function POST(req: Request) {
             } catch (extractionError) {
                 console.warn('Text extraction failed but proceeding with upload:', extractionError);
             }
-
-            // AI Analysis
-            if (extractedText && process.env.GEMINI_API_KEY) {
-                try {
-                    const { GoogleGenerativeAI } = require('@google/generative-ai');
-                    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-                    const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
-
-                    const prompt = `Analyze the following technical content and provide a structured summary in Markdown format.
-                    Include:
-                    - **Executive Summary**: A 2-sentence high-level overview.
-                    - **Key Features**: A bulleted list of 3-5 major capabilities or highlights.
-                    - **Technologies & Tools**: A list of technologies identified.
-                    - **Impact**: The potential or actual impact of this project.
-                    
-                    Do not use H1 (#) headers. Start with H2 (##) or bolding.
-                    
-                    Content:
-                    ${extractedText.slice(0, 15000)}`;
-
-                    const result = await model.generateContent(prompt);
-                    const response = await result.response;
-                    aiContent = response.text();
-                } catch (aiError) {
-                    console.error('AI generation failed:', aiError);
-                }
-            }
         } else if (editSlug) {
             // If editing without new file, get old data
             const oldPath = path.join(dataDir, `${editSlug}.json`);
@@ -95,6 +70,42 @@ export async function POST(req: Request) {
                 aiContent = oldData.aiContent || '';
             } catch (e) {
                 // ignore
+            }
+        } else {
+            // New item without file: use provided details as source text
+            const tagsJoined = tagsRaw || '';
+            const detailsParts = [
+                title,
+                description,
+                tagsJoined ? `Tags: ${tagsJoined}` : ''
+            ].filter(Boolean);
+            extractedText = detailsParts.join('\n\n');
+        }
+
+        // AI Analysis (for new content or when a new file is uploaded)
+        if (extractedText && process.env.GEMINI_API_KEY && (file || !editSlug)) {
+            try {
+                const { GoogleGenerativeAI } = require('@google/generative-ai');
+                const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+                const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+
+                const prompt = `Analyze the following technical or descriptive content and provide a structured summary in Markdown format.
+                Include:
+                - **Executive Summary**: A 2-sentence high-level overview.
+                - **Key Features / Highlights**: A bulleted list of 3-5 major points.
+                - **Technologies & Tools** (if applicable): A list of technologies identified.
+                - **Impact**: The potential or actual impact of this project, achievement, or activity.
+                
+                Do not use H1 (#) headers. Start with H2 (##) or bolding.
+                
+                Content:
+                ${extractedText.slice(0, 15000)}`;
+
+                const result = await model.generateContent(prompt);
+                const response = await result.response;
+                aiContent = response.text();
+            } catch (aiError) {
+                console.error('AI generation failed:', aiError);
             }
         }
 
@@ -110,6 +121,7 @@ export async function POST(req: Request) {
             featured,
             category,
             images,
+            importance,
         };
 
         const jsonPath = path.join(dataDir, `${slug}.json`);

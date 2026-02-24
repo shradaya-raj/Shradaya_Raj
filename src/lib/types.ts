@@ -9,4 +9,5 @@ export interface Item {
     featured: boolean;
     category: 'projects' | 'achievements' | 'eca';
     images: string[];
+    importance?: number;
 }

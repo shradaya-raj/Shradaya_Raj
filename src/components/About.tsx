@@ -78,6 +78,18 @@ const ProjectsSection = ({ projects }: ProjectsSectionProps) => {
   const slideTransition = { duration: 1.4, ease: 'easeInOut' }
   const slideOffset = 220
 
+  const goToPrevious = () => {
+    setCurrentIndex((prevIndex) =>
+      prevIndex === 0 ? projects.length - 1 : prevIndex - 1
+    )
+  }
+
+  const goToNext = () => {
+    setCurrentIndex((prevIndex) =>
+      prevIndex === projects.length - 1 ? 0 : prevIndex + 1
+    )
+  }
+
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentIndex((prevIndex) => 
@@ -89,6 +101,10 @@ const ProjectsSection = ({ projects }: ProjectsSectionProps) => {
   }, [projects.length])
 
   const getProjectImage = (project: Project) => {
+    if (project.image) {
+      return project.image
+    }
+
     switch (project.slug) {
       case 'utility-management-system':
         return '/images/UMS/webportal.png'
@@ -100,6 +116,8 @@ const ProjectsSection = ({ projects }: ProjectsSectionProps) => {
         return '/images/lidar-scanning/lidar-scan.jpg'
       case 'gis-mapping':
         return '/images/gis-mapping/gis-mapping.jpg'
+      case 'airlift-kailas-cleanup-campaign':
+        return '/images/Manaslu/Mount Manaslu.jpg'
       default:
         return '/images/project-placeholder.jpg'
     }
@@ -143,25 +161,43 @@ const ProjectsSection = ({ projects }: ProjectsSectionProps) => {
                     ))}
                   </div>
                 </div>
-                <div className="flex justify-center space-x-2 mt-6">
-                  {projects.map((_: Project, index: number) => (
-                    <button
-                      key={index}
-                      onClick={(e) => {
-                        e.preventDefault()
-                        setCurrentIndex(index)
-                      }}
-                      className={`w-3 h-3 rounded-full transition-colors duration-200 ${
-                        index === currentIndex ? 'bg-blue-500' : 'bg-gray-600'
-                      }`}
-                    />
-                  ))}
-                </div>
               </div>
             </div>
           </Link>
         </motion.div>
       </AnimatePresence>
+
+      <div className="pointer-events-none absolute inset-x-0 bottom-4 flex items-center justify-center gap-4 px-8 z-20">
+        <button
+          type="button"
+          aria-label="Previous project"
+          onClick={goToPrevious}
+          className="pointer-events-auto inline-flex h-10 w-10 items-center justify-center rounded-full bg-black/60 border border-white/20 text-white hover:bg-black/75 backdrop-blur-sm"
+        >
+          ‹
+        </button>
+
+        <div className="pointer-events-auto flex justify-center space-x-2">
+          {projects.map((_: Project, index: number) => (
+            <button
+              key={index}
+              onClick={() => setCurrentIndex(index)}
+              className={`w-3 h-3 rounded-full transition-colors duration-200 ${
+                index === currentIndex ? 'bg-blue-500' : 'bg-gray-600'
+              }`}
+            />
+          ))}
+        </div>
+
+        <button
+          type="button"
+          aria-label="Next project"
+          onClick={goToNext}
+          className="pointer-events-auto inline-flex h-10 w-10 items-center justify-center rounded-full bg-black/60 border border-white/20 text-white hover:bg-black/75 backdrop-blur-sm"
+        >
+          ›
+        </button>
+      </div>
     </div>
   )
 }

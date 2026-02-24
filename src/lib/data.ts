@@ -14,7 +14,22 @@ export async function getAllItems(category: 'projects' | 'achievements' | 'eca')
                     return JSON.parse(content);
                 })
         );
-        items.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        items.sort((a: Item, b: Item) => {
+            // Featured items first
+            if (a.featured !== b.featured) {
+                return a.featured ? -1 : 1;
+            }
+
+            // Then by importance (higher number = more important)
+            const aImportance = a.importance ?? 0;
+            const bImportance = b.importance ?? 0;
+            if (aImportance !== bImportance) {
+                return bImportance - aImportance;
+            }
+
+            // Then by date (newest first)
+            return new Date(b.date).getTime() - new Date(a.date).getTime();
+        });
         return items;
     } catch (e) {
         console.error('Failed to read items for', category, e);

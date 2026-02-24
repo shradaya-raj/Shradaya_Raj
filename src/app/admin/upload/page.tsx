@@ -12,7 +12,9 @@ export default function UploadPage() {
     const [date, setDate] = useState('');
     const [tags, setTags] = useState('');
     const [featured, setFeatured] = useState(false);
+    const [importance, setImportance] = useState(0);
     const [isUploading, setIsUploading] = useState(false);
+    const [isAIWorking, setIsAIWorking] = useState(false);
     const [editSlug, setEditSlug] = useState<string | null>(null);
 
     const [items, setItems] = useState<any>({ projects: [], achievements: [], eca: [] });
@@ -44,6 +46,7 @@ export default function UploadPage() {
         setDate(item.date.split('T')[0]); // Extract YYYY-MM-DD
         setTags(item.tags.join(', '));
         setFeatured(item.featured);
+        setImportance(item.importance ?? 0);
         setEditSlug(item.slug);
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
@@ -68,8 +71,6 @@ export default function UploadPage() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!file && !editSlug) return alert('Please select a file');
-
         setIsUploading(true);
         const formData = new FormData();
         if (file) formData.append('file', file);
@@ -79,6 +80,7 @@ export default function UploadPage() {
         formData.append('date', date);
         formData.append('tags', tags);
         formData.append('featured', String(featured));
+        formData.append('importance', String(importance));
         if (editSlug) {
             formData.append('editSlug', editSlug);
             // find original category of the item being edited
@@ -123,7 +125,54 @@ export default function UploadPage() {
         setDate('');
         setTags('');
         setFeatured(false);
+        setImportance(0);
         setFile(null);
+    };
+
+    const handleAIEnhance = async () => {
+        if (!title && !description) {
+            alert('Please provide at least a title or description for AI to work with.');
+            return;
+        }
+
+        setIsAIWorking(true);
+        try {
+            const res = await fetch('/api/ai-assist', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    title,
+                    description,
+                    tags,
+                    category,
+                }),
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                console.error('AI assist error:', data.error);
+                alert(data.error || 'AI assist failed. Please try again.');
+                return;
+            }
+
+            if (data.description) {
+                setDescription(data.description);
+            }
+            if (Array.isArray(data.tags)) {
+                setTags(data.tags.join(', '));
+            }
+            if (typeof data.importance === 'number') {
+                setImportance(data.importance);
+            }
+        } catch (err) {
+            console.error('AI assist failed:', err);
+            alert('AI assist failed. Please try again.');
+        } finally {
+            setIsAIWorking(false);
+        }
     };
 
     return (
@@ -177,6 +226,18 @@ export default function UploadPage() {
                                     placeholder="Brief overview of the content"
                                     required
                                 />
+                                <button
+                                    type="button"
+                                    onClick={handleAIEnhance}
+                                    disabled={isAIWorking}
+                                    className={`mt-3 text-sm px-3 py-1 rounded-lg border transition ${
+                                        isAIWorking
+                                            ? 'border-gray-700 text-gray-500 cursor-not-allowed'
+                                            : 'border-blue-500/40 text-blue-300 hover:border-blue-400 hover:text-blue-200'
+                                    }`}
+                                >
+                                    {isAIWorking ? 'AI refining…' : 'Use AI to refine text & tags'}
+                                </button>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
@@ -197,6 +258,19 @@ export default function UploadPage() {
                                         onChange={(e) => setTags(e.target.value)}
                                         className="w-full p-3 bg-black/50 border border-white/10 rounded-xl text-white outline-none focus:ring-2 focus:ring-blue-500/50 transition"
                                         placeholder="GIS, Mapping, Python..."
+                                    />
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-400 mb-2">Importance</label>
+                                    <input
+                                        type="number"
+                                        min={0}
+                                        value={importance}
+                                        onChange={(e) => setImportance(Number(e.target.value) || 0)}
+                                        className="w-full p-3 bg-black/50 border border-white/10 rounded-xl text-white outline-none focus:ring-2 focus:ring-blue-500/50 transition"
+                                        placeholder="Higher number = more prominent"
                                     />
                                 </div>
                             </div>
