@@ -22,10 +22,6 @@ export async function POST(req: Request) {
         const editSlug = formData.get('editSlug') as string | null;
         const oldCategory = formData.get('oldCategory') as string | null;
 
-        if (!file && !editSlug) {
-            return NextResponse.json({ error: 'No file uploaded' }, { status: 400 });
-        }
-
         const tags = tagsRaw.split(',').map((t) => t.trim()).filter(Boolean);
         const slug = slugify(`${title}-${formatDate(date)}`);
 
@@ -82,28 +78,50 @@ export async function POST(req: Request) {
             extractedText = detailsParts.join('\n\n');
         }
 
-        // AI Analysis (for new content or when a new file is uploaded)
-        if (extractedText && process.env.GEMINI_API_KEY && (file || !editSlug)) {
+        // AI Analysis (for new content or when a new file is uploaded) using DeepSeek
+        if (extractedText && process.env.DEEPSEEK_API_KEY && (file || !editSlug)) {
+            const prompt = `Analyze the following technical or descriptive content and provide a structured summary in Markdown format.
+Include:
+- **Executive Summary**: A 2-sentence high-level overview.
+- **Key Features / Highlights**: A bulleted list of 3-5 major points.
+- **Technologies & Tools** (if applicable): A list of technologies identified.
+- **Impact**: The potential or actual impact of this project, achievement, or activity.
+
+Do not use H1 (#) headers. Start with H2 (##) or bolding.
+
+Content:
+${extractedText.slice(0, 15000)}`;
+
             try {
-                const { GoogleGenerativeAI } = require('@google/generative-ai');
-                const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-                const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+                const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${process.env.DEEPSEEK_API_KEY}`,
+                    },
+                    body: JSON.stringify({
+                        model: 'deepseek-chat',
+                        messages: [
+                            {
+                                role: 'system',
+                                content:
+                                    'You are a helpful assistant that writes concise, well-structured Markdown summaries for a personal portfolio website.',
+                            },
+                            {
+                                role: 'user',
+                                content: prompt,
+                            },
+                        ],
+                    }),
+                });
 
-                const prompt = `Analyze the following technical or descriptive content and provide a structured summary in Markdown format.
-                Include:
-                - **Executive Summary**: A 2-sentence high-level overview.
-                - **Key Features / Highlights**: A bulleted list of 3-5 major points.
-                - **Technologies & Tools** (if applicable): A list of technologies identified.
-                - **Impact**: The potential or actual impact of this project, achievement, or activity.
-                
-                Do not use H1 (#) headers. Start with H2 (##) or bolding.
-                
-                Content:
-                ${extractedText.slice(0, 15000)}`;
-
-                const result = await model.generateContent(prompt);
-                const response = await result.response;
-                aiContent = response.text();
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('DeepSeek AI generation failed:', response.status, errorText);
+                } else {
+                    const json = await response.json();
+                    aiContent = json.choices?.[0]?.message?.content?.trim?.() ?? '';
+                }
             } catch (aiError) {
                 console.error('AI generation failed:', aiError);
             }

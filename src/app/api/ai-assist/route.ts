@@ -8,9 +8,9 @@ interface AiAssistRequest {
 }
 
 export async function POST(req: Request) {
-  if (!process.env.GEMINI_API_KEY) {
+  if (!process.env.DEEPSEEK_API_KEY) {
     return NextResponse.json(
-      { error: 'GEMINI_API_KEY is not configured on the server.' },
+      { error: 'DEEPSEEK_API_KEY is not configured on the server.' },
       { status: 500 }
     );
   }
@@ -30,10 +30,6 @@ export async function POST(req: Request) {
         { status: 400 }
       );
     }
-
-    const { GoogleGenerativeAI } = require('@google/generative-ai');
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
 
     const prompt = `You are helping manage content in a personal portfolio CMS.
 Return STRICT JSON only, with no extra text, in this exact shape:
@@ -56,9 +52,39 @@ Category: ${category}
 Description: ${description}
 Tags: ${tags}`;
 
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const rawText: string = response.text().trim();
+    const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${process.env.DEEPSEEK_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: 'deepseek-chat',
+        messages: [
+          {
+            role: 'system',
+            content:
+              'You are a helpful assistant that returns STRICT JSON for managing items in a personal portfolio CMS.',
+          },
+          {
+            role: 'user',
+            content: prompt,
+          },
+        ],
+      }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('DeepSeek ai-assist failed:', response.status, errorText);
+      return NextResponse.json(
+        { error: 'AI assist request failed. Please try again.' },
+        { status: 500 }
+      );
+    }
+
+    const json = await response.json();
+    const rawText: string = json.choices?.[0]?.message?.content?.trim?.() ?? '';
 
     // Strip optional ```json code fences if the model added them
     const cleaned = rawText
