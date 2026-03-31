@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react'
 import Navigation from '@/components/Navigation'
-import Link from 'next/link'
 import Image from 'next/image'
 
 import {
@@ -79,9 +78,6 @@ export default function UtilityManagementProject() {
         <div className="max-w-6xl mx-auto px-4">
           {/* Top actions */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-            <Link href="/" className="text-blue-300 hover:text-blue-200 inline-flex items-center gap-2 w-fit">
-              <span aria-hidden>←</span> Back to Home
-            </Link>
             <button
               onClick={() => setIsImageOpen(true)}
               className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full bg-blue-500/15 border border-blue-500/30 text-blue-50 text-sm hover:bg-blue-500/20 transition-colors w-fit"

@@ -2,7 +2,7 @@ import About from '@/components/About'
 import { getProjects } from '@/lib/projects'
 import Navigation from '@/components/Navigation'
 
-export const dynamic = 'force-dynamic'
+export const dynamic = 'force-static'
 
 export default async function AboutPage() {
   const projects = await getProjects()

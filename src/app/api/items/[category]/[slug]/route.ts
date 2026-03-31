@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { promises as fs } from 'fs';
 import path from 'path';
 import { getItemBySlug } from '@/lib/data';
+import { requireAdmin } from '@/lib/adminAuth';
 
 export async function GET(
     req: Request,
@@ -17,6 +18,9 @@ export async function DELETE(
     req: Request,
     { params }: { params: { category: string; slug: string } }
 ) {
+    const guard = requireAdmin(req);
+    if (guard) return guard;
+
     const { category, slug } = params;
     try {
         const jsonPath = path.join(process.cwd(), 'data', category, `${slug}.json`);

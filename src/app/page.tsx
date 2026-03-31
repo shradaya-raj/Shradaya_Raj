@@ -24,11 +24,61 @@ const fadeInUp = {
 
 const smoothTransition = { duration: 1.2, ease: 'easeOut' }
 
+type HomeContent = {
+  profileImage: string
+  profileAlt: string
+  name: string
+  role: string
+  highlights: string[]
+  intro: { headingPrefix: string; headingHighlight: string; paragraph: string }
+  stats: { number: string; label: string }[]
+  toolsTitle: string
+  toolsCategories: { title: string; items: string[] }[]
+  cta: { primary: { text: string; href: string }; secondary: { text: string; href: string } }
+}
+
+const defaultHomeContent: HomeContent = {
+  profileImage: '/profile1.jpg',
+  profileAlt: 'Shradaya Raj Poudel',
+  name: 'Shradaya Raj Poudel',
+  role: 'Geomatics Engineer',
+  highlights: ['GNSS', 'GIS', '360 Mapping', '3D Modeling', 'Drone Mapping'],
+  intro: {
+    headingPrefix: 'Mapping with',
+    headingHighlight: 'heart, precision, and purpose.',
+    paragraph:
+      "Hi! I’m a Geomatics Engineering graduate from Tribhuvan University with a big passion for everything geospatial. From 3D Modeling, GIS and 360° mapping to drone surveys, fieldwork, GNSS technologies and remote sensing, I love working with tools and technologies that help us better understand the world around us. I’m always eager to learn, explore new ideas, and be part of projects that make a real impact through smart mapping and spatial solutions.",
+  },
+  stats: [
+    { number: '10+', label: 'Months of Experience' },
+    { number: '5+', label: 'Projects Completed' },
+    { number: '5+', label: 'Training Attended' },
+    { number: '1', label: 'Artical Published' },
+  ],
+  toolsTitle: 'Gadgets & Software',
+  toolsCategories: [
+    { title: 'Photogrammetry', items: ['Pix 4D', 'AgiSoft Metashape', 'DJI Terra', 'DJI Modify'] },
+    { title: 'GIS & Mapping', items: ['ArcGIS', 'QGIS', 'uMap', 'OpenRoute Service'] },
+    {
+      title: 'Surveying',
+      items: ['Total Station', 'Drones (Mavic 3E, Phantom 4 RTK)', 'DJI FlightHub2', 'DRTK', 'DGPS', 'Kobo Collect', 'ODK Collect'],
+    },
+    { title: 'Designing', items: ['Revit', 'Canva'] },
+    { title: 'GNSS Data Processing', items: ['RTKLIB', 'U-Center'] },
+    { title: 'Virtual Tour Mapping', items: ['3D Vista', 'Insta 360 Pro 2', 'PanoX'] },
+  ],
+  cta: {
+    primary: { text: 'View Projects', href: '/about' },
+    secondary: { text: 'Get in Touch', href: '/contact' },
+  },
+}
+
 export default function Home() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
   const [isMounted, setIsMounted] = useState(false)
 
   const [dynamicProjects, setDynamicProjects] = useState<any[]>([])
+  const [siteContent, setSiteContent] = useState<HomeContent | null>(null)
 
   useEffect(() => {
     setIsMounted(true)
@@ -48,10 +98,24 @@ export default function Home() {
       }
     }
 
+    const fetchSiteContent = async () => {
+      try {
+        const res = await fetch('/api/site/home')
+        if (!res.ok) return
+        const data = await res.json()
+        setSiteContent(data)
+      } catch {
+        // ignore; use defaults
+      }
+    }
+
     window.addEventListener('mousemove', handleMouseMove)
     fetchFeatured()
+    fetchSiteContent()
     return () => window.removeEventListener('mousemove', handleMouseMove)
   }, [])
+
+  const homeContent = siteContent ?? defaultHomeContent
 
   const projects = dynamicProjects.map(p => ({
     title: p.title,
@@ -137,8 +201,8 @@ export default function Home() {
                 {/* Main image container */}
                 <div className="relative w-full h-full rounded-full overflow-hidden ring-4 ring-blue-500 ring-offset-8 ring-offset-black shadow-[0_0_20px_rgba(59,130,246,0.5)] group-hover:ring-purple-500 group-hover:shadow-[0_0_30px_rgba(168,85,247,0.5)] transition-all duration-300 mt-8">
                   <Image
-                    src="/profile1.jpg"
-                    alt="Shradaya Raj Poudel"
+                    src={homeContent.profileImage}
+                    alt={homeContent.profileAlt}
                     width={350}
                     height={350}
                     priority
@@ -161,7 +225,7 @@ export default function Home() {
                   transition={{ ...smoothTransition, delay: 0.2 }}
                   className="inline-block bg-clip-text text-transparent bg-gradient-to-r from-white via-blue-100 to-white relative z-10"
                 >
-                  Shradaya Raj Poudel
+                  {homeContent.name}
                 </motion.span>
                 <motion.span
                   initial={{ opacity: 0, y: 20 }}
@@ -169,7 +233,7 @@ export default function Home() {
                   transition={{ ...smoothTransition, delay: 0.4 }}
                   className="block bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400 relative z-10 text-4xl md:text-6xl"
                 >
-                  Geomatics Engineer
+                  {homeContent.role}
                 </motion.span>
               </h1>
 
@@ -179,11 +243,12 @@ export default function Home() {
                 transition={{ ...smoothTransition, delay: 0.6 }}
                 className="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto text-center relative z-10"
               >
-                <span className="text-purple-400">GNSS</span> |{' '}
-                <span className="text-blue-400">GIS</span> |{' '}
-                <span className="text-purple-400">360 Mapping</span> |{' '}
-                <span className="text-blue-400">3D Modeling</span> |{' '}
-                <span className="text-pink-400">Drone Mapping</span>
+                {homeContent.highlights.map((h, idx) => (
+                  <React.Fragment key={h}>
+                    <span className={idx % 2 === 0 ? 'text-purple-400' : 'text-blue-400'}>{h}</span>
+                    {idx < homeContent.highlights.length - 1 ? ' | ' : null}
+                  </React.Fragment>
+                ))}
               </motion.p>
 
               <motion.div
@@ -192,22 +257,22 @@ export default function Home() {
                 transition={{ ...smoothTransition, delay: 0.8 }}
                 className="flex flex-col sm:flex-row gap-4 justify-center relative z-10"
               >
-                <Link href="/about">
+                <Link href={homeContent.cta.primary.href}>
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-8 py-3 rounded-full text-lg font-semibold transition-all hover:shadow-lg hover:shadow-blue-500/25"
                   >
-                    View Projects
+                    {homeContent.cta.primary.text}
                   </motion.button>
                 </Link>
-                <Link href="/contact">
+                <Link href={homeContent.cta.secondary.href}>
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     className="bg-transparent border-2 border-blue-500 text-white px-8 py-3 rounded-full text-lg font-semibold transition-all hover:bg-blue-500/10 h-[52px]"
                   >
-                    Get in Touch
+                    {homeContent.cta.secondary.text}
                   </motion.button>
                 </Link>
               </motion.div>
@@ -234,22 +299,17 @@ export default function Home() {
           >
             <motion.div variants={fadeInUp} className="text-center mb-16">
               <h2 className="text-3xl md:text-4xl font-bold mb-8 text-white">
-                Mapping with{' '}
-                <span className="text-blue-400">heart, precision, and purpose.</span>
+                {homeContent.intro.headingPrefix}{' '}
+                <span className="text-blue-400">{homeContent.intro.headingHighlight}</span>
               </h2>
               <p className="text-gray-300 max-w-2xl mx-auto">
-                Hi! I'm a Geomatics Engineering graduate from Tribhuvan University with a big passion for everything geospatial. From 3D Modeling, GIS and 360° mapping to drone surveys, fieldwork, GNSS technologies and remote sensing, I love working with tools and technologies that help us better understand the world around us. I'm always eager to learn, explore new ideas, and be part of projects that make a real impact through smart mapping and spatial solutions.
+                {homeContent.intro.paragraph}
               </p>
             </motion.div>
 
             {/* Key Stats */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-10 mb-6">
-              {[
-                { number: "10+", label: "Months of Experience", className: "flex flex-col items-center justify-center" },
-                { number: "5+", label: "Projects Completed", className: "flex flex-col items-center justify-center" },
-                { number: "5+", label: "Training Attended", className: "flex flex-col items-center justify-center" },
-                { number: "1", label: "Artical Published", className: "flex flex-col items-center justify-center" }
-              ].map((stat, index) => (
+              {homeContent.stats.map((stat) => (
                 <motion.div
                   key={stat.label}
                   variants={fadeInUp}
@@ -278,19 +338,12 @@ export default function Home() {
             className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8"
           >
             <motion.div variants={fadeInUp} className="text-center mb-10">
-              <h2 className="text-3xl md:text-4xl font-bold mb-8 text-white">Gadgets & Software</h2>
+              <h2 className="text-3xl md:text-4xl font-bold mb-8 text-white">{homeContent.toolsTitle}</h2>
               <div className="w-24 h-1 bg-blue-500 mx-auto mb-8"></div>
             </motion.div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {[
-                { title: 'Photogrammetry', items: ['Pix 4D', 'AgiSoft Metashape', 'DJI Terra', 'DJI Modify'] },
-                { title: 'GIS & Mapping', items: ['ArcGIS', 'QGIS', 'uMap', 'OpenRoute Service'] },
-                { title: 'Surveying', items: ['Total Station', 'Drones (Mavic 3E, Phantom 4 RTK)', 'DJI FlightHub2', 'DRTK', 'DGPS', 'Kobo Collect', 'ODK Collect'] },
-                { title: 'Designing', items: ['Revit', 'Canva'] },
-                { title: 'GNSS Data Processing', items: ['RTKLIB', 'U-Center'] },
-                { title: 'Virtual Tour Mapping', items: ['3D Vista', 'Insta 360 Pro 2', 'PanoX'] },
-              ].map((category, idx) => (
+              {homeContent.toolsCategories.map((category, idx) => (
                 <motion.div
                   key={category.title}
                   variants={fadeInUp}

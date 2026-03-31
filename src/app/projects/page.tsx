@@ -5,6 +5,26 @@ import Projects from '@/components/Projects';
 
 export default async function ProjectsPage() {
   const allItems = await getAllItems('projects');
+  const sortedByDate = [...allItems].sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+  );
+
+  const yearGroups = sortedByDate.reduce<Record<string, typeof sortedByDate>>((acc, item) => {
+    const d = new Date(item.date);
+    const key = Number.isFinite(d.getTime()) ? String(d.getFullYear()) : 'Unknown';
+    acc[key] = acc[key] ?? [];
+    acc[key].push(item);
+    return acc;
+  }, {});
+
+  const yearKeys = Object.keys(yearGroups).sort((a, b) => {
+    const na = Number(a);
+    const nb = Number(b);
+    if (Number.isNaN(na) && Number.isNaN(nb)) return a.localeCompare(b);
+    if (Number.isNaN(na)) return 1;
+    if (Number.isNaN(nb)) return -1;
+    return nb - na;
+  });
 
   return (
     <>
@@ -19,25 +39,37 @@ export default async function ProjectsPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {allItems.map((item: any) => (
-              <ItemCard
-                key={item.slug}
-                slug={item.slug}
-                title={item.title}
-                description={item.description}
-                image={item.images?.[0]?.startsWith('/')
-                  ? item.images[0]
-                  : item.images?.[0] ? `/images/projects/${item.slug}/${item.images[0]}` : undefined}
-                tags={item.tags}
-                featured={item.featured}
-                category="projects"
-              />
-            ))}
-            {allItems.length === 0 && (
-              <p className="text-gray-500 text-center col-span-full py-20">No projects found.</p>
-            )}
-          </div>
+          {allItems.length === 0 ? (
+            <p className="text-gray-500 text-center col-span-full py-20">No projects found.</p>
+          ) : (
+            <div className="space-y-16">
+              {yearKeys.map((year) => (
+                <section key={year}>
+                  <h2 className="text-3xl font-bold text-white mb-8">
+                    {year}
+                  </h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {yearGroups[year].map((item: any) => (
+                      <ItemCard
+                        key={item.slug}
+                        slug={item.slug}
+                        title={item.title}
+                        description={item.description}
+                        image={item.images?.[0]?.startsWith('/')
+                          ? item.images[0]
+                          : item.images?.[0]
+                            ? `/images/projects/${item.slug}/${item.images[0]}`
+                            : undefined}
+                        tags={item.tags}
+                        featured={item.featured}
+                        category="projects"
+                      />
+                    ))}
+                  </div>
+                </section>
+              ))}
+            </div>
+          )}
         </section>
       </main>
     </>

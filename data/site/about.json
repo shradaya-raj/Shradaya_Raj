@@ -1,0 +1,10 @@
+{
+  "heading": "About Me",
+  "paragraphs": [
+    "Welcome to my digital space! I’m a passionate and driven Geomatics Engineer with a deep interest in geospatial science, mapping technologies, and the innovative use of spatial data to solve real-world challenges. My work revolves around the integration of GIS, remote sensing, GNSS, and surveying to deliver accurate, insightful, and practical solutions across various sectors.",
+    "Whether it’s monitoring the environment, supporting infrastructure planning, or conducting spatial analysis, I work on turning complex geographic data into clear, actionable insights. I’m especially interested in the intersection of technology and geography—using tools like QGIS, ArcGIS, and Python for geospatial processing and visualization.",
+    "This website showcases my work, ongoing projects, and ideas around geomatics, spatial data science, and how we can better understand the world through data."
+  ],
+  "skills": ["GNSS", "GIS", "Remote Sensing", "3D Mapping", "3D Modeling", "Drone Mapping"]
+}
+

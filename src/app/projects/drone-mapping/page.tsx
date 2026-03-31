@@ -2,7 +2,6 @@
 
 import React from 'react'
 import Navigation from '@/components/Navigation'
-import Link from 'next/link'
 import Image from 'next/image'
 
 export default function DroneMappingProject() {
@@ -11,10 +10,6 @@ export default function DroneMappingProject() {
       <Navigation />
       <main className="min-h-screen bg-black text-white py-20">
         <div className="max-w-6xl mx-auto px-4">
-          <Link href="/" className="text-blue-400 hover:text-blue-300 mb-8 inline-block">
-            ← Back to Home
-          </Link>
-          
           <div className="relative aspect-video w-full mb-8 rounded-xl overflow-hidden">
             <Image
               src="/images/drone-mapping.jpg"

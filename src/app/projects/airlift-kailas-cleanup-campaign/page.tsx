@@ -2,8 +2,8 @@
 
 import React, { useState } from 'react'
 import Navigation from '@/components/Navigation'
-import Link from 'next/link'
 import Image from 'next/image'
+import { getCloudinaryVideoUrl } from '@/lib/cloudinary'
 
 const sectionShell =
   'relative overflow-hidden rounded-2xl border border-blue-900/35 bg-gradient-to-br from-gray-950 via-gray-950/85 to-gray-900/70 shadow-[0_22px_70px_rgba(0,0,0,0.35)]'
@@ -13,16 +13,18 @@ export default function AirliftKailasCleanupCampaign() {
   const [showBaseCampVideo, setShowBaseCampVideo] = useState(false)
   const [showHoverTestVideo, setShowHoverTestVideo] = useState(false)
   const [showMarshallingVideo, setShowMarshallingVideo] = useState(false)
+  const baseCampVideoSrc =
+    getCloudinaryVideoUrl('manaslu/morning-on-base-camp') ?? '/images/Manaslu/Morning on Base Camp.mp4'
+  const hoverTestVideoSrc =
+    getCloudinaryVideoUrl('manaslu/hover-test-at-base-camp') ?? '/images/Manaslu/Hover test at Base Camp.mp4'
+  const marshallingVideoSrc =
+    getCloudinaryVideoUrl('manaslu/marshelling') ?? '/images/Manaslu/Marshelling.mp4'
 
   return (
     <>
       <Navigation />
       <main className="min-h-screen bg-black text-white py-20">
         <div className="max-w-6xl mx-auto px-4">
-          <Link href="/" className="text-blue-300 hover:text-blue-200 mb-8 inline-block">
-            ← Back to Home
-          </Link>
-
           {/* Hero */}
           <section className={`${sectionShell} mb-12`}>
             <div className={innerBorder} />
@@ -349,10 +351,11 @@ export default function AirliftKailasCleanupCampaign() {
                         </button>
                       ) : (
                         <video
-                          src="/images/Manaslu/Morning on Base Camp.mp4"
+                          src={baseCampVideoSrc}
                           controls
                           autoPlay
                           playsInline
+                          preload="metadata"
                           className="h-full w-full object-cover"
                         />
                       )}
@@ -399,11 +402,13 @@ export default function AirliftKailasCleanupCampaign() {
                         </button>
                       ) : (
                         <video
-                          src="/images/Manaslu/Hover test at Base Camp.mp4"
+                          src={hoverTestVideoSrc}
+                          controls
                           autoPlay
                           loop
                           muted
                           playsInline
+                          preload="metadata"
                           className="h-full w-full object-cover"
                         />
                       )}
@@ -440,11 +445,13 @@ export default function AirliftKailasCleanupCampaign() {
                         </button>
                       ) : (
                         <video
-                          src="/images/Manaslu/Marshelling.mp4"
+                          src={marshallingVideoSrc}
+                          controls
                           autoPlay
                           loop
                           muted
                           playsInline
+                          preload="metadata"
                           className="h-full w-full object-cover"
                         />
                       )}

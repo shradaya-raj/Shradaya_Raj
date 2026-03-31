@@ -2,9 +2,22 @@ import { getAllItems } from '@/lib/data';
 import ItemCard from '@/app/components/ItemCard';
 import Navigation from '@/components/Navigation';
 
+function sortByDateDesc<T extends { date: string }>(items: T[]): T[] {
+  return [...items].sort((a, b) => {
+    const aTime = new Date(a.date).getTime();
+    const bTime = new Date(b.date).getTime();
+
+    if (Number.isNaN(aTime) && Number.isNaN(bTime)) return 0;
+    if (Number.isNaN(aTime)) return 1;
+    if (Number.isNaN(bTime)) return -1;
+
+    return bTime - aTime;
+  });
+}
+
 export default async function AchievementsPage() {
-  const achievements = await getAllItems('achievements');
-  const eca = await getAllItems('eca');
+  const achievements = sortByDateDesc(await getAllItems('achievements'));
+  const eca = sortByDateDesc(await getAllItems('eca'));
 
   return (
     <>

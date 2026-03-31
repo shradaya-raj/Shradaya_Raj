@@ -12,6 +12,34 @@ interface AboutProps {
 
 const About = ({ initialProjects }: AboutProps) => {
   const smoothTransition = { duration: 1.2, ease: 'easeOut' }
+  const [siteAbout, setSiteAbout] = useState<{
+    heading?: string
+    paragraphs?: string[]
+    skills?: string[]
+  } | null>(null)
+
+  useEffect(() => {
+    const fetchSiteAbout = async () => {
+      try {
+        const res = await fetch('/api/site/about')
+        if (!res.ok) return
+        const data = await res.json()
+        setSiteAbout(data)
+      } catch {
+        // ignore; use defaults
+      }
+    }
+    fetchSiteAbout()
+  }, [])
+
+  const heading = siteAbout?.heading ?? 'About Me'
+  const paragraphs =
+    siteAbout?.paragraphs ?? [
+      "Welcome to my digital space! I’m a passionate and driven Geomatics Engineer with a deep interest in geospatial science, mapping technologies, and the innovative use of spatial data to solve real-world challenges. My work revolves around the integration of GIS, remote sensing, GNSS, and surveying to deliver accurate, insightful, and practical solutions across various sectors.",
+      "Whether it’s monitoring the environment, supporting infrastructure planning, or conducting spatial analysis, I work on turning complex geographic data into clear, actionable insights. I’m especially interested in the intersection of technology and geography—using tools like QGIS, ArcGIS, and Python for geospatial processing and visualization.",
+      'This website showcases my work, ongoing projects, and ideas around geomatics, spatial data science, and how we can better understand the world through data.',
+    ]
+  const skills = siteAbout?.skills ?? ['GNSS', 'GIS', 'Remote Sensing', '3D Mapping', '3D Modeling', 'Drone Mapping']
 
   return (
     <section id="about" className="py-20 bg-gradient-to-b from-black to-gray-900">
@@ -23,7 +51,7 @@ const About = ({ initialProjects }: AboutProps) => {
           viewport={{ once: true }}
           className="text-center mb-12"
         >
-          <h2 className="text-4xl font-bold mb-4">About Me</h2>
+          <h2 className="text-4xl font-bold mb-4">{heading}</h2>
           <div className="w-24 h-1 bg-blue-500 mx-auto"></div>
         </motion.div>
 
@@ -35,22 +63,15 @@ const About = ({ initialProjects }: AboutProps) => {
             viewport={{ once: true }}
             className="space-y-6"
           >
-            <p className="text-xl text-gray-300 text-justify">
-              Welcome to my digital space! I'm a passionate and driven Geomatics Engineer with a deep interest in geospatial science, mapping technologies, and the innovative use of spatial data to solve real-world challenges. My work revolves around the integration of GIS, remote sensing, GNSS, and surveying to deliver accurate, insightful, and practical solutions across various sectors.
-            </p>
-            <p className="text-xl text-gray-300 text-justify">
-              Whether it's monitoring the environment, supporting infrastructure planning, or conducting spatial analysis, I work on turning complex geographic data into clear, actionable insights. I'm especially interested in the intersection of technology and geography—using tools like QGIS, ArcGIS, and Python for geospatial processing and visualization.
-            </p>
-            <p className="text-xl text-gray-300 text-justify">
-              This website showcases my work, ongoing projects, and ideas around geomatics, spatial data science, and how we can better understand the world through data.
-            </p>
+            {paragraphs.map((p) => (
+              <p key={p} className="text-xl text-gray-300 text-justify">
+                {p}
+              </p>
+            ))}
             <div className="flex flex-wrap gap-4">
-              <Skill>GNSS</Skill>
-              <Skill>GIS</Skill>
-              <Skill>Remote Sensing</Skill>
-              <Skill>3D Mapping</Skill>
-              <Skill>3D Modeling</Skill>
-              <Skill>Drone Mapping</Skill>
+              {skills.map((s) => (
+                <Skill key={s}>{s}</Skill>
+              ))}
             </div>
           </motion.div>
 
@@ -75,6 +96,7 @@ interface ProjectsSectionProps {
 
 const ProjectsSection = ({ projects }: ProjectsSectionProps) => {
   const [currentIndex, setCurrentIndex] = useState(0)
+  const [imageErrorMap, setImageErrorMap] = useState<Record<string, boolean>>({})
   const slideTransition = { duration: 1.4, ease: 'easeInOut' }
   const slideOffset = 220
 
@@ -123,6 +145,11 @@ const ProjectsSection = ({ projects }: ProjectsSectionProps) => {
     }
   }
 
+  const activeProject = projects[currentIndex]
+  const activeImageSrc = activeProject ? getProjectImage(activeProject) : '/images/project-placeholder.jpg'
+  const displayImageSrc =
+    imageErrorMap[activeImageSrc] || !activeImageSrc ? '/images/project-placeholder.jpg' : activeImageSrc
+
   return (
     <div className="relative h-[500px] overflow-hidden rounded-xl">
       <AnimatePresence mode="wait">
@@ -134,24 +161,27 @@ const ProjectsSection = ({ projects }: ProjectsSectionProps) => {
           transition={slideTransition}
           className="absolute inset-0"
         >
-          <Link href={`/projects/${projects[currentIndex].slug}`} className="block h-full">
+          <Link href={`/projects/${activeProject.slug}`} className="block h-full">
             <div className="relative h-full w-full bg-gray-800 rounded-xl overflow-hidden group">
               <div className="absolute inset-0">
                 <Image
-                  src={getProjectImage(projects[currentIndex])}
-                  alt={projects[currentIndex].title}
+                  src={displayImageSrc}
+                  alt={activeProject.title}
                   fill
                   className="object-cover transition-transform duration-700 group-hover:scale-105"
                   priority
+                  onError={() => {
+                    setImageErrorMap((prev) => ({ ...prev, [activeImageSrc]: true }))
+                  }}
                 />
                 <div className="absolute inset-0 bg-black/60 transition-opacity duration-500 group-hover:bg-black/40" />
               </div>
               <div className="relative h-full w-full p-8 flex flex-col justify-between z-10">
                 <div>
-                  <h3 className="text-2xl font-bold mb-4">{projects[currentIndex].title}</h3>
-                  <p className="text-gray-300 text-lg mb-6">{projects[currentIndex].description}</p>
+                  <h3 className="text-2xl font-bold mb-4">{activeProject.title}</h3>
+                  <p className="text-gray-300 text-lg mb-6">{activeProject.description}</p>
                   <div className="flex flex-wrap gap-2">
-                    {projects[currentIndex].technologies.map((tech: string, index: number) => (
+                    {activeProject.technologies.map((tech: string, index: number) => (
                       <span 
                         key={index}
                         className="px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-sm backdrop-blur-sm"

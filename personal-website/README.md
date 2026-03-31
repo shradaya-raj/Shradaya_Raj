@@ -1,3 +1,9 @@
+# Nested Next.js app (not deployed)
+
+This directory contains a separate Next.js project (Next 15 / React 19) and is **not** the deployed site.
+
+The deployed site is the **root app** at `../` (Next 14).
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started

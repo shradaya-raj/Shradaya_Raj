@@ -1,0 +1,11 @@
+{
+  "heading": "Contact Me",
+  "imageSrc": "/profile.jpg",
+  "imageAlt": "Contact page featured image",
+  "email": "shradayarajpoudel@gmail.com",
+  "location": "Pokhara, Nepal",
+  "social": {
+    "linkedin": "https://www.linkedin.com/in/shradaya-raj-poudel-b11454273/"
+  }
+}
+

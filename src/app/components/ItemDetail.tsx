@@ -1,5 +1,9 @@
+/* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
+'use client'
+
 import Image from 'next/image';
 import ReactMarkdown from 'react-markdown';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Item } from '@/lib/types';
 import { formatDate } from '@/lib/dateFormatter';
 import Navigation from '@/components/Navigation';
@@ -9,14 +13,72 @@ interface ItemDetailProps {
 }
 
 export default function ItemDetail({ item }: ItemDetailProps) {
+    const [lightbox, setLightbox] = useState<{ src: string; alt: string } | null>(null)
+
+    const resolveImageSrc = useMemo(() => {
+        return (img: string) =>
+            img.startsWith('/')
+                ? img
+                : `/images/${item.category}/${item.slug}/${img}`
+    }, [item.category, item.slug])
+
+    useEffect(() => {
+        if (!lightbox) return
+
+        const onKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') setLightbox(null)
+        }
+
+        // Basic focus/UX: prevent background scroll while lightbox is open.
+        const prevOverflow = document.body.style.overflow
+        document.body.style.overflow = 'hidden'
+        window.addEventListener('keydown', onKeyDown)
+
+        return () => {
+            document.body.style.overflow = prevOverflow
+            window.removeEventListener('keydown', onKeyDown)
+        }
+    }, [lightbox])
+
     return (
         <>
             <Navigation />
+            {lightbox && (
+                <div
+                    className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
+                    onClick={() => setLightbox(null)}
+                    role="dialog"
+                    aria-modal="true"
+                >
+                    <div
+                        className="relative w-[92vw] h-[86vh] max-w-5xl"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <Image
+                            src={lightbox.src}
+                            alt={lightbox.alt}
+                            fill
+                            className="object-contain"
+                            priority
+                        />
+                        <button
+                            type="button"
+                            className="absolute top-4 right-4 text-white bg-black/50 hover:bg-black/70 rounded-full p-2 transition-colors"
+                            onClick={() => setLightbox(null)}
+                            aria-label="Close image"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            )}
             <main className="min-h-screen bg-black text-white pt-24 pb-16">
                 <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                     <header className="mb-12">
                         {item.featured && (
-                            <span className="inline-block px-3 py-1 rounded-full bg-blue-500/20 border border-blue-500/30 text-blue-400 text-xs font-bold uppercase tracking-wider mb-4">
+                            <span className="inline-block px-3 py-1 rounded-full bg-green-500/20 border border-green-500/30 text-green-300 text-xs font-bold uppercase tracking-wider mb-4">
                                 Featured Project
                             </span>
                         )}
@@ -30,10 +92,19 @@ export default function ItemDetail({ item }: ItemDetailProps) {
 
                     {item.images && item.images.length > 0 && (
                         <div className="relative aspect-video w-full overflow-hidden rounded-2xl mb-12 ring-1 ring-white/10">
+                            <button
+                                type="button"
+                                className="absolute inset-0 z-10 cursor-zoom-in"
+                                onClick={() =>
+                                    setLightbox({
+                                        src: resolveImageSrc(item.images[0]),
+                                        alt: item.title,
+                                    })
+                                }
+                                aria-label="Open project image"
+                            />
                             <Image
-                                src={item.images[0].startsWith('/')
-                                    ? item.images[0]
-                                    : `/images/${item.category}/${item.slug}/${item.images[0]}`}
+                                src={resolveImageSrc(item.images[0])}
                                 alt={item.title}
                                 fill
                                 className="object-cover"
@@ -93,21 +164,6 @@ export default function ItemDetail({ item }: ItemDetailProps) {
                                 </div>
                             </div>
 
-                            <div className="bg-gray-900/50 rounded-2xl p-6 border border-white/5 backdrop-blur-sm">
-                                <h3 className="text-lg font-semibold mb-2 text-blue-400">Attachments</h3>
-                                <p className="text-sm text-gray-400 mb-4">Original document is available for reference.</p>
-                                {item.images.map((img) => (
-                                    <a
-                                        key={img}
-                                        href={img.startsWith('/') ? img : `/images/${item.category}/${item.slug}/${img}`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="block p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition text-sm text-blue-300 truncate"
-                                    >
-                                        📄 {img.split('/').pop()}
-                                    </a>
-                                ))}
-                            </div>
                         </aside>
                     </div>
                 </div>

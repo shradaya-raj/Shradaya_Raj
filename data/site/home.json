@@ -1,0 +1,43 @@
+{
+  "profileImage": "/profile1.jpg",
+  "profileAlt": "Shradaya Raj Poudel",
+  "name": "Shradaya Raj Poudel",
+  "role": "Geomatics Engineer",
+  "highlights": ["GNSS", "GIS", "360 Mapping", "3D Modeling", "Drone Mapping"],
+  "intro": {
+    "headingPrefix": "Mapping with",
+    "headingHighlight": "heart, precision, and purpose.",
+    "paragraph": "Hi! I’m a Geomatics Engineering graduate from Tribhuvan University with a big passion for everything geospatial. From 3D Modeling, GIS and 360° mapping to drone surveys, fieldwork, GNSS technologies and remote sensing, I love working with tools and technologies that help us better understand the world around us. I’m always eager to learn, explore new ideas, and be part of projects that make a real impact through smart mapping and spatial solutions."
+  },
+  "stats": [
+    { "number": "10+", "label": "Months of Experience" },
+    { "number": "5+", "label": "Projects Completed" },
+    { "number": "5+", "label": "Training Attended" },
+    { "number": "1", "label": "Artical Published" }
+  ],
+  "toolsTitle": "Gadgets & Software",
+  "toolsCategories": [
+    { "title": "Photogrammetry", "items": ["Pix 4D", "AgiSoft Metashape", "DJI Terra", "DJI Modify"] },
+    { "title": "GIS & Mapping", "items": ["ArcGIS", "QGIS", "uMap", "OpenRoute Service"] },
+    {
+      "title": "Surveying",
+      "items": [
+        "Total Station",
+        "Drones (Mavic 3E, Phantom 4 RTK)",
+        "DJI FlightHub2",
+        "DRTK",
+        "DGPS",
+        "Kobo Collect",
+        "ODK Collect"
+      ]
+    },
+    { "title": "Designing", "items": ["Revit", "Canva"] },
+    { "title": "GNSS Data Processing", "items": ["RTKLIB", "U-Center"] },
+    { "title": "Virtual Tour Mapping", "items": ["3D Vista", "Insta 360 Pro 2", "PanoX"] }
+  ],
+  "cta": {
+    "primary": { "text": "View Projects", "href": "/about" },
+    "secondary": { "text": "Get in Touch", "href": "/contact" }
+  }
+}
+

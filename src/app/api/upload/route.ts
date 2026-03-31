@@ -6,8 +6,31 @@ import path from 'path';
 // import mammoth from 'mammoth';
 import { slugify } from '../../../../lib/slugify';
 import { formatDate } from '../../../../lib/dateFormatter';
+import { requireAdmin } from '@/lib/adminAuth';
+import { createCmsBranch, createPullRequest, deleteFile, upsertFile } from '@/lib/github';
+
+const allowedExtensions = new Set([
+  '.pdf',
+  '.doc',
+  '.docx',
+  '.png',
+  '.jpg',
+  '.jpeg',
+  '.webp',
+  '.gif',
+  '.mp4',
+  '.webm',
+]);
+
+function getExt(name: string) {
+  const idx = name.lastIndexOf('.');
+  return idx >= 0 ? name.slice(idx).toLowerCase() : '';
+}
 
 export async function POST(req: Request) {
+    const guard = requireAdmin(req);
+    if (guard) return guard;
+
     try {
         const formData = await req.formData();
         const file = formData.get('file') as File | null;
@@ -25,11 +48,46 @@ export async function POST(req: Request) {
         const tags = tagsRaw.split(',').map((t) => t.trim()).filter(Boolean);
         const slug = slugify(`${title}-${formatDate(date)}`);
 
+        const shouldUseGitHubPr =
+          process.env.NODE_ENV === 'production' &&
+          !!process.env.GITHUB_TOKEN &&
+          !!process.env.GITHUB_OWNER &&
+          !!process.env.GITHUB_REPO;
+
+        if (file) {
+            const ext = getExt(file.name);
+            if (!allowedExtensions.has(ext)) {
+                return NextResponse.json(
+                    {
+                        error: `Unsupported file type (${ext || 'unknown'}).`,
+                        allowed: Array.from(allowedExtensions),
+                    },
+                    { status: 400 }
+                );
+            }
+
+            // GitHub Contents API is best for small/medium assets. Keep uploads small for a smooth PR workflow.
+            const maxBytes = shouldUseGitHubPr ? 900_000 : 25_000_000;
+            if (file.size > maxBytes) {
+                return NextResponse.json(
+                    {
+                        error: `File is too large (${Math.round(file.size / 1024 / 1024)}MB).`,
+                        maxMB: Math.round(maxBytes / 1024 / 1024),
+                        hint:
+                            'For large videos, prefer external hosting (YouTube/Vimeo) and store the URL in the item JSON. If you want to store large binaries in git, consider Git LFS.',
+                    },
+                    { status: 413 }
+                );
+            }
+        }
+
         // Prepare directories
         const dataDir = path.join(process.cwd(), 'data', category);
         const imagesDir = path.join(process.cwd(), 'public', 'images', category, slug);
-        await fs.mkdir(dataDir, { recursive: true });
-        await fs.mkdir(imagesDir, { recursive: true });
+        if (!shouldUseGitHubPr) {
+            await fs.mkdir(dataDir, { recursive: true });
+            await fs.mkdir(imagesDir, { recursive: true });
+        }
 
         let images: string[] = [];
         let extractedText = '';
@@ -39,9 +97,11 @@ export async function POST(req: Request) {
         if (file) {
             const arrayBuffer = await file.arrayBuffer();
             const fileBuffer = Buffer.from(arrayBuffer);
-            const originalFilePath = path.join(imagesDir, file.name);
-            await fs.writeFile(originalFilePath, fileBuffer);
             images = [file.name];
+            if (!shouldUseGitHubPr) {
+                const originalFilePath = path.join(imagesDir, file.name);
+                await fs.writeFile(originalFilePath, fileBuffer);
+            }
 
             try {
                 if (file.name.endsWith('.pdf')) {
@@ -142,6 +202,67 @@ ${extractedText.slice(0, 15000)}`;
             importance,
         };
 
+        if (shouldUseGitHubPr) {
+            const branch = await createCmsBranch(`${category}/${slug}`);
+            const commitMessage = `cms: update ${category}/${slug}`;
+
+            // 1) JSON content
+            await upsertFile({
+                branch,
+                path: `data/${category}/${slug}.json`,
+                contentBase64: Buffer.from(JSON.stringify(payload, null, 2), 'utf8').toString('base64'),
+                message: commitMessage,
+            });
+
+            // 2) Media/document file (optional)
+            if (file) {
+                const arrayBuffer = await file.arrayBuffer();
+                const fileBuffer = Buffer.from(arrayBuffer);
+                await upsertFile({
+                    branch,
+                    path: `public/images/${category}/${slug}/${file.name}`,
+                    contentBase64: fileBuffer.toString('base64'),
+                    message: commitMessage,
+                });
+            }
+
+            // 3) If slug/category changed during edit, delete old JSON (best-effort)
+            if (editSlug) {
+                const sameCategory = !oldCategory || oldCategory === category;
+                if (editSlug !== slug || !sameCategory) {
+                    const deleteCat = oldCategory || category;
+                    await deleteFile({
+                        branch,
+                        path: `data/${deleteCat}/${editSlug}.json`,
+                        message: `cms: remove old ${deleteCat}/${editSlug}`,
+                    });
+                }
+            }
+
+            const pr = await createPullRequest({
+                branch,
+                title: editSlug
+                    ? `CMS: update ${category}/${slug}`
+                    : `CMS: add ${category}/${slug}`,
+                body: [
+                    '## Summary',
+                    `- Category: **${category}**`,
+                    `- Slug: **${slug}**`,
+                    editSlug ? `- Edited from: **${editSlug}**` : null,
+                    '',
+                    '## Notes',
+                    '- This PR was generated from the site admin UI.',
+                ]
+                    .filter(Boolean)
+                    .join('\n'),
+            });
+
+            return NextResponse.json(
+                { slug, message: 'PR created', prUrl: pr.url, prNumber: pr.number },
+                { status: 200 }
+            );
+        }
+
         const jsonPath = path.join(dataDir, `${slug}.json`);
         await fs.writeFile(jsonPath, JSON.stringify(payload, null, 2), 'utf8');
 
@@ -171,6 +292,9 @@ export async function DELETE(
   req: Request,
   { params }: { params: { category: string; slug: string } }
 ) {
+  const guard = requireAdmin(req);
+  if (guard) return guard;
+
   try {
     const { category, slug } = params;
 

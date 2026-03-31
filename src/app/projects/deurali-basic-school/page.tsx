@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react'
 import Navigation from '@/components/Navigation'
-import Link from 'next/link'
 import Image from 'next/image'
 
 export default function DeuraliBasicSchoolProject() {
@@ -21,7 +20,7 @@ export default function DeuraliBasicSchoolProject() {
             onClick={(e) => e.stopPropagation()}
           >
             <Image
-              src="/images/catchment-area.png"
+              src="/images/deurali-basic-school/catchment-area.png"
               alt="School Catchment Area Analysis"
               fill
               className="object-contain"
@@ -41,8 +40,6 @@ export default function DeuraliBasicSchoolProject() {
       )}
       <main className="min-h-screen bg-black text-white py-20">
         <div className="max-w-6xl mx-auto px-4">
-          
-          
           <div className="relative aspect-[21/9] w-full mb-8 rounded-xl overflow-hidden">
             <Image
               src="/images/deurali-basic-school/deurali-basic-school.png"
@@ -73,7 +70,7 @@ export default function DeuraliBasicSchoolProject() {
             <div>
               <h2 className="text-2xl font-bold mt-8 mb-4">School Background</h2>
               <p className="text-gray-300">
-                Established in 2057 B.S., Deurali Basic School is a government-funded institution serving as a crucial educational hub for students across several wards, including parts of Pokhara Metropolitan City. The school has earned recognition as the "Best Basic School" by the local municipality and is known for its innovative curriculum, including a locally initiated computer science program.
+                Established in 2057 B.S., Deurali Basic School is a government-funded institution serving as a crucial educational hub for students across several wards, including parts of Pokhara Metropolitan City. The school has earned recognition as the &quot;Best Basic School&quot; by the local municipality and is known for its innovative curriculum, including a locally initiated computer science program.
               </p>
             </div>
 
@@ -127,7 +124,7 @@ export default function DeuraliBasicSchoolProject() {
                       </div>
                       <div className="w-full md:w-1/2 space-y-4">
                         <p className="text-gray-300">
-                          Our detailed analysis of the school's catchment area reveals significant potential for enrollment growth across different zones. The study utilized advanced GIS mapping to identify optimal transportation routes and student distribution patterns.
+                          Our detailed analysis of the school&apos;s catchment area reveals significant potential for enrollment growth across different zones. The study utilized advanced GIS mapping to identify optimal transportation routes and student distribution patterns.
                         </p>
                         <p className="text-sm text-gray-400">
                           Map showing student distribution across different zones with color-coded distance markers: 0-1 km (Yellow), 1-2 km (Blue), 2-3 km (Beige), and 3-4 km (Pink) from the school.
@@ -164,7 +161,7 @@ export default function DeuraliBasicSchoolProject() {
             <div>
               <h2 className="text-2xl font-bold mt-8 mb-4">Impact & Future Outlook</h2>
               <p className="text-gray-300 text-justify">
-                This initiative demonstrates the crucial link between transportation infrastructure and educational access in rural Nepal. The implementation of a reliable school bus service has the potential to not only restore previous enrollment levels but also create new opportunities for educational inclusion and community development. The project's findings provide valuable insights for both immediate implementation and long-term educational planning in the region.
+                This initiative demonstrates the crucial link between transportation infrastructure and educational access in rural Nepal. The implementation of a reliable school bus service has the potential to not only restore previous enrollment levels but also create new opportunities for educational inclusion and community development. The project&apos;s findings provide valuable insights for both immediate implementation and long-term educational planning in the region.
               </p>
             </div>
           </div>

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { requireAdmin } from '@/lib/adminAuth';
 
 interface AiAssistRequest {
   title?: string;
@@ -8,6 +9,9 @@ interface AiAssistRequest {
 }
 
 export async function POST(req: Request) {
+  const guard = requireAdmin(req);
+  if (guard) return guard;
+
   if (!process.env.DEEPSEEK_API_KEY) {
     return NextResponse.json(
       { error: 'DEEPSEEK_API_KEY is not configured on the server.' },

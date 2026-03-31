@@ -24,12 +24,12 @@ export default function ItemCard({ slug, title, description, image, tags = [], f
                         className="object-cover group-hover:scale-110 transition-transform duration-500"
                     />
                     {featured && (
-                        <div className="absolute top-2 left-2 bg-yellow-500/80 text-xs font-bold px-2 py-1 rounded">Featured</div>
+                        <div className="absolute top-2 left-2 bg-green-500/80 text-xs font-bold px-2 py-1 rounded">Featured</div>
                     )}
                 </div>
             )}
             {!image && featured && (
-                <div className="bg-yellow-500 text-black text-[10px] font-bold px-2 py-0.5 inline-block m-4 rounded uppercase tracking-tighter">Featured</div>
+                <div className="bg-green-500 text-black text-[10px] font-bold px-2 py-0.5 inline-block m-4 rounded uppercase tracking-tighter">Featured</div>
             )}
             <div className="p-4">
                 <h3 className="text-xl font-semibold text-white mb-2 line-clamp-1">{title}</h3>

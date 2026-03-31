@@ -16,6 +16,7 @@ export default function UploadPage() {
     const [isUploading, setIsUploading] = useState(false);
     const [isAIWorking, setIsAIWorking] = useState(false);
     const [editSlug, setEditSlug] = useState<string | null>(null);
+    const [lastPrUrl, setLastPrUrl] = useState<string | null>(null);
 
     const [items, setItems] = useState<any>({ projects: [], achievements: [], eca: [] });
     const [isLoadingItems, setIsLoadingItems] = useState(true);
@@ -72,6 +73,7 @@ export default function UploadPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsUploading(true);
+        setLastPrUrl(null);
         const formData = new FormData();
         if (file) formData.append('file', file);
         formData.append('category', category);
@@ -97,7 +99,12 @@ export default function UploadPage() {
             });
             const result = await response.json();
             if (response.ok) {
-                alert(editSlug ? 'Update successful!' : 'Upload successful!');
+                if (result?.prUrl) {
+                    setLastPrUrl(result.prUrl);
+                    alert('PR created. Merge it to publish.');
+                } else {
+                    alert(editSlug ? 'Update successful!' : 'Upload successful!');
+                }
                 const targetSlug = editSlug || result.slug;
                 const targetCategory = category;
 
@@ -105,8 +112,10 @@ export default function UploadPage() {
                 resetForm();
                 await fetchItems();
 
-                // Redirect to the newly created/updated item page
-                router.push(`/${targetCategory}/${targetSlug}`);
+                // In PR-based mode, the content isn't live until merge.
+                if (!result?.prUrl) {
+                    router.push(`/${targetCategory}/${targetSlug}`);
+                }
             } else {
                 alert('Error: ' + result.error);
             }
@@ -180,6 +189,14 @@ export default function UploadPage() {
             <Navigation />
             <div className="min-h-screen bg-black pt-24 pb-12 px-4">
                 <div className="max-w-4xl mx-auto space-y-12">
+                    <div className="flex justify-end">
+                        <a
+                            href="/admin/ai"
+                            className="text-sm px-3 py-2 rounded-xl border border-white/10 bg-white/5 text-white hover:bg-white/10"
+                        >
+                            Open AI Assistant
+                        </a>
+                    </div>
                     {/* Upload Form */}
                     <div className="p-8 bg-gray-900/50 rounded-2xl border border-white/10 shadow-2xl backdrop-blur-sm">
                         <div className="flex justify-between items-center mb-8">
@@ -193,6 +210,21 @@ export default function UploadPage() {
                             )}
                         </div>
                         <form onSubmit={handleSubmit} className="space-y-6">
+                            {lastPrUrl && (
+                                <div className="p-4 rounded-xl border border-white/10 bg-black/30">
+                                    <p className="text-sm text-gray-300">
+                                        A Pull Request was created. Merge it to publish changes:
+                                    </p>
+                                    <a
+                                        href={lastPrUrl}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="text-blue-400 hover:text-blue-300 underline break-all text-sm"
+                                    >
+                                        {lastPrUrl}
+                                    </a>
+                                </div>
+                            )}
                             <div>
                                 <label className="block text-sm font-medium text-gray-400 mb-2">Category</label>
                                 <select
@@ -286,12 +318,12 @@ export default function UploadPage() {
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-400 mb-2">
-                                    {editSlug ? 'Replace Document (Optional)' : 'Upload Document (PDF/Word)'}
+                                    {editSlug ? 'Replace File (Optional)' : 'Upload File (PDF/Word/Image/Video)'}
                                 </label>
                                 <div className="relative border-2 border-dashed border-white/10 rounded-2xl p-8 text-center hover:border-blue-500/30 transition group cursor-pointer">
                                     <input
                                         type="file"
-                                        accept=".pdf,.doc,.docx"
+                                        accept=".pdf,.doc,.docx,.png,.jpg,.jpeg,.webp,.gif,.mp4,.webm"
                                         onChange={(e) => setFile(e.target.files?.[0] || null)}
                                         className="absolute inset-0 opacity-0 cursor-pointer"
                                         required={!editSlug}
@@ -306,7 +338,7 @@ export default function UploadPage() {
                                             <div className="space-y-2">
                                                 <span className="text-4xl block mb-2">📁</span>
                                                 <p className="text-sm">Click or drag and drop to upload</p>
-                                                <p className="text-xs">Supports PDF and Word documents</p>
+                                                <p className="text-xs">Supports PDF, Word, images, and small videos</p>
                                             </div>
                                         )}
                                     </div>
