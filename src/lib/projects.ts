@@ -1,5 +1,5 @@
-import { readdirSync, readFileSync, existsSync } from 'fs'
-import { join } from 'path'
+import { getAllItems } from './data'
+import type { Item } from './types'
 
 export interface Project {
   id: string
@@ -14,54 +14,26 @@ export async function getProjects(): Promise<Project[]> {
   'use server'
 
   try {
-    const projectsDirectory = join(process.cwd(), 'src/app/projects')
-    const projectFolders = readdirSync(projectsDirectory).filter(folder =>
-      !folder.startsWith('[') && !folder.startsWith('.') && folder !== 'page.tsx'
-    )
+    const items: Item[] = await getAllItems('projects')
 
-    const projects = projectFolders.map((folder) => {
-      const projectPath = join(projectsDirectory, folder)
-      const pageFilePath = join(projectPath, 'page.tsx')
-
-      if (!existsSync(pageFilePath)) {
-        return null
-      }
-
-      const content = readFileSync(pageFilePath, 'utf8')
-
-      // Extract title from h1 tag
-      const titleMatch = content.match(/<h1[^>]*>([^<]+)<\/h1>/)
-      const title = titleMatch ? titleMatch[1].trim() : folder.split('-').map(word =>
-        word.charAt(0).toUpperCase() + word.slice(1)
-      ).join(' ')
-
-      // Extract description from first p tag in prose div
-      const descriptionMatch = content.match(/<p className="text-lg text-gray-300">([^<]+)<\/p>/)
-      const description = descriptionMatch ? descriptionMatch[1].trim() : ''
-
-      // Extract technologies from the tags array
-      const techMatch = content.match(/\[([^\]]+)\]\.map\(tag/)
-      const technologies = techMatch
-        ? techMatch[1].split(',').map(tech =>
-          tech.trim().replace(/['"]/g, '')
-        )
-        : []
-
-      // Get image path
-      const imageMatch = content.match(/src="([^"]+)"/)
-      const image = imageMatch ? imageMatch[1] : '/images/project-placeholder.jpg'
+    return items.map((item) => {
+      const firstImage = item.images?.[0]
+      const image =
+        firstImage && typeof firstImage === 'string'
+          ? firstImage.startsWith('/')
+            ? firstImage
+            : `/images/projects/${item.slug}/${firstImage}`
+          : '/images/project-placeholder.jpg'
 
       return {
-        id: folder,
-        title,
-        description,
+        id: item.slug,
+        title: item.title,
+        description: item.description,
         image,
-        technologies,
-        slug: folder
+        technologies: item.tags,
+        slug: item.slug,
       }
-    }).filter((project): project is Project => project !== null)
-
-    return projects
+    })
   } catch (error) {
     console.error('Error loading projects:', error)
     return []
