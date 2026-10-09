@@ -15,6 +15,7 @@ import {
   EmploymentChart,
   EducationChart
 } from '@/components/charts'
+import { getPrimaryImagePath } from '@/lib/media'
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -120,9 +121,7 @@ export default function Home() {
   const projects = dynamicProjects.map(p => ({
     title: p.title,
     description: p.description,
-    image: p.images?.[0]?.startsWith('/')
-      ? p.images[0]
-      : p.images?.[0] ? `/images/${p.category}/${p.slug}/${p.images[0]}` : '/images/project-placeholder.jpg',
+    image: getPrimaryImagePath(p) ?? '/images/project-placeholder.jpg',
     tags: p.tags,
     link: `/${p.category}/${p.slug}`
   }));

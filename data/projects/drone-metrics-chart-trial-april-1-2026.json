@@ -1,0 +1,37 @@
+{
+  "slug": "drone-metrics-chart-trial-april-1-2026",
+  "title": "Drone Metrics Chart Trial",
+  "description": "Testing automatic chart generation from admin data points.",
+  "fullText": "Drone Metrics Chart Trial\n\nTesting automatic chart generation from admin data points.\n\nTags: drone,gis,mapping",
+  "aiContent": "## Executive Summary\nDrone Metrics Chart Trial Testing automatic chart generation from admin data points. Tags: drone,gis,mapping\n\n## Key Features / Highlights\n- Structured content extracted from the uploaded document.\n\n## Technologies & Tools\n- drone\n- gis\n- mapping\n\n## Impact\nThis entry captures the uploaded information in a clear, portfolio-ready format for review and publication.",
+  "date": "2026-04-01",
+  "tags": [
+    "drone",
+    "gis",
+    "mapping"
+  ],
+  "featured": false,
+  "category": "projects",
+  "images": [],
+  "attachments": [],
+  "dataPointsRaw": "Area surveyed (ha): 62\nFlight missions: 14\nGround control points: 28\nDetected structures: 193",
+  "visualizations": [
+    {
+      "title": "Drone Metrics Chart Trial - Key Metrics",
+      "type": "bar",
+      "labels": [
+        "Area surveyed (ha)",
+        "Flight missions",
+        "Ground control points",
+        "Detected structures"
+      ],
+      "values": [
+        62,
+        14,
+        28,
+        193
+      ]
+    }
+  ],
+  "importance": 6
+}

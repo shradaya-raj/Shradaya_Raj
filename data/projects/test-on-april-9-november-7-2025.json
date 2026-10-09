@@ -1,0 +1,22 @@
+{
+  "slug": "test-on-april-9-november-7-2025",
+  "title": "Test on April 9",
+  "description": "hi this is about the testing of the drone mapping project for the development of the orthomosaic and 3d model of the farm land of area 202 hectares",
+  "fullText": "",
+  "aiContent": "",
+  "date": "2025-11-07",
+  "tags": [
+    "gis",
+    "drone"
+  ],
+  "featured": false,
+  "category": "projects",
+  "images": [],
+  "attachments": [
+    "Dhading sheets.pdf"
+  ],
+  "dataPointsRaw": "",
+  "visualizations": [],
+  "autoReport": "## Report Template: Test on April 9\n\n### 1) Project Context\n- **Category**: projects\n- **Date**: 2025-11-07\n- **Focus**: hi this is about the testing of the drone mapping project for the development of the orthomosaic and 3d model of the farm land of area 202 hectares\n\n### 2) Collected Data Summary\nNo extracted long-form content was available. The record is based on manually entered fields.\n\n### 3) Key Metrics\n- No numeric metrics were provided.\n\n### 4) Observations\n- Add numeric data points to produce stronger quantitative observations.\n- Add more data points for deeper comparisons and trend analysis.\n\n### 5) Recommended Next Actions\n- Validate field observations against map outputs and supporting documents.\n- Keep the same metric labels in future updates for consistent trend tracking.\n- Use generated charts to communicate progress clearly with stakeholders.\n\n### 6) Keywords\n- gis\n- drone",
+  "importance": 2
+}

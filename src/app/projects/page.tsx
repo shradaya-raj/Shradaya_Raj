@@ -2,6 +2,7 @@ import { getAllItems } from '@/lib/data';
 import ItemCard from '@/app/components/ItemCard';
 import Navigation from '@/components/Navigation';
 import Projects from '@/components/Projects';
+import { getPrimaryImagePath } from '@/lib/media';
 
 export default async function ProjectsPage() {
   const allItems = await getAllItems('projects');
@@ -55,11 +56,7 @@ export default async function ProjectsPage() {
                         slug={item.slug}
                         title={item.title}
                         description={item.description}
-                        image={item.images?.[0]?.startsWith('/')
-                          ? item.images[0]
-                          : item.images?.[0]
-                            ? `/images/projects/${item.slug}/${item.images[0]}`
-                            : undefined}
+                        image={getPrimaryImagePath(item)}
                         tags={item.tags}
                         featured={item.featured}
                         category="projects"

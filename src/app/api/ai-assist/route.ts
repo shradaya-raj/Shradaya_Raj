@@ -8,16 +8,43 @@ interface AiAssistRequest {
   category?: string;
 }
 
+function fallbackAssist(input: AiAssistRequest) {
+  const title = (input.title || '').trim();
+  const description = (input.description || '').trim();
+  const existingTags = (input.tags || '')
+    .split(',')
+    .map((t) => t.trim().toLowerCase())
+    .filter(Boolean);
+  const titleWords = title
+    .toLowerCase()
+    .split(/[^a-z0-9]+/i)
+    .map((w) => w.trim())
+    .filter((w) => w.length > 2);
+  const descWords = description
+    .toLowerCase()
+    .split(/[^a-z0-9]+/i)
+    .map((w) => w.trim())
+    .filter((w) => w.length > 4)
+    .slice(0, 5);
+
+  const tags = Array.from(new Set([...existingTags, ...titleWords.slice(0, 3), ...descWords])).slice(0, 7);
+  const compactDescription = description
+    ? description.replace(/\s+/g, ' ').trim()
+    : title
+      ? `${title} project details were added through the admin portal.`
+      : 'Project details were added through the admin portal.';
+
+  return {
+    description: compactDescription,
+    tags,
+    importance: 5,
+    fallback: true,
+  };
+}
+
 export async function POST(req: Request) {
   const guard = requireAdmin(req);
   if (guard) return guard;
-
-  if (!process.env.DEEPSEEK_API_KEY) {
-    return NextResponse.json(
-      { error: 'DEEPSEEK_API_KEY is not configured on the server.' },
-      { status: 500 }
-    );
-  }
 
   try {
     const body = (await req.json()) as AiAssistRequest;
@@ -33,6 +60,10 @@ export async function POST(req: Request) {
         { error: 'No content provided for AI assistance.' },
         { status: 400 }
       );
+    }
+
+    if (!process.env.DEEPSEEK_API_KEY) {
+      return NextResponse.json(fallbackAssist(body), { status: 200 });
     }
 
     const prompt = `You are helping manage content in a personal portfolio CMS.
@@ -81,10 +112,7 @@ Tags: ${tags}`;
     if (!response.ok) {
       const errorText = await response.text();
       console.error('DeepSeek ai-assist failed:', response.status, errorText);
-      return NextResponse.json(
-        { error: 'AI assist request failed. Please try again.' },
-        { status: 500 }
-      );
+      return NextResponse.json(fallbackAssist(body), { status: 200 });
     }
 
     const json = await response.json();
@@ -102,10 +130,7 @@ Tags: ${tags}`;
       parsed = JSON.parse(cleaned);
     } catch (err) {
       console.error('Failed to parse AI JSON:', err, 'rawText:', rawText);
-      return NextResponse.json(
-        { error: 'AI response could not be understood. Please try again.' },
-        { status: 500 }
-      );
+      return NextResponse.json(fallbackAssist(body), { status: 200 });
     }
 
     return NextResponse.json(parsed);

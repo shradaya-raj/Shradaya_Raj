@@ -1,0 +1,36 @@
+{
+  "slug": "auto-report-drone-trial-april-1-2026",
+  "title": "Auto Report Drone Trial",
+  "description": "Testing automatic report + visualization output from portal-collected data.",
+  "fullText": "Auto Report Drone Trial\n\nTesting automatic report + visualization output from portal-collected data.\n\nTags: drone,mapping,gis",
+  "aiContent": "## Executive Summary\nAuto Report Drone Trial Testing automatic report + visualization output from portal-collected data. Tags: drone,mapping,gis\n\n## Key Features / Highlights\n- Structured content extracted from the uploaded document.\n\n## Technologies & Tools\n- drone\n- mapping\n- gis\n\n## Impact\nThis entry captures the uploaded information in a clear, portfolio-ready format for review and publication.",
+  "date": "2026-04-01",
+  "tags": [
+    "drone",
+    "mapping",
+    "gis"
+  ],
+  "featured": false,
+  "category": "projects",
+  "images": [],
+  "attachments": [],
+  "dataPointsRaw": "Flights completed: 12\nArea mapped (ha): 45\nControl points: 18",
+  "visualizations": [
+    {
+      "title": "Auto Report Drone Trial - Key Metrics",
+      "type": "bar",
+      "labels": [
+        "Flights completed",
+        "Area mapped (ha)",
+        "Control points"
+      ],
+      "values": [
+        12,
+        45,
+        18
+      ]
+    }
+  ],
+  "autoReport": "## Report Template: Auto Report Drone Trial\n\n### 1) Project Context\n- **Category**: projects\n- **Date**: 2026-04-01\n- **Focus**: Testing automatic report + visualization output from portal-collected data.\n\n### 2) Collected Data Summary\nAuto Report Drone Trial Testing automatic report + visualization output from portal-collected data. Tags: drone,mapping,gis\n\n### 3) Key Metrics\n- **Flights completed**: 12\n- **Area mapped (ha)**: 45\n- **Control points**: 18\n\n### 4) Observations\n- The strongest reported metric is **Area mapped (ha) (45)**.\n- Multiple indicators are available; compare them with timeline updates in future revisions.\n\n### 5) Recommended Next Actions\n- Validate field observations against map outputs and supporting documents.\n- Keep the same metric labels in future updates for consistent trend tracking.\n- Use generated charts to communicate progress clearly with stakeholders.\n\n### 6) Keywords\n- drone\n- mapping\n- gis",
+  "importance": 5
+}

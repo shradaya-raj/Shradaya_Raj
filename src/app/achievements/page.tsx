@@ -1,6 +1,7 @@
 import { getAllItems } from '@/lib/data';
 import ItemCard from '@/app/components/ItemCard';
 import Navigation from '@/components/Navigation';
+import { getPrimaryImagePath } from '@/lib/media';
 
 function sortByDateDesc<T extends { date: string }>(items: T[]): T[] {
   return [...items].sort((a, b) => {
@@ -41,9 +42,7 @@ export default async function AchievementsPage() {
                   slug={item.slug}
                   title={item.title}
                   description={item.description}
-                  image={item.images?.[0]?.startsWith('/')
-                    ? item.images[0]
-                    : item.images?.[0] ? `/images/achievements/${item.slug}/${item.images[0]}` : undefined}
+                  image={getPrimaryImagePath(item)}
                   tags={item.tags}
                   featured={item.featured}
                   category="achievements"
@@ -64,9 +63,7 @@ export default async function AchievementsPage() {
                   slug={item.slug}
                   title={item.title}
                   description={item.description}
-                  image={item.images?.[0]?.startsWith('/')
-                    ? item.images[0]
-                    : item.images?.[0] ? `/images/eca/${item.slug}/${item.images[0]}` : undefined}
+                  image={getPrimaryImagePath(item)}
                   tags={item.tags}
                   featured={item.featured}
                   category="eca"

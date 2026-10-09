@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import Image from 'next/image'
 import type { Item } from '@/lib/types'
+import { getPrimaryImagePath } from '@/lib/media'
 
 const Projects = () => {
   const [featuredProjects, setFeaturedProjects] = useState<Item[]>([])
@@ -12,11 +13,7 @@ const Projects = () => {
   const smoothTransition = { duration: 1.2, ease: 'easeOut' }
 
   const resolveImageSrc = (item: Item) => {
-    const firstImage = item.images?.[0]
-    if (!firstImage) return '/images/project-placeholder.jpg'
-    return firstImage.startsWith('/')
-      ? firstImage
-      : `/images/${item.category}/${item.slug}/${firstImage}`
+    return getPrimaryImagePath(item) ?? '/images/project-placeholder.jpg'
   }
 
   useEffect(() => {

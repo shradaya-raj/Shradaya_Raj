@@ -1,0 +1,24 @@
+Drone Mapping for Community Land Assessment
+
+Project Summary:
+This pilot project demonstrates how low-altitude drone mapping can support land assessment, planning, and local infrastructure decisions. The objective is to produce accurate, easy-to-understand maps for municipal teams and community stakeholders.
+
+Scope of Work:
+- Flight planning for 3 villages and surrounding agricultural parcels
+- Ground control points for higher positional consistency
+- Orthomosaic and surface model generation
+- Mapping of access roads, buildings, and drainage patterns
+
+Methods and Tools:
+- Drone survey mission planning
+- RTK/GNSS checkpoints
+- Photogrammetry processing workflow
+- GIS-based feature extraction and map composition
+
+Results:
+- High-resolution orthomosaic outputs for each site
+- Base map layers for planning discussions
+- Clear visual evidence for priority infrastructure zones
+
+Impact:
+The workflow helps teams move from assumptions to map-backed decisions, improving transparency and planning quality.

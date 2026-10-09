@@ -16,6 +16,10 @@ npm run dev
 
 ## Content + admin editing (git-based)
 
+Open `/admin` for the dashboard. `/admin/pages/home`, `/admin/pages/about`, and `/admin/pages/contact` provide form editors with list controls and review before saving. Home also controls featured-project membership, order, and display count. Local saves update JSON; production saves create a GitHub PR and require merge/deployment to publish.
+
+Project decisions, implementation results, limitations, and next steps are recorded in `PROJECT_RECORD.md`. Update it with every project change as required by `AGENTS.md`.
+
 Site content is stored in git:
 
 - Structured items: `data/projects/*.json`, `data/achievements/*.json`, `data/eca/*.json`

@@ -1,3 +1,10 @@
+export interface VisualizationConfig {
+    title: string;
+    type: 'bar' | 'pie' | 'line';
+    labels: string[];
+    values: number[];
+}
+
 export interface Item {
     slug: string;
     title: string;
@@ -9,5 +16,9 @@ export interface Item {
     featured: boolean;
     category: 'projects' | 'achievements' | 'eca';
     images: string[];
+    attachments?: string[];
+    dataPointsRaw?: string;
+    visualizations?: VisualizationConfig[];
+    autoReport?: string;
     importance?: number;
 }

@@ -64,7 +64,9 @@ function isRateLimited(key: string): boolean {
   return false
 }
 
-function validatePayload(payload: ContactPayload) {
+function validatePayload(payload: ContactPayload):
+  | { ok: false; reason: string }
+  | { ok: true; name: string; email: string; message: string } {
   const name = (payload.name || '').trim()
   const email = (payload.email || '').trim().toLowerCase()
   const message = (payload.message || '').trim()

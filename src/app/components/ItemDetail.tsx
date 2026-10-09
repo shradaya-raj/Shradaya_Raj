@@ -7,6 +7,8 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Item } from '@/lib/types';
 import { formatDate } from '@/lib/dateFormatter';
 import Navigation from '@/components/Navigation';
+import { getAttachmentPaths, getPrimaryImagePath } from '@/lib/media';
+import DynamicVisualizations from './DynamicVisualizations';
 
 interface ItemDetailProps {
     item: Item;
@@ -14,13 +16,30 @@ interface ItemDetailProps {
 
 export default function ItemDetail({ item }: ItemDetailProps) {
     const [lightbox, setLightbox] = useState<{ src: string; alt: string } | null>(null)
+    const coverImage = useMemo(() => getPrimaryImagePath(item), [item])
+    const attachmentPaths = useMemo(() => getAttachmentPaths(item), [item])
+    const attachmentGroups = useMemo(() => {
+        const getExt = (value: string) => {
+            const name = value.split('/').pop() || value;
+            const idx = name.lastIndexOf('.');
+            return idx >= 0 ? name.slice(idx).toLowerCase() : '';
+        };
 
-    const resolveImageSrc = useMemo(() => {
-        return (img: string) =>
-            img.startsWith('/')
-                ? img
-                : `/images/${item.category}/${item.slug}/${img}`
-    }, [item.category, item.slug])
+        const images: string[] = [];
+        const videos: string[] = [];
+        const docs: string[] = [];
+        const other: string[] = [];
+
+        for (const path of attachmentPaths) {
+            const ext = getExt(path);
+            if (['.png', '.jpg', '.jpeg', '.webp', '.gif', '.avif', '.svg'].includes(ext)) images.push(path);
+            else if (['.mp4', '.webm', '.mov', '.m4v'].includes(ext)) videos.push(path);
+            else if (['.pdf', '.doc', '.docx', '.txt', '.csv', '.xlsx'].includes(ext)) docs.push(path);
+            else other.push(path);
+        }
+
+        return { images, videos, docs, other };
+    }, [attachmentPaths])
 
     useEffect(() => {
         if (!lightbox) return
@@ -90,21 +109,21 @@ export default function ItemDetail({ item }: ItemDetailProps) {
                         </div>
                     </header>
 
-                    {item.images && item.images.length > 0 && (
+                    {coverImage && (
                         <div className="relative aspect-video w-full overflow-hidden rounded-2xl mb-12 ring-1 ring-white/10">
                             <button
                                 type="button"
                                 className="absolute inset-0 z-10 cursor-zoom-in"
                                 onClick={() =>
                                     setLightbox({
-                                        src: resolveImageSrc(item.images[0]),
+                                        src: coverImage,
                                         alt: item.title,
                                     })
                                 }
                                 aria-label="Open project image"
                             />
                             <Image
-                                src={resolveImageSrc(item.images[0])}
+                                src={coverImage}
                                 alt={item.title}
                                 fill
                                 className="object-cover"
@@ -122,6 +141,90 @@ export default function ItemDetail({ item }: ItemDetailProps) {
                                 </p>
                             </section>
 
+                            {attachmentPaths.length > 0 && (
+                                <section>
+                                    <h2 className="text-2xl font-semibold mb-4 text-blue-400">Attachments</h2>
+                                    <div className="space-y-4">
+                                        {attachmentGroups.videos.length > 0 && (
+                                            <div className="space-y-3">
+                                                <h3 className="text-sm uppercase tracking-wide text-gray-400">Videos</h3>
+                                                <div className="grid grid-cols-1 gap-4">
+                                                    {attachmentGroups.videos.map((video) => (
+                                                        <div key={video} className="rounded-xl border border-white/10 bg-gray-900/40 p-3">
+                                                            <video controls className="w-full rounded-lg bg-black">
+                                                                <source src={video} />
+                                                                Your browser does not support this video format.
+                                                            </video>
+                                                            <a
+                                                                href={video}
+                                                                target="_blank"
+                                                                rel="noreferrer"
+                                                                className="inline-block mt-2 text-xs text-blue-300 hover:text-blue-200 underline break-all"
+                                                            >
+                                                                {video.split('/').pop()}
+                                                            </a>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {attachmentGroups.images.length > 0 && (
+                                            <div className="space-y-3">
+                                                <h3 className="text-sm uppercase tracking-wide text-gray-400">Images</h3>
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                    {attachmentGroups.images.map((img) => (
+                                                        <button
+                                                            key={img}
+                                                            type="button"
+                                                            onClick={() => setLightbox({ src: img, alt: img.split('/').pop() || 'Attachment image' })}
+                                                            className="text-left rounded-xl border border-white/10 bg-gray-900/40 p-2 hover:border-blue-400/40 transition"
+                                                        >
+                                                            <div className="relative aspect-video rounded-lg overflow-hidden">
+                                                                <Image src={img} alt={img.split('/').pop() || 'Attachment image'} fill className="object-cover" />
+                                                            </div>
+                                                            <span className="inline-block mt-2 text-xs text-blue-300 underline break-all">
+                                                                {img.split('/').pop()}
+                                                            </span>
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {(attachmentGroups.docs.length > 0 || attachmentGroups.other.length > 0) && (
+                                            <div className="space-y-3">
+                                                <h3 className="text-sm uppercase tracking-wide text-gray-400">Documents</h3>
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                                    {[...attachmentGroups.docs, ...attachmentGroups.other].map((attachment) => (
+                                                        <div key={attachment} className="rounded-xl border border-white/10 bg-gray-900/40 p-3">
+                                                            <p className="text-sm text-white break-all">{attachment.split('/').pop()}</p>
+                                                            <div className="mt-2 flex gap-3 text-xs">
+                                                                <a
+                                                                    href={attachment}
+                                                                    target="_blank"
+                                                                    rel="noreferrer"
+                                                                    className="text-blue-300 hover:text-blue-200 underline"
+                                                                >
+                                                                    Open
+                                                                </a>
+                                                                <a
+                                                                    href={attachment}
+                                                                    download
+                                                                    className="text-blue-300 hover:text-blue-200 underline"
+                                                                >
+                                                                    Download
+                                                                </a>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                </section>
+                            )}
+
                             {item.aiContent && (
                                 <section className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-900/20 to-purple-900/20 border border-blue-500/20 p-8 mb-12">
                                     <div className="absolute top-0 right-0 p-4 opacity-20">
@@ -137,6 +240,19 @@ export default function ItemDetail({ item }: ItemDetailProps) {
                                         <ReactMarkdown>{item.aiContent}</ReactMarkdown>
                                     </div>
                                 </section>
+                            )}
+
+                            {item.autoReport && (
+                                <section className="rounded-2xl border border-white/10 bg-gray-900/40 p-6">
+                                    <h2 className="text-2xl font-semibold mb-4 text-blue-400">Auto-Generated Report</h2>
+                                    <div className="prose prose-invert prose-blue max-w-none prose-headings:text-blue-300 prose-strong:text-white">
+                                        <ReactMarkdown>{item.autoReport}</ReactMarkdown>
+                                    </div>
+                                </section>
+                            )}
+
+                            {item.visualizations && item.visualizations.length > 0 && (
+                                <DynamicVisualizations visualizations={item.visualizations} />
                             )}
 
                             {item.fullText && (

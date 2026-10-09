@@ -1,0 +1,21 @@
+{
+  "slug": "orange-orchard-monitoring-initiative-v2-april-1-2026",
+  "title": "Orange Orchard Monitoring Initiative V2",
+  "description": "Second test after txt parsing fix.",
+  "fullText": "Source: orange-project.txt\nOrange Orchard Monitoring Initiative\n\nProject Summary:\nThis project demonstrates a practical workflow for monitoring orange orchards using geospatial tools and simple field observations. The goal is to help farmers identify tree health issues early and improve harvest planning.\n\nKey Activities:\n- Mapped orchard boundaries and tree clusters\n- Recorded tree condition in field forms\n- Added monthly observations for leaf color, fruit load, and irrigation\n- Prepared a dashboard-style summary for quick decisions\n\nTools and Methods:\n- QGIS for map layout and layer management\n- GPS-enabled mobile data collection\n- Spreadsheet-based trend tracking\n- Basic photo documentation from field visits\n\nImpact:\nThe workflow makes orchard monitoring easier for local teams, improves communication with farm owners, and supports better seasonal management.",
+  "aiContent": "",
+  "date": "2026-04-01",
+  "tags": [
+    "orange",
+    "agriculture",
+    "gis",
+    "monitoring"
+  ],
+  "featured": false,
+  "category": "projects",
+  "images": [],
+  "attachments": [
+    "orange-project.txt"
+  ],
+  "importance": 7
+}

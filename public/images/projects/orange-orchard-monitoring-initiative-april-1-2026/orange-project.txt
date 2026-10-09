@@ -1,0 +1,19 @@
+Orange Orchard Monitoring Initiative
+
+Project Summary:
+This project demonstrates a practical workflow for monitoring orange orchards using geospatial tools and simple field observations. The goal is to help farmers identify tree health issues early and improve harvest planning.
+
+Key Activities:
+- Mapped orchard boundaries and tree clusters
+- Recorded tree condition in field forms
+- Added monthly observations for leaf color, fruit load, and irrigation
+- Prepared a dashboard-style summary for quick decisions
+
+Tools and Methods:
+- QGIS for map layout and layer management
+- GPS-enabled mobile data collection
+- Spreadsheet-based trend tracking
+- Basic photo documentation from field visits
+
+Impact:
+The workflow makes orchard monitoring easier for local teams, improves communication with farm owners, and supports better seasonal management.

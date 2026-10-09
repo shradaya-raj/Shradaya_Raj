@@ -1,0 +1,25 @@
+{
+  "slug": "drone-mapping-community-land-assessment-trial-april-1-2026",
+  "title": "Drone Mapping Community Land Assessment Trial",
+  "description": "Portal test entry for drone mapping workflow with document and image attachments.",
+  "fullText": "",
+  "aiContent": "",
+  "date": "2026-04-01",
+  "tags": [
+    "drone mapping",
+    "photogrammetry",
+    "gis",
+    "orthomosaic",
+    "planning"
+  ],
+  "featured": true,
+  "category": "projects",
+  "images": [],
+  "attachments": [
+    "Updated_SRS_Storage_Strategy(1).docx"
+  ],
+  "dataPointsRaw": "",
+  "visualizations": [],
+  "autoReport": "## Report Template: Drone Mapping Community Land Assessment Trial\n\n### 1) Project Context\n- **Category**: projects\n- **Date**: 2026-04-01\n- **Focus**: Portal test entry for drone mapping workflow with document and image attachments.\n\n### 2) Collected Data Summary\nNo extracted long-form content was available. The record is based on manually entered fields.\n\n### 3) Key Metrics\n- No numeric metrics were provided.\n\n### 4) Observations\n- Add numeric data points to produce stronger quantitative observations.\n- Add more data points for deeper comparisons and trend analysis.\n\n### 5) Recommended Next Actions\n- Validate field observations against map outputs and supporting documents.\n- Keep the same metric labels in future updates for consistent trend tracking.\n- Use generated charts to communicate progress clearly with stakeholders.\n\n### 6) Keywords\n- drone mapping\n- photogrammetry\n- gis\n- orthomosaic\n- planning",
+  "importance": 9
+}

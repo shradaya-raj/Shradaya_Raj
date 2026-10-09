@@ -1,27 +1,32 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import Navigation from '@/components/Navigation';
 
 export default function UploadPage() {
-    const [file, setFile] = useState<File | null>(null);
+    const [files, setFiles] = useState<File[]>([]);
     const [category, setCategory] = useState('projects');
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [date, setDate] = useState('');
     const [tags, setTags] = useState('');
+    const [dataPointsRaw, setDataPointsRaw] = useState('');
     const [featured, setFeatured] = useState(false);
     const [importance, setImportance] = useState(0);
     const [isUploading, setIsUploading] = useState(false);
     const [isAIWorking, setIsAIWorking] = useState(false);
+    const [isIntakeWorking, setIsIntakeWorking] = useState(false);
     const [editSlug, setEditSlug] = useState<string | null>(null);
     const [lastPrUrl, setLastPrUrl] = useState<string | null>(null);
+    const [showReviewModal, setShowReviewModal] = useState(false);
+    const [lastSaveInfo, setLastSaveInfo] = useState<any>(null);
+    const [formError, setFormError] = useState<string | null>(null);
+    const [submitStage, setSubmitStage] = useState<string | null>(null);
+    const [intakePreview, setIntakePreview] = useState('');
+    const [intakeAttachments, setIntakeAttachments] = useState<string[]>([]);
 
     const [items, setItems] = useState<any>({ projects: [], achievements: [], eca: [] });
     const [isLoadingItems, setIsLoadingItems] = useState(true);
-
-    const router = useRouter();
 
     const fetchItems = async () => {
         setIsLoadingItems(true);
@@ -46,6 +51,7 @@ export default function UploadPage() {
         setDescription(item.description);
         setDate(item.date.split('T')[0]); // Extract YYYY-MM-DD
         setTags(item.tags.join(', '));
+        setDataPointsRaw(item.dataPointsRaw || '');
         setFeatured(item.featured);
         setImportance(item.importance ?? 0);
         setEditSlug(item.slug);
@@ -70,17 +76,22 @@ export default function UploadPage() {
         }
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const submitContent = async () => {
         setIsUploading(true);
         setLastPrUrl(null);
+        setLastSaveInfo(null);
+        setFormError(null);
+        setSubmitStage('Preparing submission payload...');
         const formData = new FormData();
-        if (file) formData.append('file', file);
+        for (const file of files) {
+            formData.append('files', file);
+        }
         formData.append('category', category);
         formData.append('title', title);
         formData.append('description', description);
         formData.append('date', date);
         formData.append('tags', tags);
+        formData.append('dataPointsRaw', dataPointsRaw);
         formData.append('featured', String(featured));
         formData.append('importance', String(importance));
         if (editSlug) {
@@ -93,38 +104,53 @@ export default function UploadPage() {
         }
 
         try {
+            setSubmitStage('Uploading files and project data...');
             const response = await fetch('/api/upload', {
                 method: 'POST',
                 body: formData,
             });
+            setSubmitStage('Processing response and updating portal view...');
             const result = await response.json();
             if (response.ok) {
+                setLastSaveInfo(result);
                 if (result?.prUrl) {
                     setLastPrUrl(result.prUrl);
                     alert('PR created. Merge it to publish.');
-                } else {
-                    alert(editSlug ? 'Update successful!' : 'Upload successful!');
                 }
-                const targetSlug = editSlug || result.slug;
-                const targetCategory = category;
 
                 setEditSlug(null);
                 resetForm();
                 await fetchItems();
-
-                // In PR-based mode, the content isn't live until merge.
-                if (!result?.prUrl) {
-                    router.push(`/${targetCategory}/${targetSlug}`);
-                }
+                setSubmitStage('Completed successfully.');
             } else {
-                alert('Error: ' + result.error);
+                setFormError(result?.error || 'Save failed.');
+                setSubmitStage('Failed.');
             }
         } catch (error) {
             console.error('Upload failed:', error);
-            alert('Upload failed. Please try again.');
+            setFormError('Upload failed. Please try again.');
+            setSubmitStage('Failed.');
         } finally {
             setIsUploading(false);
         }
+    };
+
+    const validateForm = (): string | null => {
+        if (!title.trim()) return 'Title is required.';
+        if (!description.trim()) return 'Description is required.';
+        if (!date) return 'Date is required.';
+        return null;
+    };
+
+    const handleOpenReview = (e: React.FormEvent) => {
+        e.preventDefault();
+        const validationError = validateForm();
+        if (validationError) {
+            setFormError(validationError);
+            return;
+        }
+        setFormError(null);
+        setShowReviewModal(true);
     };
 
     const resetForm = () => {
@@ -133,9 +159,12 @@ export default function UploadPage() {
         setDescription('');
         setDate('');
         setTags('');
+        setDataPointsRaw('');
         setFeatured(false);
         setImportance(0);
-        setFile(null);
+        setFiles([]);
+        setIntakePreview('');
+        setIntakeAttachments([]);
     };
 
     const handleAIEnhance = async () => {
@@ -184,6 +213,49 @@ export default function UploadPage() {
         }
     };
 
+    const handleAIAutofillFromFile = async () => {
+        if (files.length === 0) {
+            alert('Please select one or more files first.');
+            return;
+        }
+
+        setIsIntakeWorking(true);
+        setIntakePreview('');
+        setIntakeAttachments([]);
+        try {
+            const formData = new FormData();
+            for (const file of files) {
+                formData.append('files', file);
+            }
+
+            const res = await fetch('/api/ai-intake', {
+                method: 'POST',
+                body: formData,
+            });
+            const data = await res.json();
+
+            if (!res.ok) {
+                alert(data?.error || 'AI intake failed. Please try another file.');
+                return;
+            }
+
+            if (data?.category) setCategory(data.category);
+            if (data?.title) setTitle(data.title);
+            if (data?.description) setDescription(data.description);
+            if (Array.isArray(data?.tags)) setTags(data.tags.join(', '));
+            if (typeof data?.importance === 'number') setImportance(data.importance);
+            if (data?.extractedPreview) setIntakePreview(data.extractedPreview);
+            if (Array.isArray(data?.attachedMedia)) setIntakeAttachments(data.attachedMedia);
+        } catch (err) {
+            console.error('AI intake failed:', err);
+            alert('AI intake failed. Please try again.');
+        } finally {
+            setIsIntakeWorking(false);
+        }
+    };
+
+    const isEditing = !!editSlug;
+
     return (
         <>
             <Navigation />
@@ -197,6 +269,7 @@ export default function UploadPage() {
                             Open AI Assistant
                         </a>
                     </div>
+
                     {/* Upload Form */}
                     <div className="p-8 bg-gray-900/50 rounded-2xl border border-white/10 shadow-2xl backdrop-blur-sm">
                         <div className="flex justify-between items-center mb-8">
@@ -209,7 +282,12 @@ export default function UploadPage() {
                                 </button>
                             )}
                         </div>
-                        <form onSubmit={handleSubmit} className="space-y-6">
+                        <form onSubmit={handleOpenReview} className="space-y-6">
+                            {formError && (
+                                <div className="p-4 rounded-xl border border-red-500/30 bg-red-500/10 text-sm text-red-200">
+                                    {formError}
+                                </div>
+                            )}
                             {lastPrUrl && (
                                 <div className="p-4 rounded-xl border border-white/10 bg-black/30">
                                     <p className="text-sm text-gray-300">
@@ -223,6 +301,31 @@ export default function UploadPage() {
                                     >
                                         {lastPrUrl}
                                     </a>
+                                </div>
+                            )}
+                            {lastSaveInfo && !lastSaveInfo?.prUrl && (
+                                <div className="p-4 rounded-xl border border-green-500/30 bg-green-500/10 text-sm text-green-200">
+                                    <p>Saved successfully.</p>
+                                    <a
+                                        href={`/${lastSaveInfo?.category}/${lastSaveInfo?.slug}`}
+                                        className="inline-block mt-2 underline text-green-100"
+                                    >
+                                        Open saved item
+                                    </a>
+                                </div>
+                            )}
+                            {(isUploading || submitStage) && (
+                                <div
+                                    className={`p-4 rounded-xl border text-sm ${
+                                        submitStage === 'Failed.'
+                                            ? 'border-red-500/30 bg-red-500/10 text-red-200'
+                                            : submitStage === 'Completed successfully.'
+                                                ? 'border-green-500/30 bg-green-500/10 text-green-200'
+                                                : 'border-blue-500/30 bg-blue-500/10 text-blue-200'
+                                    }`}
+                                >
+                                    <p className="font-medium">Submission Status</p>
+                                    <p className="mt-1">{submitStage || 'Starting...'}</p>
                                 </div>
                             )}
                             <div>
@@ -306,6 +409,21 @@ export default function UploadPage() {
                                     />
                                 </div>
                             </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-400 mb-2">
+                                    Data Points (optional, for charts)
+                                </label>
+                                <textarea
+                                    value={dataPointsRaw}
+                                    onChange={(e) => setDataPointsRaw(e.target.value)}
+                                    className="w-full p-3 bg-black/50 border border-white/10 rounded-xl text-white outline-none focus:ring-2 focus:ring-blue-500/50 transition"
+                                    rows={5}
+                                    placeholder={`Example:\nHouseholds mapped: 148\nRoad segments digitized: 36\nIrrigation lines surveyed: 19`}
+                                />
+                                <p className="text-xs text-gray-500 mt-2">
+                                    Add one metric per line as Label: Value. The system auto-selects best chart type.
+                                </p>
+                            </div>
                             <div className="flex items-center space-x-3">
                                 <input
                                     type="checkbox"
@@ -318,21 +436,21 @@ export default function UploadPage() {
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-400 mb-2">
-                                    {editSlug ? 'Replace File (Optional)' : 'Upload File (PDF/Word/Image/Video)'}
+                                    {editSlug ? 'Replace Files (Optional)' : 'Upload Files (PDF/Word/Image/Video)'}
                                 </label>
                                 <div className="relative border-2 border-dashed border-white/10 rounded-2xl p-8 text-center hover:border-blue-500/30 transition group cursor-pointer">
                                     <input
                                         type="file"
-                                        accept=".pdf,.doc,.docx,.png,.jpg,.jpeg,.webp,.gif,.mp4,.webm"
-                                        onChange={(e) => setFile(e.target.files?.[0] || null)}
+                                        accept=".pdf,.doc,.docx,.txt,.png,.jpg,.jpeg,.webp,.gif,.mp4,.webm"
+                                        multiple
+                                        onChange={(e) => setFiles(Array.from(e.target.files ?? []))}
                                         className="absolute inset-0 opacity-0 cursor-pointer"
-                                        required={!editSlug}
                                     />
                                     <div className="text-gray-500 group-hover:text-blue-400 transition">
-                                        {file ? (
+                                        {files.length > 0 ? (
                                             <div className="flex items-center justify-center space-x-2 text-blue-400">
                                                 <span className="text-2xl">📄</span>
-                                                <span className="font-medium">{file.name}</span>
+                                                <span className="font-medium">{files.length} file(s) selected</span>
                                             </div>
                                         ) : (
                                             <div className="space-y-2">
@@ -343,6 +461,51 @@ export default function UploadPage() {
                                         )}
                                     </div>
                                 </div>
+                                <div className="mt-3">
+                                    <button
+                                        type="button"
+                                        onClick={handleAIAutofillFromFile}
+                                        disabled={isIntakeWorking || files.length === 0}
+                                        className={`text-sm px-3 py-1 rounded-lg border transition ${
+                                            isIntakeWorking || files.length === 0
+                                                ? 'border-gray-700 text-gray-500 cursor-not-allowed'
+                                                : 'border-purple-500/40 text-purple-300 hover:border-purple-400 hover:text-purple-200'
+                                        }`}
+                                    >
+                                        {isIntakeWorking ? 'Reading files with AI…' : 'Auto-fill form from uploaded files'}
+                                    </button>
+                                </div>
+                                {files.length > 0 && (
+                                    <div className="mt-3 p-3 rounded-lg border border-white/10 bg-black/30">
+                                        <p className="text-xs text-gray-400 mb-1">Selected files</p>
+                                        <p className="text-xs text-gray-300 break-all">
+                                            {files.map((f) => f.name).join(', ')}
+                                        </p>
+                                    </div>
+                                )}
+                                {!isEditing && files.length === 0 && (
+                                    <div className="mt-3 p-3 rounded-lg border border-yellow-500/20 bg-yellow-500/10">
+                                        <p className="text-xs text-yellow-200">
+                                            You can save without files, but AI extraction works best when you upload at least one document.
+                                        </p>
+                                    </div>
+                                )}
+                                {intakePreview && (
+                                    <div className="mt-3 p-3 rounded-lg border border-white/10 bg-black/30">
+                                        <p className="text-xs text-gray-400 mb-1">Extracted text preview</p>
+                                        <p className="text-xs text-gray-300 whitespace-pre-wrap max-h-28 overflow-auto">
+                                            {intakePreview}
+                                        </p>
+                                    </div>
+                                )}
+                                {intakeAttachments.length > 0 && (
+                                    <div className="mt-3 p-3 rounded-lg border border-white/10 bg-black/30">
+                                        <p className="text-xs text-gray-400 mb-1">Detected attachments</p>
+                                        <p className="text-xs text-gray-300 break-all">
+                                            {intakeAttachments.join(', ')}
+                                        </p>
+                                    </div>
+                                )}
                             </div>
                             <button
                                 type="submit"
@@ -352,7 +515,7 @@ export default function UploadPage() {
                                     : 'bg-gradient-to-r from-blue-600 to-purple-600 hover:shadow-blue-500/25 hover:scale-[1.02] active:scale-[0.98]'
                                     }`}
                             >
-                                {isUploading ? 'Processing...' : editSlug ? 'Update Post' : 'Save & Publish'}
+                                {isUploading ? 'Processing...' : 'Review Before Save'}
                             </button>
                         </form>
                     </div>
@@ -377,6 +540,12 @@ export default function UploadPage() {
                                                         <p className="text-gray-500 text-xs">{new Date(item.date).toLocaleDateString()}</p>
                                                     </div>
                                                     <div className="flex space-x-2">
+                                                        <a
+                                                            href={`/${cat}/${item.slug}`}
+                                                            className="px-3 py-1 bg-white/10 text-white rounded-lg text-sm hover:bg-white/20 transition"
+                                                        >
+                                                            View
+                                                        </a>
                                                         <button
                                                             onClick={() => handleEdit(item)}
                                                             className="px-3 py-1 bg-blue-500/10 text-blue-400 rounded-lg text-sm hover:bg-blue-500/20 transition"
@@ -403,6 +572,57 @@ export default function UploadPage() {
                     </div>
                 </div>
             </div>
+
+            {showReviewModal && (
+                <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
+                    <div className="w-full max-w-2xl rounded-2xl border border-white/10 bg-gray-950 p-6 space-y-5">
+                        <h2 className="text-xl font-bold text-white">Review Before Save</h2>
+                        <div className="text-sm text-gray-300 space-y-2">
+                            <p><span className="text-gray-500">Category:</span> {category}</p>
+                            <p><span className="text-gray-500">Title:</span> {title}</p>
+                            <p><span className="text-gray-500">Date:</span> {date}</p>
+                            <p><span className="text-gray-500">Tags:</span> {tags || '(none)'}</p>
+                            <p><span className="text-gray-500">Featured:</span> {featured ? 'Yes' : 'No'}</p>
+                            <p><span className="text-gray-500">Importance:</span> {importance}</p>
+                            <p><span className="text-gray-500">Chart points:</span> {dataPointsRaw.trim() ? 'Provided' : 'None'}</p>
+                            <p className="text-gray-500">Description</p>
+                            <p className="text-gray-200 whitespace-pre-wrap">{description}</p>
+                            <p><span className="text-gray-500">Files:</span> {files.length > 0 ? files.map((f) => f.name).join(', ') : '(no new files selected)'}</p>
+                        </div>
+
+                        {!isEditing && files.length === 0 && (
+                            <div className="p-3 rounded-xl border border-yellow-500/20 bg-yellow-500/10 text-xs text-yellow-200">
+                                No files selected. The project will still be saved from form data, but document extraction and richer AI-generated details require uploaded files.
+                            </div>
+                        )}
+
+                        <div className="p-3 rounded-xl border border-white/10 bg-white/5 text-xs text-gray-300">
+                            Confirm Save will apply your changes to this site. Use “Open saved item” after saving to verify output.
+                        </div>
+
+                        <div className="flex justify-end gap-3">
+                            <button
+                                type="button"
+                                onClick={() => setShowReviewModal(false)}
+                                className="px-4 py-2 rounded-xl border border-white/10 text-gray-300 hover:text-white hover:bg-white/10"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="button"
+                                onClick={async () => {
+                                    setShowReviewModal(false);
+                                    await submitContent();
+                                }}
+                                disabled={isUploading}
+                                className="px-4 py-2 rounded-xl bg-blue-600 text-white hover:bg-blue-500 disabled:opacity-50"
+                            >
+                                {isUploading ? 'Saving...' : editSlug ? 'Confirm Update' : 'Confirm Save'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </>
     );
 }
