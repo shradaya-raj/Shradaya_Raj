@@ -2,6 +2,41 @@
 
 This is the ongoing record of project decisions, implementation, verification, and remaining work. Update it with every project change; do not rewrite historical entries to imply unfinished work was completed.
 
+## Section directory
+
+These links open the local website while its server is running at http://127.0.0.1:3000. Admin pages may require authentication when an admin password is configured.
+
+| Public section | Link |
+| --- | --- |
+| Home | [Open Home](http://127.0.0.1:3000/) |
+| Projects | [Open Projects](http://127.0.0.1:3000/projects) |
+| Achievements | [Open Achievements](http://127.0.0.1:3000/achievements) |
+| Extracurricular activities | [Open ECA](http://127.0.0.1:3000/eca) |
+| About | [Open About](http://127.0.0.1:3000/about) |
+| Contact | [Open Contact](http://127.0.0.1:3000/contact) |
+
+| Admin section | Link and purpose |
+| --- | --- |
+| Dashboard | [Open dashboard](http://127.0.0.1:3000/admin) — overview and editor links |
+| Home editor | [Edit Home](http://127.0.0.1:3000/admin/pages/home) — portrait, biography, tools, statistics, buttons and featured selection |
+| About editor | [Edit About](http://127.0.0.1:3000/admin/pages/about) — biography paragraphs and skills |
+| Contact editor | [Edit Contact](http://127.0.0.1:3000/admin/pages/contact) — image, contact details and LinkedIn |
+| Content library | [Manage content](http://127.0.0.1:3000/admin/upload) — projects, achievements and ECA upload/edit controls |
+| AI assistant | [Open AI assistant](http://127.0.0.1:3000/admin/ai) — optional site/item drafting and publishing review |
+
+| Dedicated project page | Link |
+| --- | --- |
+| Utility Management System | [Open UMS](http://127.0.0.1:3000/projects/utility-management-system) |
+| Airlift Kailas cleanup campaign | [Open Airlift](http://127.0.0.1:3000/projects/airlift-kailas-cleanup-campaign) |
+| Deurali Basic School | [Open Deurali](http://127.0.0.1:3000/projects/deurali-basic-school) |
+| Drone mapping | [Open Drone Mapping](http://127.0.0.1:3000/projects/drone-mapping) |
+| GIS mapping | [Open GIS Mapping](http://127.0.0.1:3000/projects/gis-mapping) |
+| LiDAR scanning | [Open LiDAR](http://127.0.0.1:3000/projects/lidar-scanning) |
+
+Additional item details can be opened from their cards on Projects, Achievements and ECA. Media-library, revision-history and site-settings pages are planned and do not yet have routes.
+
+Repository: [shradaya-raj/Shradaya_Raj](https://github.com/shradaya-raj/Shradaya_Raj). Local links do not confirm that a production deployment is available.
+
 ## Baseline — 9 October 2026
 
 - The root Next.js 14 app is the active website. The nested personal-website directory is a separate experiment.
@@ -29,6 +64,12 @@ The owner must be able to edit routine content without code: text, media, links,
 Until persistent production storage is chosen, extend the existing workflow: local edits write JSON; production edits create GitHub pull requests and publish after merge/deployment. Do not label a pending PR as already published. Immediate production publication is still an open architecture decision.
 
 ## Change log
+
+### 2026-10-09 — Section links added
+
+- Added the section directory to PROJECT_RECORD.md, covering six public sections, six dashboard/editor routes and six dedicated project pages.
+- Verified the documented paths against the root app's page files; no application behavior changed.
+- Next: continue the CMS implementation sequence below; keep this directory current when routes are added.
 
 ### 2026-10-09 — Planning and first implementation started
 
