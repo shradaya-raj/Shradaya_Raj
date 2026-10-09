@@ -65,3 +65,5 @@ Until persistent production storage is chosen, extend the existing workflow: loc
 - Preparing current website source, portfolio content/media, CMS work and documentation for the requested push. Existing trial content within data/public is included; loose root test inputs, tmp-upload-test.txt and generated build caches are excluded.
 - Fixed contact validation's TypeScript narrowing with an explicit success/error union and added nodemailer type declarations to remove the earlier build blockers. Ignored generated *.tsbuildinfo files.
 - Verification: TypeScript, lint, staged whitespace check and production build passed. No environment-secret files are staged. Publishing prepared updates to origin/main; remote commit and CI will be checked after push.
+- Push result: website commit 2a1a010 successfully pushed to origin/main and verified with git ls-remote. GitHub CI run 37917492610 started and was still running at verification time; deployment status is not confirmed. Local development server restarted at http://127.0.0.1:3000.
+- The remaining untracked root trial files are preserved locally. No destructive cleanup or production configuration change was performed.
