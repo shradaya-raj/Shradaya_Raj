@@ -71,6 +71,7 @@ Until persistent production storage is chosen, extend the existing workflow: loc
 - Included eight project-record deletions and seven associated media-file deletions already made through the local admin. Preserved loose root input files and local preview screenshots outside the commit.
 - Initial SSH fetch failed on DNS lookup; HTTPS API confirmed the repository was accessible and retrying SSH fetch succeeded.
 - Verification: lint, TypeScript and staged whitespace checks passed. Prepared for origin/main; production deployment remains unverified.
+- Push result: commit 33d6da3 successfully pushed to origin/main, including the UI updates and existing local content removals. Vercel deployment completion has not been checked.
 
 ### 2026-10-14 — Content deletion dialog and scroll stability
 
