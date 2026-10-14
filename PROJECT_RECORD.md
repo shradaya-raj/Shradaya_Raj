@@ -65,6 +65,17 @@ Until persistent production storage is chosen, extend the existing workflow: loc
 
 ## Change log
 
+### 2026-10-14 — Next.js security upgrade in progress
+
+- Replacing Next.js/eslint-config-next 14.1.0 with the latest published 15.5 release observed in npm, 15.5.27. React 18 remains within its declared peer range.
+- Migrated server page/API route parameters to awaited promises; moved the client page editor into src/components/PageEditor.tsx behind a server wrapper. Removed the unavailable NextRequest.ip fallback; forwarded-header handling remains.
+- Verification: dependency installation and build checks pending. Do not treat this entry as confirmation of a successful deployment.
+- Security sources: Vercel May 2026 guidance requires upgrading 13/14 to supported lines. Next.js also announced an October 14 upstream security release; its published advisory/patch availability must be checked separately, and this update is not a guarantee against future advisories.
+- Updated PostCSS to 8.5.30 with a dependency override after npm audit found a vulnerable bundled copy. Audit now reports neither Next.js nor PostCSS advisories; other unrelated dependency advisories remain outside this change.
+- Next.js 15 route validation exposed a broken legacy DELETE handler at /api/upload that expected nonexistent category/slug URL parameters. It now returns 405 and directs callers to the existing /api/items/{category}/{slug} endpoint used by the dashboard.
+- Verification: production build (including lint and TypeScript) passed. Homepage, Home editor, site/content APIs and a dynamic project detail returned HTTP 200 after restart. npm audit reports no Next.js/PostCSS advisory. Generated next-env.d.ts updated by Next.js. Localhost is running on the upgraded version.
+- Publication: preparing security fix for GitHub; Vercel deployment must still complete using the root app. The nested experiment was intentionally not changed.
+
 ### 2026-10-14 — Admin updates and content removals prepared for GitHub
 
 - Included the floating admin navigation and redesigned deletion dialog described below.

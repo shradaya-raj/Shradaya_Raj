@@ -40,7 +40,7 @@ globalThis.__contactRateLimitStore = rateLimitStore
 function extractClientIp(req: NextRequest): string {
   const forwarded = req.headers.get('x-forwarded-for')
   if (forwarded) return forwarded.split(',')[0]?.trim() || 'unknown'
-  return req.ip || 'unknown'
+  return 'unknown'
 }
 
 function isRateLimited(key: string): boolean {

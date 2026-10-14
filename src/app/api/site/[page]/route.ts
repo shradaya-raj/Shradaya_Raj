@@ -12,9 +12,9 @@ const allowedPages = new Set(['home', 'about', 'contact']);
 
 export async function GET(
   _req: Request,
-  { params }: { params: { page: string } }
+  { params }: { params: Promise<{ page: string }> }
 ) {
-  const page = params.page;
+  const { page } = await params;
   if (!allowedPages.has(page)) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 });
   }
@@ -32,16 +32,17 @@ export async function GET(
   }
 }
 
-export async function PUT(req: Request, { params }: { params: { page: string } }) {
+export async function PUT(req: Request, { params }: { params: Promise<{ page: string }> }) {
+  const { page } = await params;
   const guard = requireAdmin(req);
   if (guard) return guard;
-  if (!isSitePage(params.page)) return NextResponse.json({ error: 'Not found' }, { status: 404 });
+  if (!isSitePage(page)) return NextResponse.json({ error: 'Not found' }, { status: 404 });
   let content: any;
   try {
     const raw = await req.text();
     if (Buffer.byteLength(raw) > 200000) throw new Error('Page content is too large.');
     content = JSON.parse(raw);
-    validateSiteContent(params.page, content);
+    validateSiteContent(page, content);
     if (content.featuredProjects?.mode === 'manual') {
       const projects = await getAllItems('projects');
       if (content.featuredProjects.slugs.some((slug: string) => !projects.some(project => project.slug === slug))) {
@@ -52,12 +53,12 @@ export async function PUT(req: Request, { params }: { params: { page: string } }
     return NextResponse.json({ error: error instanceof Error ? error.message : 'Invalid page content.' }, { status: 400 });
   }
   try {
-    const repoPath = `data/site/${params.page}.json`;
+    const repoPath = `data/site/${page}.json`;
     const serialized = JSON.stringify(content, null, 2) + '\n';
     if (process.env.NODE_ENV === 'production') {
-      const branch = await createCmsBranch(`site/${params.page}`);
-      await upsertFile({ branch, path: repoPath, contentBase64: Buffer.from(serialized).toString('base64'), message: `cms: edit ${params.page}` });
-      const pr = await createPullRequest({ branch, title: `CMS: edit ${params.page}`, body: `Updates ${params.page} content from the page editor. Merge and deploy to publish.` });
+      const branch = await createCmsBranch(`site/${page}`);
+      await upsertFile({ branch, path: repoPath, contentBase64: Buffer.from(serialized).toString('base64'), message: `cms: edit ${page}` });
+      const pr = await createPullRequest({ branch, title: `CMS: edit ${page}`, body: `Updates ${page} content from the page editor. Merge and deploy to publish.` });
       return NextResponse.json({ mode: 'pull-request', prUrl: pr.url });
     }
     const filePath = path.join(process.cwd(), repoPath);
