@@ -65,6 +65,28 @@ Until persistent production storage is chosen, extend the existing workflow: loc
 
 ## Change log
 
+### 2026-10-14 — Admin updates and content removals prepared for GitHub
+
+- Included the floating admin navigation and redesigned deletion dialog described below.
+- Included eight project-record deletions and seven associated media-file deletions already made through the local admin. Preserved loose root input files and local preview screenshots outside the commit.
+- Initial SSH fetch failed on DNS lookup; HTTPS API confirmed the repository was accessible and retrying SSH fetch succeeded.
+- Verification: lint, TypeScript and staged whitespace checks passed. Prepared for origin/main; production deployment remains unverified.
+
+### 2026-10-14 — Content deletion dialog and scroll stability
+
+- Replaced browser confirm/alert prompts in src/app/admin/upload/page.tsx with a styled native dialog, item title, cancel/delete controls, pending state and inline failure feedback. Native modal behavior provides focus containment and Escape cancellation.
+- Successful deletion updates only the affected list instead of replacing all lists with a loading screen. This prevents the page-height collapse that reset scroll position. Added inline success feedback; deleting the currently edited item clears its form.
+- Verification: lint and TypeScript passed; browser confirmed the dialog shows the selected item and Keep content closes it. Saved admin-delete-preview.png. No existing portfolio content deleted during verification; successful deletion's scroll behavior has not been exercised against real content.
+- Limitation: deleting near the page bottom can still require normal browser scroll clamping as the page becomes shorter. Production deletion persistence remains a separate planned improvement.
+
+### 2026-10-14 — Shared floating admin navigation
+
+- Added src/components/AdminNavigation.tsx and src/app/admin/layout.tsx: fixed gradient navigation matching the public site's style, shared across all admin routes, with active-page indicators and a collapsible small-screen menu.
+- Navigation links directly to Dashboard, Home, About, Contact, Content library and AI assistant, plus the public website. Content library continues to manage Projects, Achievements and ECA together.
+- Replaced dashboard editor tiles with content-count summaries and a content-library shortcut. Removed the separate public navigation bars from admin upload/AI screens; adjusted top spacing for the shared bar.
+- Verification: lint and TypeScript checks passed. Browser checks confirmed the small-screen menu opens, About navigation works and closes the menu, and the shared navigation remains on the editor. At 1280px the full bar is visible, fixed, and fits without horizontal overflow. Saved admin-navigation-preview.png as a local preview.
+- Next: continue image uploads and complete project editing; dedicated project/achievement editors remain planned.
+
 ### 2026-10-09 — Section links added
 
 - Added the section directory to PROJECT_RECORD.md, covering six public sections, six dashboard/editor routes and six dedicated project pages.

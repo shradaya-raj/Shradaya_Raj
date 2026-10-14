@@ -1,7 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import Navigation from '@/components/Navigation';
+import React, { useState, useEffect, useRef } from 'react';
 
 export default function UploadPage() {
     const [files, setFiles] = useState<File[]>([]);
@@ -27,6 +26,16 @@ export default function UploadPage() {
 
     const [items, setItems] = useState<any>({ projects: [], achievements: [], eca: [] });
     const [isLoadingItems, setIsLoadingItems] = useState(true);
+    const [deleteTarget, setDeleteTarget] = useState<{ category: string; slug: string; title: string } | null>(null);
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [deleteError, setDeleteError] = useState('');
+    const [deleteMessage, setDeleteMessage] = useState('');
+    const deleteDialog = useRef<HTMLDialogElement>(null);
+
+    useEffect(() => {
+        if (deleteTarget) deleteDialog.current?.showModal();
+        else deleteDialog.current?.close();
+    }, [deleteTarget]);
 
     const fetchItems = async () => {
         setIsLoadingItems(true);
@@ -58,21 +67,29 @@ export default function UploadPage() {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
-    const handleDelete = async (cat: string, slug: string) => {
-        if (!confirm('Are you sure you want to delete this item?')) return;
-
+    const handleDelete = async () => {
+        if (!deleteTarget || isDeleting) return;
+        const { category: cat, slug, title: itemTitle } = deleteTarget;
+        setIsDeleting(true);
+        setDeleteError('');
         try {
             const res = await fetch(`/api/items/${cat}/${slug}`, {
                 method: 'DELETE',
             });
             if (res.ok) {
-                alert('Deleted successfully');
-                fetchItems();
+                // Keep the list mounted so removing one row does not collapse the page.
+                setItems((current: any) => ({ ...current, [cat]: current[cat].filter((item: any) => item.slug !== slug) }));
+                setDeleteMessage(`Deleted “${itemTitle}”.`);
+                setDeleteTarget(null);
+                if (editSlug === slug && category === cat) resetForm();
             } else {
-                alert('Failed to delete');
+                setDeleteError('Could not delete this item. Please try again.');
             }
         } catch (err) {
             console.error('Delete failed', err);
+            setDeleteError('Could not reach the server. Please try again.');
+        } finally {
+            setIsDeleting(false);
         }
     };
 
@@ -258,8 +275,7 @@ export default function UploadPage() {
 
     return (
         <>
-            <Navigation />
-            <div className="min-h-screen bg-black pt-24 pb-12 px-4">
+            <div className="min-h-screen bg-black pt-8 pb-12 px-4">
                 <div className="max-w-4xl mx-auto space-y-12">
                     <div className="flex justify-end">
                         <a
@@ -523,6 +539,7 @@ export default function UploadPage() {
                     {/* Manage Content List */}
                     <div className="p-8 bg-gray-900/50 rounded-2xl border border-white/10 shadow-2xl backdrop-blur-sm">
                         <h2 className="text-2xl font-bold text-white mb-6">Manage Existing Content</h2>
+                        {deleteMessage && <p role="status" className="mb-4 rounded-xl border border-green-500/20 bg-green-500/10 p-3 text-green-200">{deleteMessage}</p>}
                         {isLoadingItems ? (
                             <p className="text-gray-500">Loading items...</p>
                         ) : (
@@ -553,7 +570,7 @@ export default function UploadPage() {
                                                             Edit
                                                         </button>
                                                         <button
-                                                            onClick={() => handleDelete(cat, item.slug)}
+                                                            onClick={() => { setDeleteError(''); setDeleteMessage(''); setDeleteTarget({ category: cat, slug: item.slug, title: item.title }); }}
                                                             className="px-3 py-1 bg-red-500/10 text-red-500 rounded-lg text-sm hover:bg-red-500/20 transition"
                                                         >
                                                             Delete
@@ -573,6 +590,16 @@ export default function UploadPage() {
                 </div>
             </div>
 
+            <dialog ref={deleteDialog} aria-labelledby="delete-title" aria-describedby="delete-description" onCancel={event => { if (isDeleting) event.preventDefault(); else setDeleteTarget(null); }} className="w-[calc(100%-2rem)] max-w-md rounded-2xl border border-red-500/20 bg-gray-950 p-6 text-white shadow-2xl backdrop:bg-black/75 backdrop:backdrop-blur-sm">
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-red-500/10 text-2xl text-red-300" aria-hidden="true">×</div>
+                <h2 id="delete-title" className="text-xl font-semibold">Delete this content?</h2>
+                <p id="delete-description" className="mt-3 text-sm leading-relaxed text-gray-400">“{deleteTarget?.title}” and its attached files will be removed. This cannot be undone from the dashboard.</p>
+                {deleteError && <p role="alert" className="mt-4 rounded-lg bg-red-500/10 p-3 text-sm text-red-200">{deleteError}</p>}
+                <div className="mt-6 flex justify-end gap-3">
+                    <button autoFocus disabled={isDeleting} onClick={() => setDeleteTarget(null)} className="rounded-lg border border-white/10 px-4 py-2 hover:bg-white/5 disabled:opacity-50">Keep content</button>
+                    <button disabled={isDeleting} onClick={handleDelete} className="rounded-lg bg-red-600 px-4 py-2 font-medium hover:bg-red-500 disabled:opacity-50">{isDeleting ? 'Deleting…' : 'Delete content'}</button>
+                </div>
+            </dialog>
             {showReviewModal && (
                 <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
                     <div className="w-full max-w-2xl rounded-2xl border border-white/10 bg-gray-950 p-6 space-y-5">

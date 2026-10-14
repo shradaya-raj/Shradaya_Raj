@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useEffect, useMemo, useState } from 'react';
-import Navigation from '@/components/Navigation';
 
 type Mode = 'site' | 'item';
 
@@ -140,8 +139,7 @@ export default function AdminAiPage() {
 
   return (
     <>
-      <Navigation />
-      <main className="min-h-screen bg-black pt-24 pb-12 px-4">
+      <main className="min-h-screen bg-black pt-8 pb-12 px-4">
         <div className="max-w-5xl mx-auto space-y-8">
           <div className="p-6 bg-gray-900/50 rounded-2xl border border-white/10">
             <h1 className="text-2xl font-bold text-white">Admin: AI Assistant</h1>
