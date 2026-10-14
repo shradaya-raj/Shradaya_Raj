@@ -14,7 +14,7 @@
     "@react-three/fiber": "^9.1.2",
     "framer-motion": "^12.7.4",
     "gsap": "^3.12.7",
-    "next": "15.3.1",
+    "next": "15.3.8",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "three": "^0.175.0"
