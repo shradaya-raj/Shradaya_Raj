@@ -65,6 +65,14 @@ Until persistent production storage is chosen, extend the existing workflow: loc
 
 ## Change log
 
+### 2026-10-23 — Production page-save diagnostics
+
+- Owner reported authenticated PUT /api/site/home returning 500. Existing page-save error concealed missing GitHub publishing configuration and invalid repository/token failures; font preload notice is unrelated to the save request.
+- Added missing-setting checks returning 503 with variable names only. GitHub errors now distinguish invalid token, denied permissions/rate limit, inaccessible repo/base branch and branch/rule conflicts; upstream response bodies/credentials are not returned. Trimmed publishing configuration values.
+- Production still requires the owner's GITHUB_TOKEN, GITHUB_OWNER, GITHUB_REPO (and optional GITHUB_BASE_BRANCH) in Vercel. Code changes cannot supply those credentials. Actual remote configuration and failure reason are not yet confirmed.
+- Verification: pending checks and deployment. The credential header included in the report must not be copied into records; advised the owner to replace the exposed admin password.
+- Verification completed: production build/lint/TypeScript passed. Diagnostic checks exercised 401/403/404/422 classifications without network calls. A production-mode local PUT with missing GitHub settings returned 503 and named the missing keys, without writing content or opening a PR. Remote Vercel settings still require owner configuration.
+
 ### 2026-10-23 — Animation responsiveness
 
 - Found full Home rerenders on every mousemove, plus fresh random background positions each render. Replaced with isolated HeroGlow component using one pending animation-frame transform update, no React state per pointer movement, and disabled pointer tracking for coarse pointers/reduced-motion users.
@@ -72,6 +80,7 @@ Until persistent production storage is chosen, extend the existing workflow: loc
 - Shortened Home reveals and About/Projects carousel travel/transitions; carousel timers skip hidden tabs, stop offscreen and disable auto-advance for reduced-motion users. Added a shared MotionConfig reduced-motion preference and CSS fallback for smooth scrolling/animated gradients.
 - Verification: lint and TypeScript passed; production build and browser smoke checks pending. No measured FPS improvement is claimed; these changes remove identified rendering work and intentional long transitions.
 - Final verification: production build passed. Production-mode browser checks confirmed Home rendered without captured console errors and the About Next project transition completed. Deployment pending; no device-specific FPS benchmark was performed.
+- Vercel confirmed successful deployment of b6c74c2. Result recorded locally after deployment to avoid an extra documentation-only deployment.
 
 ### 2026-10-23 — Image loading and missing-asset repairs
 

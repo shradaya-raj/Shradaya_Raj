@@ -3,7 +3,7 @@ import { promises as fs } from 'fs';
 import path from 'path';
 import { requireAdmin } from '@/lib/adminAuth';
 import { isSitePage, validateSiteContent } from '@/lib/siteContent';
-import { createCmsBranch, createPullRequest, upsertFile } from '@/lib/github';
+import { createCmsBranch, createPullRequest, upsertFile, missingGithubSettings, publishingErrorMessage } from '@/lib/github';
 import { getAllItems } from '@/lib/data';
 
 export const dynamic = 'force-dynamic';
@@ -56,6 +56,8 @@ export async function PUT(req: Request, { params }: { params: Promise<{ page: st
     const repoPath = `data/site/${page}.json`;
     const serialized = JSON.stringify(content, null, 2) + '\n';
     if (process.env.NODE_ENV === 'production') {
+      const missing = missingGithubSettings();
+      if (missing.length) return NextResponse.json({ error: `Publishing is not configured. Add ${missing.join(', ')} in Vercel for Production, then redeploy.`, missing }, { status: 503 });
       const branch = await createCmsBranch(`site/${page}`);
       await upsertFile({ branch, path: repoPath, contentBase64: Buffer.from(serialized).toString('base64'), message: `cms: edit ${page}` });
       const pr = await createPullRequest({ branch, title: `CMS: edit ${page}`, body: `Updates ${page} content from the page editor. Merge and deploy to publish.` });
@@ -69,7 +71,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ page: st
     return NextResponse.json({ mode: 'local', message: 'Saved locally. Refresh the public page to see your changes.' });
   } catch (error) {
     console.error('Site save failed:', error);
-    return NextResponse.json({ error: 'Could not save this page. Check the server publishing configuration.' }, { status: 500 });
+    return NextResponse.json({ error: process.env.NODE_ENV === 'production' ? publishingErrorMessage(error) : 'Could not save the local page file.' }, { status: 500 });
   }
 }
 

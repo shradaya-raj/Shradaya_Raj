@@ -5,11 +5,32 @@ type GithubEnv = {
   baseBranch: string;
 };
 
+export function missingGithubSettings(): string[] {
+  return ['GITHUB_TOKEN', 'GITHUB_OWNER', 'GITHUB_REPO'].filter(name => !process.env[name]?.trim());
+}
+
+export class GithubPublishingError extends Error {
+  constructor(public readonly status: number) {
+    super(`GitHub publishing request failed (${status}).`);
+  }
+}
+
+export function publishingErrorMessage(error: unknown): string {
+  if (!(error instanceof GithubPublishingError)) return 'Could not reach GitHub publishing. Retry, or check Vercel function logs.';
+  switch (error.status) {
+    case 401: return 'GitHub rejected GITHUB_TOKEN. Replace the expired or invalid token in Vercel and redeploy.';
+    case 403: return 'GitHub denied publishing. Check repository access, Contents and Pull requests write permissions, organization approval, or GitHub rate limits.';
+    case 404: return 'GitHub repository or base branch was not found, or the token cannot access it. Check GITHUB_OWNER, GITHUB_REPO and GITHUB_BASE_BRANCH.';
+    case 409: case 422: return 'GitHub could not create this publishing review. Retry and check the base branch and repository rules.';
+    default: return 'GitHub publishing is temporarily unavailable. Retry or check Vercel function logs.';
+  }
+}
+
 function getGithubEnv(): GithubEnv {
-  const token = process.env.GITHUB_TOKEN;
-  const owner = process.env.GITHUB_OWNER;
-  const repo = process.env.GITHUB_REPO;
-  const baseBranch = process.env.GITHUB_BASE_BRANCH || 'main';
+  const token = process.env.GITHUB_TOKEN?.trim();
+  const owner = process.env.GITHUB_OWNER?.trim();
+  const repo = process.env.GITHUB_REPO?.trim();
+  const baseBranch = process.env.GITHUB_BASE_BRANCH?.trim() || 'main';
 
   if (!token || !owner || !repo) {
     throw new Error('Missing GitHub configuration (GITHUB_TOKEN/GITHUB_OWNER/GITHUB_REPO).');
@@ -32,8 +53,7 @@ async function ghFetch(path: string, init: RequestInit = {}) {
   });
 
   if (!res.ok) {
-    const text = await res.text().catch(() => '');
-    throw new Error(`GitHub API error ${res.status} ${res.statusText}: ${text}`);
+    throw new GithubPublishingError(res.status);
   }
 
   return res;
@@ -75,8 +95,7 @@ async function getFileSha(pathInRepo: string, branch: string): Promise<string | 
 
   if (res.status === 404) return null;
   if (!res.ok) {
-    const text = await res.text().catch(() => '');
-    throw new Error(`GitHub API error ${res.status} ${res.statusText}: ${text}`);
+    throw new GithubPublishingError(res.status);
   }
 
   const json: any = await res.json();
