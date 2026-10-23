@@ -13,7 +13,7 @@ const Projects = () => {
   const smoothTransition = { duration: 1.2, ease: 'easeOut' }
 
   const resolveImageSrc = (item: Item) => {
-    return getPrimaryImagePath(item) ?? '/images/project-placeholder.jpg'
+    return getPrimaryImagePath(item) ?? '/images/project-placeholder.svg'
   }
 
   useEffect(() => {
@@ -79,6 +79,7 @@ const Projects = () => {
                     src={resolveImageSrc(active)}
                     alt={active.title}
                     fill
+                    sizes="(max-width: 1200px) 100vw, 1152px"
                     className="object-cover"
                     priority={currentIndex === 0}
                   />

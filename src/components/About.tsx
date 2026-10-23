@@ -114,7 +114,7 @@ const ProjectsSection = ({ projects }: ProjectsSectionProps) => {
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setCurrentIndex((prevIndex) => 
+      setCurrentIndex((prevIndex) =>
         prevIndex === projects.length - 1 ? 0 : prevIndex + 1
       )
     }, 7000)
@@ -141,14 +141,14 @@ const ProjectsSection = ({ projects }: ProjectsSectionProps) => {
       case 'airlift-kailas-cleanup-campaign':
         return '/images/Manaslu/Mount Manaslu.jpg'
       default:
-        return '/images/project-placeholder.jpg'
+        return '/images/project-placeholder.svg'
     }
   }
 
   const activeProject = projects[currentIndex]
-  const activeImageSrc = activeProject ? getProjectImage(activeProject) : '/images/project-placeholder.jpg'
+  const activeImageSrc = activeProject ? getProjectImage(activeProject) : '/images/project-placeholder.svg'
   const displayImageSrc =
-    imageErrorMap[activeImageSrc] || !activeImageSrc ? '/images/project-placeholder.jpg' : activeImageSrc
+    imageErrorMap[activeImageSrc] || !activeImageSrc ? '/images/project-placeholder.svg' : activeImageSrc
 
   return (
     <div className="relative h-[500px] overflow-hidden rounded-xl">
@@ -168,6 +168,7 @@ const ProjectsSection = ({ projects }: ProjectsSectionProps) => {
                   src={displayImageSrc}
                   alt={activeProject.title}
                   fill
+                  sizes="(max-width: 1024px) 100vw, 600px"
                   className="object-cover transition-transform duration-700 group-hover:scale-105"
                   priority
                   onError={() => {
@@ -182,7 +183,7 @@ const ProjectsSection = ({ projects }: ProjectsSectionProps) => {
                   <p className="text-gray-300 text-lg mb-6">{activeProject.description}</p>
                   <div className="flex flex-wrap gap-2">
                     {activeProject.technologies.map((tech: string, index: number) => (
-                      <span 
+                      <span
                         key={index}
                         className="px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-sm backdrop-blur-sm"
                       >
@@ -238,4 +239,4 @@ const Skill = ({ children }: { children: React.ReactNode }) => (
   </span>
 )
 
-export default About 
+export default About

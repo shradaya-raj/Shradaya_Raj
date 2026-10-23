@@ -23,7 +23,7 @@ export async function getProjects(): Promise<Project[]> {
           ? firstImage.startsWith('/')
             ? firstImage
             : `/images/projects/${item.slug}/${firstImage}`
-          : '/images/project-placeholder.jpg'
+          : '/images/project-placeholder.svg'
 
       return {
         id: item.slug,

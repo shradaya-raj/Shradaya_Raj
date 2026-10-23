@@ -121,7 +121,7 @@ export default function Home() {
   const projects = dynamicProjects.map(p => ({
     title: p.title,
     description: p.description,
-    image: getPrimaryImagePath(p) ?? '/images/project-placeholder.jpg',
+    image: getPrimaryImagePath(p) ?? '/images/project-placeholder.svg',
     tags: p.tags,
     link: `/${p.category}/${p.slug}`
   }));
@@ -204,6 +204,7 @@ export default function Home() {
                     alt={homeContent.profileAlt}
                     width={350}
                     height={350}
+                    sizes="(max-width: 768px) 160px, 192px"
                     priority
                     className="object-cover w-full h-full transform group-hover:scale-110 transition-transform duration-500 translate-y-4"
                   />
@@ -448,4 +449,4 @@ export default function Home() {
       </main>
     </>
   )
-} 
+}

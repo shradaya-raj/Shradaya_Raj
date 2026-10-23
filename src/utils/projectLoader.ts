@@ -44,7 +44,7 @@ export function getProjects(): Project[] {
 
     // Get image path
     const imageMatch = content.match(/src="([^"]+)"/)
-    const image = imageMatch ? imageMatch[1] : '/images/project-placeholder.jpg'
+    const image = imageMatch ? imageMatch[1] : '/images/project-placeholder.svg'
 
     return {
       id: folder,

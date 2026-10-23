@@ -29,8 +29,9 @@ export default function Error({
           >
             Try again
           </button>
+          <button onClick={() => window.location.reload()} className="block mx-auto mt-4 text-blue-300 underline">Reload page files</button>
         </motion.div>
       </div>
     </div>
   )
-} 
+}

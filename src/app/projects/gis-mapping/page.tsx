@@ -12,7 +12,7 @@ export default function GISMappingProject() {
         <div className="max-w-6xl mx-auto px-4">
           <div className="relative aspect-video w-full mb-8 rounded-xl overflow-hidden">
             <Image
-              src="/images/gis-mapping.jpg"
+              src="/images/project-placeholder.svg"
               alt="GIS Mapping System"
               fill
               className="object-cover"

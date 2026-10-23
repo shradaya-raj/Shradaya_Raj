@@ -65,10 +65,18 @@ Until persistent production storage is chosen, extend the existing workflow: loc
 
 ## Change log
 
+### 2026-10-23 — Image loading and missing-asset repairs
+
+- Reviewed the owner's browser log: several chunk requests failed, and image optimization returned 400 for missing images. Live checks now return 200 for the two cited shared JavaScript chunks. One sample optimized portrait was about 55KB versus the 663KB original; observed timings are single requests, not performance benchmarks.
+- Added a real lightweight SVG fallback and replaced references to absent placeholder/drone/GIS/LiDAR files in records and page components. Generic fallback is explicitly labelled unavailable, rather than misrepresenting another project's photo.
+- Added responsive image sizes to cards, featured carousel, About carousel and Home portrait so the browser need not request 1920px versions for small cards. Added a tiny SVG monogram favicon (Apple icon uses an existing portrait) and a manual Reload page files action to the error screen.
+- Verification: production build including lint/TypeScript passed; static record/media scan found no missing referenced assets. Public deployment checks pending. Missing original project photos still need owner-provided replacements; this change prevents failed requests using a fallback. Chunk availability does not establish the cause of the earlier intermittent browser failures.
+
 ### 2026-10-23 — Fresh deployment after Vercel settings correction
 
 - Owner reported correcting Root Directory/build settings but the security-remediation Redeploy control remains disabled. Confirmed main still matches GitHub at c652ddf and the root package uses Next.js 15.5.27.
 - Sending this documentation commit to trigger a fresh Git-integrated Production build with the saved Vercel settings rather than retrying an old deployment snapshot. Application source unchanged; prior build/test results still apply. Deployment result remains pending until checked.
+- Verified result: commit 0356bc2 deployed successfully (Vercel Production deployment 7275469300 / dpl_FZ2PxyxUGfJqTJJ8vHveLr91gsAi). Public https://shradaya-raj.vercel.app/, /projects and /contact returned HTTP 200; /admin returned 401 without credentials. Deployment URL: https://shradaya-kdbmqbubp-shradaya-rajs-projects.vercel.app. This result entry is saved locally after deployment to avoid triggering an unnecessary second deployment.
 
 ### 2026-10-23 — GitHub sync and Vercel deployment check
 

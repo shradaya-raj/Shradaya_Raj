@@ -12,7 +12,7 @@ export default function DroneMappingProject() {
         <div className="max-w-6xl mx-auto px-4">
           <div className="relative aspect-video w-full mb-8 rounded-xl overflow-hidden">
             <Image
-              src="/images/drone-mapping.jpg"
+              src="/images/project-placeholder.svg"
               alt="Drone Mapping"
               fill
               className="object-cover"

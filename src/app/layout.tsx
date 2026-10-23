@@ -18,9 +18,9 @@ export const metadata: Metadata = {
   keywords: 'portfolio, developer, designer, web development, projects',
   authors: [{ name: 'Shradaya Raj Poudel' }],
   icons: {
-    icon: '/profile-icon.png',
-    shortcut: '/profile-icon.png',
-    apple: '/profile-icon.png',
+    icon: '/icon.svg',
+    shortcut: '/icon.svg',
+    apple: '/profile1.jpg',
   },
   openGraph: {
     title: 'Shradaya Raj Poudel | Developer & Designer',
