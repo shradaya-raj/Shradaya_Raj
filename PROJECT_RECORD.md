@@ -65,6 +65,11 @@ Until persistent production storage is chosen, extend the existing workflow: loc
 
 ## Change log
 
+### 2026-10-23 — Fresh deployment after Vercel settings correction
+
+- Owner reported correcting Root Directory/build settings but the security-remediation Redeploy control remains disabled. Confirmed main still matches GitHub at c652ddf and the root package uses Next.js 15.5.27.
+- Sending this documentation commit to trigger a fresh Git-integrated Production build with the saved Vercel settings rather than retrying an old deployment snapshot. Application source unchanged; prior build/test results still apply. Deployment result remains pending until checked.
+
 ### 2026-10-23 — GitHub sync and Vercel deployment check
 
 - Compared local main with fetched origin/main: committed history matched at 4b93273, but the QA report and first remediation batch were not yet committed. Preparing them for the requested push; loose input files and preview screenshots remain local.
