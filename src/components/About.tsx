@@ -1,7 +1,7 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import React, { useState, useEffect, useRef } from 'react'
+import { motion, AnimatePresence, useReducedMotion, useInView } from 'framer-motion'
 import Link from 'next/link'
 import Image from 'next/image'
 import type { Project } from '@/lib/projects'
@@ -11,7 +11,7 @@ interface AboutProps {
 }
 
 const About = ({ initialProjects }: AboutProps) => {
-  const smoothTransition = { duration: 1.2, ease: 'easeOut' }
+  const smoothTransition = { duration: 0.4, ease: 'easeOut' }
   const [siteAbout, setSiteAbout] = useState<{
     heading?: string
     paragraphs?: string[]
@@ -95,10 +95,14 @@ interface ProjectsSectionProps {
 }
 
 const ProjectsSection = ({ projects }: ProjectsSectionProps) => {
+  const carouselRef = useRef<HTMLDivElement>(null)
+  const visible = useInView(carouselRef)
+  const reduceMotion = useReducedMotion()
+
   const [currentIndex, setCurrentIndex] = useState(0)
   const [imageErrorMap, setImageErrorMap] = useState<Record<string, boolean>>({})
-  const slideTransition = { duration: 1.4, ease: 'easeInOut' }
-  const slideOffset = 220
+  const slideTransition = { duration: 0.35, ease: 'easeInOut' }
+  const slideOffset = reduceMotion ? 0 : 24
 
   const goToPrevious = () => {
     setCurrentIndex((prevIndex) =>
@@ -113,14 +117,16 @@ const ProjectsSection = ({ projects }: ProjectsSectionProps) => {
   }
 
   useEffect(() => {
+    if (projects.length <= 1 || !visible || reduceMotion) return
     const timer = setInterval(() => {
+      if (document.hidden) return
       setCurrentIndex((prevIndex) =>
         prevIndex === projects.length - 1 ? 0 : prevIndex + 1
       )
     }, 7000)
 
     return () => clearInterval(timer)
-  }, [projects.length])
+  }, [projects.length, visible, reduceMotion])
 
   const getProjectImage = (project: Project) => {
     if (project.image) {
@@ -151,7 +157,7 @@ const ProjectsSection = ({ projects }: ProjectsSectionProps) => {
     imageErrorMap[activeImageSrc] || !activeImageSrc ? '/images/project-placeholder.svg' : activeImageSrc
 
   return (
-    <div className="relative h-[500px] overflow-hidden rounded-xl">
+    <div ref={carouselRef} className="relative h-[500px] overflow-hidden rounded-xl">
       <AnimatePresence mode="wait">
         <motion.div
           key={currentIndex}

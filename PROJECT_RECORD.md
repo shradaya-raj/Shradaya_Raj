@@ -65,12 +65,21 @@ Until persistent production storage is chosen, extend the existing workflow: loc
 
 ## Change log
 
+### 2026-10-23 — Animation responsiveness
+
+- Found full Home rerenders on every mousemove, plus fresh random background positions each render. Replaced with isolated HeroGlow component using one pending animation-frame transform update, no React state per pointer movement, and disabled pointer tracking for coarse pointers/reduced-motion users.
+- Made floating-shape positions deterministic and pause their animation outside the hero viewport. Removed Home's mounted-only blank render now that random positions no longer require it.
+- Shortened Home reveals and About/Projects carousel travel/transitions; carousel timers skip hidden tabs, stop offscreen and disable auto-advance for reduced-motion users. Added a shared MotionConfig reduced-motion preference and CSS fallback for smooth scrolling/animated gradients.
+- Verification: lint and TypeScript passed; production build and browser smoke checks pending. No measured FPS improvement is claimed; these changes remove identified rendering work and intentional long transitions.
+- Final verification: production build passed. Production-mode browser checks confirmed Home rendered without captured console errors and the About Next project transition completed. Deployment pending; no device-specific FPS benchmark was performed.
+
 ### 2026-10-23 — Image loading and missing-asset repairs
 
 - Reviewed the owner's browser log: several chunk requests failed, and image optimization returned 400 for missing images. Live checks now return 200 for the two cited shared JavaScript chunks. One sample optimized portrait was about 55KB versus the 663KB original; observed timings are single requests, not performance benchmarks.
 - Added a real lightweight SVG fallback and replaced references to absent placeholder/drone/GIS/LiDAR files in records and page components. Generic fallback is explicitly labelled unavailable, rather than misrepresenting another project's photo.
 - Added responsive image sizes to cards, featured carousel, About carousel and Home portrait so the browser need not request 1920px versions for small cards. Added a tiny SVG monogram favicon (Apple icon uses an existing portrait) and a manual Reload page files action to the error screen.
 - Verification: production build including lint/TypeScript passed; static record/media scan found no missing referenced assets. Public deployment checks pending. Missing original project photos still need owner-provided replacements; this change prevents failed requests using a fallback. Chunk availability does not establish the cause of the earlier intermittent browser failures.
+- Deployment verified: a0e94d7 succeeded on Vercel. Public favicon and SVG fallback return 200; /projects returns 200 and uses the new fallback without the missing JPG placeholder. /api/items/all remains protected (401). Result saved locally after deployment; use the stable shradaya-raj.vercel.app domain for the latest deployment.
 
 ### 2026-10-23 — Fresh deployment after Vercel settings correction
 

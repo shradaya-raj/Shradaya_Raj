@@ -24,6 +24,11 @@ html {
   scroll-behavior: smooth;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto !important; }
+  .animated-gradient { animation: none; }
+}
+
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
@@ -69,4 +74,4 @@ html {
   100% {
     background-position: 0% 50%;
   }
-} 
+}

@@ -1,7 +1,8 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
-import { motion } from 'framer-motion'
+import React, { useEffect, useState, useRef } from 'react'
+import { motion, useReducedMotion, useInView } from 'framer-motion'
+import HeroGlow from '@/components/HeroGlow'
 import Navigation from '@/components/Navigation'
 import Link from 'next/link'
 import Image from 'next/image' // Changed from next/legacy/image to next/image
@@ -20,10 +21,14 @@ import { getPrimaryImagePath } from '@/lib/media'
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
   animate: { opacity: 1, y: 0 },
-  transition: { duration: 1.2, ease: 'easeOut' }
+  transition: { duration: 0.4, ease: 'easeOut' }
 }
 
-const smoothTransition = { duration: 1.2, ease: 'easeOut' }
+const smoothTransition = { duration: 0.4, ease: 'easeOut' }
+const floatingShapes = Array.from({ length: 5 }, (_, i) => ({
+  id: i, initialX: i * 12, initialY: i * 8, animateX: 35 + i * 10,
+  animateY: 20 + i * 9, left: `${i * 23}%`, top: `${(i * 31) % 100}%`,
+}))
 
 type HomeContent = {
   profileImage: string
@@ -75,17 +80,14 @@ const defaultHomeContent: HomeContent = {
 }
 
 export default function Home() {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
-  const [isMounted, setIsMounted] = useState(false)
+  const hero = useRef<HTMLElement>(null)
+  const heroVisible = useInView(hero)
+  const reduceMotion = useReducedMotion()
 
   const [dynamicProjects, setDynamicProjects] = useState<any[]>([])
   const [siteContent, setSiteContent] = useState<HomeContent | null>(null)
 
   useEffect(() => {
-    setIsMounted(true)
-    const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY })
-    }
 
     const fetchFeatured = async () => {
       try {
@@ -110,10 +112,8 @@ export default function Home() {
       }
     }
 
-    window.addEventListener('mousemove', handleMouseMove)
     fetchFeatured()
     fetchSiteContent()
-    return () => window.removeEventListener('mousemove', handleMouseMove)
   }, [])
 
   const homeContent = siteContent ?? defaultHomeContent
@@ -127,34 +127,15 @@ export default function Home() {
   }));
 
 
-  // Generate static positions for floating shapes
-  const floatingShapes = Array.from({ length: 5 }, (_, i) => ({
-    id: i,
-    initialX: Math.floor(Math.random() * 100),
-    initialY: Math.floor(Math.random() * 100),
-    animateX: Math.floor(Math.random() * 100),
-    animateY: Math.floor(Math.random() * 100),
-    left: `${Math.floor(Math.random() * 100)}%`,
-    top: `${Math.floor(Math.random() * 100)}%`,
-  }))
-
-  if (!isMounted) {
-    return null
-  }
 
   return (
     <>
       <Navigation />
       <main className="relative bg-black">
         {/* Hero Section */}
-        <section className="h-screen flex items-center justify-center relative overflow-hidden bg-gradient-to-b from-black via-blue-900/20 to-black">
+        <section ref={hero} className="h-screen flex items-center justify-center relative overflow-hidden bg-gradient-to-b from-black via-blue-900/20 to-black">
           {/* Dynamic gradient background that follows mouse */}
-          <div
-            className="absolute inset-0 z-0"
-            style={{
-              background: `radial-gradient(circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(59, 130, 246, 0.3), transparent 40%)`
-            }}
-          />
+          <HeroGlow />
 
           {/* Floating shapes */}
           <div className="absolute inset-0 overflow-hidden">
@@ -163,13 +144,13 @@ export default function Home() {
                 key={shape.id}
                 className="absolute w-64 h-64 bg-blue-500/5 rounded-full"
                 initial={{ x: shape.initialX, y: shape.initialY }}
-                animate={{
+                animate={heroVisible && !reduceMotion ? {
                   x: [shape.initialX, shape.animateX],
                   y: [shape.initialY, shape.animateY],
-                }}
+                } : { x: shape.initialX, y: shape.initialY }}
                 transition={{
-                  duration: 20,
-                  repeat: Infinity,
+                  duration: heroVisible && !reduceMotion ? 20 : 0,
+                  repeat: heroVisible && !reduceMotion ? Infinity : 0,
                   repeatType: "reverse",
                   ease: "linear",
                 }}
@@ -190,7 +171,7 @@ export default function Home() {
             <motion.div
               initial={{ scale: 0.5, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              transition={{ ...smoothTransition, duration: 1.3 }}
+              transition={{ ...smoothTransition, duration: 0.4 }}
               className="mb-12"
             >
               <div className="w-40 h-40 md:w-48 md:h-48 mx-auto relative group">
@@ -222,7 +203,7 @@ export default function Home() {
                 <motion.span
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ ...smoothTransition, delay: 0.2 }}
+                  transition={{ ...smoothTransition, delay: 0.05 }}
                   className="inline-block bg-clip-text text-transparent bg-gradient-to-r from-white via-blue-100 to-white relative z-10"
                 >
                   {homeContent.name}
@@ -230,7 +211,7 @@ export default function Home() {
                 <motion.span
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ ...smoothTransition, delay: 0.4 }}
+                  transition={{ ...smoothTransition, delay: 0.1 }}
                   className="block bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400 relative z-10 text-4xl md:text-6xl"
                 >
                   {homeContent.role}
@@ -240,7 +221,7 @@ export default function Home() {
               <motion.p
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ ...smoothTransition, delay: 0.6 }}
+                transition={{ ...smoothTransition, delay: 0.15 }}
                 className="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto text-center relative z-10"
               >
                 {homeContent.highlights.map((h, idx) => (
@@ -254,7 +235,7 @@ export default function Home() {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ ...smoothTransition, delay: 0.8 }}
+                transition={{ ...smoothTransition, delay: 0.2 }}
                 className="flex flex-col sm:flex-row gap-4 justify-center relative z-10"
               >
                 <Link href={homeContent.cta.primary.href}>

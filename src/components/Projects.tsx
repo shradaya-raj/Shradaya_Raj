@@ -1,16 +1,20 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
+import React, { useEffect, useState, useRef } from 'react'
+import { AnimatePresence, motion, useReducedMotion, useInView } from 'framer-motion'
 import Image from 'next/image'
 import type { Item } from '@/lib/types'
 import { getPrimaryImagePath } from '@/lib/media'
 
 const Projects = () => {
+  const carouselRef = useRef<HTMLDivElement>(null)
+  const visible = useInView(carouselRef)
+  const reduceMotion = useReducedMotion()
+
   const [featuredProjects, setFeaturedProjects] = useState<Item[]>([])
   const [currentIndex, setCurrentIndex] = useState(0)
 
-  const smoothTransition = { duration: 1.2, ease: 'easeOut' }
+  const smoothTransition = { duration: 0.4, ease: 'easeOut' }
 
   const resolveImageSrc = (item: Item) => {
     return getPrimaryImagePath(item) ?? '/images/project-placeholder.svg'
@@ -31,16 +35,17 @@ const Projects = () => {
   }, [])
 
   useEffect(() => {
-    if (featuredProjects.length <= 1) return
+    if (featuredProjects.length <= 1 || !visible || reduceMotion) return
 
     const timer = setInterval(() => {
+      if (document.hidden) return
       setCurrentIndex((prevIndex) =>
         prevIndex === featuredProjects.length - 1 ? 0 : prevIndex + 1
       )
     }, 7000)
 
     return () => clearInterval(timer)
-  }, [featuredProjects.length])
+  }, [featuredProjects.length, visible, reduceMotion])
 
   useEffect(() => {
     if (currentIndex >= featuredProjects.length) setCurrentIndex(0)
@@ -62,15 +67,15 @@ const Projects = () => {
           <div className="w-24 h-1 bg-blue-500 mx-auto" />
         </motion.div>
 
-        <div className="relative h-[500px] overflow-hidden rounded-xl">
+        <div ref={carouselRef} className="relative h-[500px] overflow-hidden rounded-xl">
           <AnimatePresence mode="wait">
             {active ? (
               <motion.div
                 key={active.slug}
-                initial={{ opacity: 0, x: 300 }}
+                initial={{ opacity: 0, x: reduceMotion ? 0 : 24 }}
                 animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -300 }}
-                transition={{ duration: 0.9, ease: 'easeInOut' }}
+                exit={{ opacity: 0, x: reduceMotion ? 0 : -24 }}
+                transition={{ duration: 0.35, ease: 'easeInOut' }}
                 className="absolute inset-0 cursor-pointer"
                 onClick={() => (window.location.href = `/projects/${active.slug}`)}
               >
