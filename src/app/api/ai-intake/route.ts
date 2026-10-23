@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/adminAuth';
 
-const allowedDocExtensions = new Set(['.pdf', '.doc', '.docx', '.txt']);
+const allowedDocExtensions = new Set(['.pdf', '.docx', '.txt']);
 
 function getExt(name: string) {
   const idx = name.lastIndexOf('.');
@@ -32,12 +32,15 @@ export async function POST(req: Request) {
     if (files.length === 0) {
       return NextResponse.json({ error: 'No file provided.' }, { status: 400 });
     }
+    if (files.length > 30 || files.reduce((total, file) => total + file.size, 0) > 25_000_000) {
+      return NextResponse.json({ error: 'Use at most 30 files and 25MB total for document intake.' }, { status: 413 });
+    }
 
     const docFile = files.find((candidate) => allowedDocExtensions.has(getExt(candidate.name)));
     if (!docFile) {
       return NextResponse.json(
         {
-          error: 'Please include at least one PDF, DOC, DOCX, or TXT file for AI intake.',
+          error: 'Please include at least one PDF, DOCX, or TXT file for AI intake.',
           allowed: Array.from(allowedDocExtensions),
         },
         { status: 400 }
@@ -59,7 +62,7 @@ export async function POST(req: Request) {
         extractedText = data.text || '';
       } else if (ext === '.doc' || ext === '.docx') {
         const mammoth = require('mammoth');
-        const result = await mammoth.extractRawText({ arrayBuffer: arrayBuffer as ArrayBuffer });
+        const result = await mammoth.extractRawText({ buffer: fileBuffer });
         extractedText = result.value || '';
       } else if (ext === '.txt') {
         extractedText = fileBuffer.toString('utf8');

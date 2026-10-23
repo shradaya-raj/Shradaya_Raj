@@ -65,6 +65,34 @@ Until persistent production storage is chosen, extend the existing workflow: loc
 
 ## Change log
 
+### 2026-10-23 — GitHub sync and Vercel deployment check
+
+- Compared local main with fetched origin/main: committed history matched at 4b93273, but the QA report and first remediation batch were not yet committed. Preparing them for the requested push; loose input files and preview screenshots remain local.
+- GitHub reports the previous Production deployment failed. Vercel's automated security PR changes only the nested experiment, supporting the earlier wrong-root diagnosis. The root app remains the intended deployment target.
+- Vercel project settings redirect to login in the available browser. Requested the owner sign in before inspecting/changing root directory. No deployment success or working production URL is claimed yet.
+- Prior production build/regression checks passed for this remediation batch; no source changes since those checks except whitespace cleanup.
+
+### 2026-10-23 — First QA remediation batch
+
+- Upload edits preserve existing slugs, old media paths, attachments, rich body and unknown fields; category moves read the original category and reject destination collisions. New attachments append rather than replacing content; existing summaries are not regenerated during edits. Duplicate filenames are rejected to prevent overwrites.
+- Added shared category/slug validation, required title/description/date and integer importance checks, aggregate upload limits and filename checks. Production upload fails clearly when GitHub publishing is unavailable. Item reads reject unknown categories.
+- Production deletion now creates a GitHub PR; UI keeps the item visible until merge/deployment. Both local and production deletion retain media because moved items can share asset paths. Orphan-media cleanup remains a separate future operation.
+- Fixed pdf-parse 2.x class usage and Node mammoth buffer handling. Legacy DOC is excluded from AI intake. Intake has aggregate file limits. Corrected media classification so absolute PDF/video paths are not treated as images.
+- Added unsaved-change navigation/reload protection to page and upload editors; fixed Home CTA destination and closed mobile-menu accessibility state.
+- Added tests/cms-regression.cjs. Disposable-record checks passed for stable URLs, append/preservation, category move, invalid fields/categories, duplicate attachments and deletion retaining media. Real local PDF and DOCX extraction passed without external AI calls. Existing portfolio content preserved.
+- Browser unsaved-dialog automation was inconclusive because the automation click timed out and navigation completed before the dialog could be inspected; manual cancellation testing remains required. Final build result recorded below when complete.
+- Final verification: production build, lint and TypeScript passed. Production-mode save/delete with missing GitHub configuration returned 503 and preserved the disposable record. Real PDF/DOCX extraction and the repeatable regression suite passed. Localhost restarted on port 3000. GitHub PR creation/merge was not exercised.
+- Remaining: exact live preview/drafts/history, conflict protection, dedicated case-study migration, persistent instant publishing, remaining dependency review, metadata/assets and complete no-code controls. No GitHub push or real publishing PR created in this batch.
+
+### 2026-10-18 — QA audit against agreed CMS requirements
+
+- Added QA_REPORT_2026-10-18.md with reproducible defects, source-inspected risks, deployment limitations, unimplemented requirements and prioritized improvements.
+- Lint, TypeScript and production build passed. Twelve public/admin pages, five content APIs and all 17 existing item detail URLs returned 200; nonexistent page returned 404.
+- Production-mode authentication checks passed for admin/write routes using a disposable process-only password. No credentials are recorded. Confirmed local SMTP/Turnstile are not ready; no email or AI request sent.
+- Disposable edit tests confirmed changing a title changes the slug, category moves lose media references, and blank title/description are accepted by upload API. Browser test confirmed unsaved heading disappears after switching admin pages. Production cache probe confirmed new detail record absent from prebuilt listing. Fixtures cleaned up; real portfolio content preserved.
+- Additional findings include production filesystem deletion, broken PDF/DOCX intake integration, missing assets, wrong CTA, mixed hardcoded/detail data and incomplete schema enforcement. npm audit reported 20 flagged entries (15 high/five moderate); Next.js/PostCSS not flagged.
+- This pass documents findings rather than changing application behavior. Next: content preservation/validation, document intake fixes and durable publishing, then draft protection and remaining no-code controls.
+
 ### 2026-10-14 — Next.js security upgrade in progress
 
 - Replacing Next.js/eslint-config-next 14.1.0 with the latest published 15.5 release observed in npm, 15.5.27. React 18 remains within its declared peer range.

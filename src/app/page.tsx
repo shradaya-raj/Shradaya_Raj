@@ -69,7 +69,7 @@ const defaultHomeContent: HomeContent = {
     { title: 'Virtual Tour Mapping', items: ['3D Vista', 'Insta 360 Pro 2', 'PanoX'] },
   ],
   cta: {
-    primary: { text: 'View Projects', href: '/about' },
+    primary: { text: 'View Projects', href: '/projects' },
     secondary: { text: 'Get in Touch', href: '/contact' },
   },
 }

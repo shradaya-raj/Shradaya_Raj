@@ -29,6 +29,8 @@ const Navigation = () => {
           </div>
           <div className="md:hidden">
             <button
+              aria-expanded={isOpen}
+              aria-controls="public-mobile-menu"
               onClick={() => setIsOpen(!isOpen)}
               className="inline-flex items-center justify-center p-2 rounded-md text-blue-400 hover:text-white hover:bg-blue-500/20 focus:outline-none"
             >
@@ -49,6 +51,8 @@ const Navigation = () => {
 
       {/* Mobile menu */}
       <motion.div
+        id="public-mobile-menu"
+        hidden={!isOpen}
         className="md:hidden"
         initial={false}
         animate={isOpen ? { height: 'auto', opacity: 1 } : { height: 0, opacity: 0 }}

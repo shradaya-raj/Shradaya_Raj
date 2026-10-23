@@ -8,6 +8,8 @@ import { slugify } from '../../../../lib/slugify';
 import { formatDate } from '../../../../lib/dateFormatter';
 import { requireAdmin } from '@/lib/adminAuth';
 import { createCmsBranch, createPullRequest, deleteFile, upsertFile } from '@/lib/github';
+import { getItemBySlug } from '@/lib/data';
+import { isCategory, isSlug } from '@/lib/contentValidation';
 import { VisualizationConfig } from '@/lib/types';
 
 const allowedExtensions = new Set([
@@ -183,7 +185,7 @@ export async function POST(req: Request) {
         const tagsRaw = (formData.get('tags') as string) ?? '';
         const featured = (formData.get('featured') as string) === 'true';
         const importanceRaw = (formData.get('importance') as string) ?? '0';
-        const importance = Number.isNaN(Number(importanceRaw)) ? 0 : Number(importanceRaw);
+        const importance = Number(importanceRaw);
         const dataPointsRaw = (formData.get('dataPointsRaw') as string) ?? '';
         const editSlug = formData.get('editSlug') as string | null;
         const oldCategory = formData.get('oldCategory') as string | null;
@@ -191,7 +193,21 @@ export async function POST(req: Request) {
         const tags = tagsRaw.split(',').map((t) => t.trim()).filter(Boolean);
         const parsedPoints = parseDataPoints(dataPointsRaw);
         const visualizations = buildVisualizations(title, parsedPoints);
-        const slug = slugify(`${title}-${formatDate(date)}`);
+        if (!isCategory(category) || (oldCategory && !isCategory(oldCategory)) ||
+            (editSlug && !isSlug(editSlug)) || !title.trim() || !description.trim() ||
+            !Number.isFinite(Date.parse(date)) || !Number.isInteger(importance) || importance < 0 || importance > 10) {
+            return NextResponse.json({ error: 'Provide a valid category, title, description, date and importance (0–10).' }, { status: 400 });
+        }
+        const previous = editSlug ? await getItemBySlug((oldCategory || category) as any, editSlug) : null;
+        if (editSlug && !previous) return NextResponse.json({ error: 'Original item not found.' }, { status: 404 });
+        const slug = editSlug || slugify(title + '-' + formatDate(date));
+        if (!isSlug(slug)) return NextResponse.json({ error: 'Invalid content identifier.' }, { status: 400 });
+        if ((!editSlug || oldCategory && oldCategory !== category) && await getItemBySlug(category, slug)) {
+            return NextResponse.json({ error: 'An item already exists at this destination.' }, { status: 409 });
+        }
+        if (process.env.NODE_ENV === 'production' && (!process.env.GITHUB_TOKEN || !process.env.GITHUB_OWNER || !process.env.GITHUB_REPO)) {
+            return NextResponse.json({ error: 'Configure GitHub publishing before saving production content.' }, { status: 503 });
+        }
 
         const shouldUseGitHubPr =
           process.env.NODE_ENV === 'production' &&
@@ -199,8 +215,19 @@ export async function POST(req: Request) {
           !!process.env.GITHUB_OWNER &&
           !!process.env.GITHUB_REPO;
 
+        if (files.reduce((total, file) => total + file.size, 0) > 50_000_000 || files.length > 30) {
+            return NextResponse.json({ error: 'Upload at most 30 files and 50MB total.' }, { status: 413 });
+        }
+        const existingNames = new Set([...(previous?.images || []), ...(previous?.attachments || [])].map(asset => path.basename(asset)));
+        const newNames = new Set<string>();
+        for (const file of files) {
+            if (existingNames.has(file.name) || newNames.has(file.name)) return NextResponse.json({ error: 'Duplicate attachment name. Rename the new file to preserve the existing attachment.' }, { status: 409 });
+            newNames.add(file.name);
+        }
+
         // Validate all uploaded files.
         for (const file of files) {
+          if (!file.name || /[\\/]/.test(file.name) || file.name.includes('..')) return NextResponse.json({ error: 'Invalid filename.' }, { status: 400 });
           const ext = getExt(file.name);
           if (!allowedExtensions.has(ext)) {
               return NextResponse.json(
@@ -235,20 +262,21 @@ export async function POST(req: Request) {
             await fs.mkdir(imagesDir, { recursive: true });
         }
 
-        let images: string[] = [];
-        let attachments: string[] = [];
-        let extractedText = '';
-        let aiContent = '';
-        let autoReport = '';
+        const preservePath = (asset: string) => asset.startsWith('/') ? asset : '/images/' + previous!.category + '/' + previous!.slug + '/' + asset;
+        let images: string[] = (previous?.images || []).map(preservePath);
+        let attachments: string[] = (previous?.attachments || []).map(preservePath);
+        let extractedText = previous?.fullText || '';
+        let aiContent = previous?.aiContent || '';
+        let autoReport = previous?.autoReport || '';
 
         // Handle file uploads if present
         if (files.length > 0) {
-            images = files
+            images = [...images, ...files
               .filter((f) => imageExtensions.has(getExt(f.name)))
-              .map((f) => f.name);
-            attachments = files
+              .map((f) => f.name)];
+            attachments = [...attachments, ...files
               .filter((f) => !imageExtensions.has(getExt(f.name)))
-              .map((f) => f.name);
+              .map((f) => f.name)];
             const extractedChunks: string[] = [];
 
             for (const file of files) {
@@ -263,9 +291,10 @@ export async function POST(req: Request) {
 
               try {
                   if (ext === '.pdf') {
-                      const pdfParseMod = require('pdf-parse');
-                      const pdfParse = (pdfParseMod as any).default ?? pdfParseMod;
-                      const data = await (pdfParse as any)(fileBuffer);
+                      const { PDFParse } = require('pdf-parse');
+                      const parser = new PDFParse({ data: fileBuffer });
+                      let data;
+                      try { data = await parser.getText(); } finally { await parser.destroy(); }
                       const text = String(data.text || '').trim();
                       if (text) extractedChunks.push(`Source: ${file.name}\n${text}`);
                   } else if (ext === '.doc' || ext === '.docx') {
@@ -282,21 +311,8 @@ export async function POST(req: Request) {
               }
             }
 
-            extractedText = extractedChunks.join('\n\n---\n\n');
-        } else if (editSlug) {
-            // If editing without new file, get old data
-            const oldPath = path.join(dataDir, `${editSlug}.json`);
-            try {
-                const oldData = JSON.parse(await fs.readFile(oldPath, 'utf8'));
-                images = oldData.images || [];
-                attachments = oldData.attachments || [];
-                extractedText = oldData.fullText || '';
-                aiContent = oldData.aiContent || '';
-                autoReport = oldData.autoReport || '';
-            } catch (e) {
-                // ignore
-            }
-        } else {
+            extractedText = [extractedText, extractedChunks.join('\n\n---\n\n')].filter(Boolean).join('\n\n');
+        } else if (!editSlug) {
             // New item without file: use provided details as source text
             const tagsJoined = tagsRaw || '';
             const detailsParts = [
@@ -308,11 +324,11 @@ export async function POST(req: Request) {
         }
 
         // AI Analysis (for new content or when a new file is uploaded) using DeepSeek
-        if (extractedText && (files.length > 0 || !editSlug)) {
+        if (extractedText && (!editSlug)) {
             aiContent = buildFallbackAiContent(extractedText, tags, title);
         }
 
-        if ((description || extractedText || parsedPoints.length > 0) && (files.length > 0 || !editSlug)) {
+        if ((description || extractedText || parsedPoints.length > 0) && (!editSlug)) {
             autoReport = buildAutoReportTemplate({
                 title,
                 category,
@@ -324,7 +340,7 @@ export async function POST(req: Request) {
             });
         }
 
-        if (extractedText && process.env.DEEPSEEK_API_KEY && (files.length > 0 || !editSlug)) {
+        if (extractedText && process.env.DEEPSEEK_API_KEY && (!editSlug)) {
             const prompt = `Analyze the following technical or descriptive content and provide a structured summary in Markdown format.
 Include:
 - **Executive Summary**: A 2-sentence high-level overview.
@@ -377,6 +393,7 @@ ${images.join(', ') || '(none)'}`;
 
         // Build JSON payload
         const payload = {
+            ...previous,
             slug,
             title,
             description: description || (extractedText ? extractedText.slice(0, 200) : ''),
@@ -389,7 +406,7 @@ ${images.join(', ') || '(none)'}`;
             images,
             attachments,
             dataPointsRaw,
-            visualizations,
+            visualizations: parsedPoints.length ? visualizations : previous?.visualizations || [],
             autoReport,
             importance,
         };

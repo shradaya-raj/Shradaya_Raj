@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import { useUnsavedChanges } from '@/lib/useUnsavedChanges';
 
 export default function UploadPage() {
     const [files, setFiles] = useState<File[]>([]);
@@ -26,6 +27,7 @@ export default function UploadPage() {
 
     const [items, setItems] = useState<any>({ projects: [], achievements: [], eca: [] });
     const [isLoadingItems, setIsLoadingItems] = useState(true);
+    useUnsavedChanges(Boolean(title || description || date || tags || files.length || editSlug));
     const [deleteTarget, setDeleteTarget] = useState<{ category: string; slug: string; title: string } | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
     const [deleteError, setDeleteError] = useState('');
@@ -77,6 +79,13 @@ export default function UploadPage() {
                 method: 'DELETE',
             });
             if (res.ok) {
+                const result = await res.json();
+                if (result.mode === 'pr') {
+                    setLastPrUrl(result.prUrl);
+                    setDeleteMessage('Deletion submitted for review. Merge and deploy to publish it; this item remains live until then.');
+                    setDeleteTarget(null);
+                    return;
+                }
                 // Keep the list mounted so removing one row does not collapse the page.
                 setItems((current: any) => ({ ...current, [cat]: current[cat].filter((item: any) => item.slug !== slug) }));
                 setDeleteMessage(`Deleted “${itemTitle}”.`);
@@ -593,7 +602,7 @@ export default function UploadPage() {
             <dialog ref={deleteDialog} aria-labelledby="delete-title" aria-describedby="delete-description" onCancel={event => { if (isDeleting) event.preventDefault(); else setDeleteTarget(null); }} className="w-[calc(100%-2rem)] max-w-md rounded-2xl border border-red-500/20 bg-gray-950 p-6 text-white shadow-2xl backdrop:bg-black/75 backdrop:backdrop-blur-sm">
                 <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-red-500/10 text-2xl text-red-300" aria-hidden="true">×</div>
                 <h2 id="delete-title" className="text-xl font-semibold">Delete this content?</h2>
-                <p id="delete-description" className="mt-3 text-sm leading-relaxed text-gray-400">“{deleteTarget?.title}” and its attached files will be removed. This cannot be undone from the dashboard.</p>
+                <p id="delete-description" className="mt-3 text-sm leading-relaxed text-gray-400">Remove “{deleteTarget?.title}” from the content library? Media files are retained to protect other entries. Production changes require a publishing review.</p>
                 {deleteError && <p role="alert" className="mt-4 rounded-lg bg-red-500/10 p-3 text-sm text-red-200">{deleteError}</p>}
                 <div className="mt-6 flex justify-end gap-3">
                     <button autoFocus disabled={isDeleting} onClick={() => setDeleteTarget(null)} className="rounded-lg border border-white/10 px-4 py-2 hover:bg-white/5 disabled:opacity-50">Keep content</button>

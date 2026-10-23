@@ -13,13 +13,11 @@ function isAbsoluteAssetPath(value: string): boolean {
 }
 
 export function isImageFile(value: string): boolean {
-  if (isAbsoluteAssetPath(value)) return true;
-  return imageExtensions.has(getExt(value));
+  return imageExtensions.has(getExt(value.split(/[?#]/)[0]));
 }
 
 export function isVideoFile(value: string): boolean {
-  if (isAbsoluteAssetPath(value)) return false;
-  return videoExtensions.has(getExt(value));
+  return videoExtensions.has(getExt(value.split(/[?#]/)[0]));
 }
 
 export function resolveItemAssetPath(item: Pick<Item, 'category' | 'slug'>, fileNameOrPath: string): string {

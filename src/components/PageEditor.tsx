@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { isSitePage } from '@/lib/siteContent';
+import { useUnsavedChanges } from '@/lib/useUnsavedChanges';
 
 const label = (key: string) => key.replace(/([A-Z])/g, ' $1').replace(/^./, character => character.toUpperCase());
 const inputClass = 'w-full bg-black border border-gray-700 rounded-lg p-3 text-white';
@@ -66,11 +67,7 @@ export default function PageEditor({ page }: { page: string }) {
   }, [page]);
 
   const dirty = content && JSON.stringify(content) !== original;
-  useEffect(() => {
-    const warn = (event: BeforeUnloadEvent) => { if (dirty) { event.preventDefault(); event.returnValue = ''; } };
-    window.addEventListener('beforeunload', warn);
-    return () => window.removeEventListener('beforeunload', warn);
-  }, [dirty]);
+  useUnsavedChanges(Boolean(dirty));
 
   const save = async () => {
     setSaving(true); setError(''); setMessage(''); setPrUrl('');

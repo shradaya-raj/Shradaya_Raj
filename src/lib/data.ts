@@ -1,6 +1,7 @@
 import { promises as fs } from 'fs';
 import path from 'path';
 import { Item } from './types';
+import { isCategory, isSlug } from './contentValidation';
 
 export async function getAllItems(category: 'projects' | 'achievements' | 'eca'): Promise<Item[]> {
     const dataDir = path.join(process.cwd(), 'data', category);
@@ -38,6 +39,7 @@ export async function getAllItems(category: 'projects' | 'achievements' | 'eca')
 }
 
 export async function getItemBySlug(category: 'projects' | 'achievements' | 'eca', slug: string): Promise<Item | null> {
+    if (!isCategory(category) || !isSlug(slug)) return null;
     const filePath = path.join(process.cwd(), 'data', category, `${slug}.json`);
     try {
         const content = await fs.readFile(filePath, 'utf8');
