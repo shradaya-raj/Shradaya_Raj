@@ -71,6 +71,7 @@ Until persistent production storage is chosen, extend the existing workflow: loc
 - GitHub reports the previous Production deployment failed. Vercel's automated security PR changes only the nested experiment, supporting the earlier wrong-root diagnosis. The root app remains the intended deployment target.
 - Vercel project settings redirect to login in the available browser. Requested the owner sign in before inspecting/changing root directory. No deployment success or working production URL is claimed yet.
 - Prior production build/regression checks passed for this remediation batch; no source changes since those checks except whitespace cleanup.
+- Result: remediation commit ebc4347 pushed and verified on origin/main. Vercel automatically attempted Production deployment dpl_J7Q6WMLuiip13W6S8hDqPeHMVJvk and reported failure. Deployment settings/log inspection still requires Vercel sign-in; no new working production URL has been verified.
 
 ### 2026-10-23 — First QA remediation batch
 
