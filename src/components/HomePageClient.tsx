@@ -41,10 +41,9 @@ const defaultHomeContent: HomeContent = {
       "I'm a Geomatics Engineering graduate from Tribhuvan University with experience in drone surveying, GIS, GNSS, 3D modeling and 360° mapping. My work includes high-resolution mapping with Airlift Technology, drone-delivery assistance and flood-impact mapping on Mt. Manaslu, and field capture and virtual tours with Galli Maps. I've also handled drone-delivery operations following the Rasuwa-Bhotekoshi flood in Nepal, operating DJI FlyCart 100 and FlyCart 30 drones. Alongside WebGIS development, I combine fieldwork and spatial analysis to support infrastructure, environmental assessment and disaster response.",
   },
   stats: [
-    { number: '10+', label: 'Months of Experience' },
-    { number: '5+', label: 'Projects Completed' },
+    { number: '2+', label: 'Years of Experience' },
+    { number: '12+', label: 'Projects Completed' },
     { number: '5+', label: 'Trainings Attended' },
-    { number: '1', label: 'Article Published' },
   ],
   toolsTitle: 'Gadgets & Software',
   toolsCategories: [
@@ -186,7 +185,7 @@ export default function HomePageClient({ initialProjects, initialContent }: {
             </motion.div>
 
             {/* Key Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-10 mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 sm:gap-10 mb-6">
               {homeContent.stats.map((stat) => (
                 <motion.div
                   key={stat.label}

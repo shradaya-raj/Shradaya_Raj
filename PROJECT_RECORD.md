@@ -1024,3 +1024,12 @@ Until persistent production storage is chosen, extend the existing workflow: loc
 - Removed Projects.tsx pause/resume button. Retained three 44px slide-selection dots and existing hover/focus/offscreen/document/reduced-motion guards. Manual slide selection no longer sets an unreachable permanent pause state; each selected slide resets the timer.
 - Checks: lint, TypeScript, whitespace and isolated production build passed (38 static pages). Browser observed two loaded image layers crossfading at complementary opacity values, gallery still 500px tall, and Projects had zero pause/resume controls with three selection dots remaining.
 - Owner's existing publication authorization applies to this follow-up on the same Vercel project. Preparing commit/push and deployment verification; no live success claimed in this entry. No new performance score or ZIP refresh.
+
+- Deployment result: follow-up commit 5b4e531 pushed to main; GitHub CI and Vercel Production both succeeded (Vercel build 2c2RV6weYmuWmYNW25ZLkLgWRzop). Live Projects HTML has no pause/resume control and retains three slide dots; About returns 200. Live browser confirmed a 500px frame with two loaded overlapping crossfade layers and no captured errors. Result recorded locally after deployment to avoid a documentation-only redeploy.
+
+### 2026-10-31 — Updated owner-confirmed Home statistics
+
+- Changed data/site/home.json and matching HomePageClient.tsx fallback to 2+ Years of Experience, 12+ Projects Completed and 5+ Trainings Attended. Removed Article Published entirely. Counts are owner-confirmed professional totals, not calculated from the selected portfolio records.
+- Balanced the remaining three statistics in three columns from small-screen/tablet widths upward and a single column on narrow phones. Content remains editable through the Home dashboard.
+- Checks: lint/TypeScript passed; local rendered Home contains the year label and 12+ figure without Article Published; whitespace passed. No new unit tests for this content/layout-only change. Connected GitHub CI/Vercel production builds will validate publication.
+- Preparing follow-up deployment on the existing Vercel project; live result to be recorded separately. No unrelated files or settings changed.
