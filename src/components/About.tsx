@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react'
 import { motion, MotionConfig, AnimatePresence, useReducedMotion, useInView } from 'framer-motion'
-import Image from 'next/image'
+import Image, { getImageProps } from 'next/image'
 export type AboutPhoto = { imageSrc: string; imageAlt: string; position: string; fit?: string }
 export type AboutContent = { heading: string; paragraphs: string[]; skills: string[]; photos?: AboutPhoto[] }
 
@@ -94,8 +94,18 @@ function PhotoGallery({ photos }: { photos: AboutPhoto[] }) {
   const active = photos[index]
 
   useEffect(() => {
+    if (!visible || photos.length < 2) return
+    const next = photos[(index + 1) % photos.length]
+    const { props } = getImageProps({ src: next.imageSrc, alt: next.imageAlt, fill: true, sizes: '(max-width: 1024px) 100vw, 600px' })
+    const image = new window.Image()
+    image.sizes = props.sizes || ''
+    image.srcset = props.srcSet || ''
+    image.src = props.src
+  }, [photos, index, visible])
+
+  useEffect(() => {
     if (photos.length < 2 || !visible || reduceMotion || paused) return
-    const timer = setInterval(() => { if (!document.hidden) setIndex(current => (current + 1) % photos.length) }, 7000)
+    const timer = setInterval(() => { if (!document.hidden) setIndex(current => (current + 1) % photos.length) }, 5000)
     return () => clearInterval(timer)
   }, [photos.length, visible, reduceMotion, paused, index])
 
@@ -106,8 +116,8 @@ function PhotoGallery({ photos }: { photos: AboutPhoto[] }) {
     onTouchEnd={event => { if (touchStart.current === null) return; const delta = event.changedTouches[0].clientX - touchStart.current; if (Math.abs(delta) > 40) move(delta < 0 ? 1 : -1); touchStart.current = null }}
     className="relative h-[500px] overflow-hidden rounded-2xl border border-white/10 bg-gray-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-400">
     <p id="about-photo-instructions" className="sr-only">Use left and right arrow keys or swipe to browse photos. Space pauses or resumes the slideshow.</p>
-    <AnimatePresence mode="wait" initial={false}>
-      <motion.div key={active.imageSrc} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: reduceMotion ? 0 : 0.25 }} className="absolute inset-0">
+    <AnimatePresence mode="sync" initial={false}>
+      <motion.div key={active.imageSrc} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: reduceMotion ? 0 : 0.8, ease: 'easeInOut' }} className="absolute inset-0">
         <Image src={active.imageSrc} alt={active.imageAlt} fill sizes="(max-width: 1024px) 100vw, 600px" priority={index === 0} className={active.fit === 'contain' ? 'object-contain' : 'object-cover'} style={{ objectPosition: active.position }} />
       </motion.div>
     </AnimatePresence>

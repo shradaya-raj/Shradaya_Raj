@@ -10,7 +10,6 @@ export default function Projects({ initialProjects }: { initialProjects: Item[] 
   const carousel = useRef<HTMLDivElement>(null)
   const [index, setIndex] = useState(0)
   const [visible, setVisible] = useState(false)
-  const [paused, setPaused] = useState(false)
   const [interacting, setInteracting] = useState(false)
   const [reducedMotion, setReducedMotion] = useState(false)
   useEffect(() => {
@@ -23,12 +22,12 @@ export default function Projects({ initialProjects }: { initialProjects: Item[] 
     return () => { query.removeEventListener('change', update); observer.disconnect() }
   }, [])
   useEffect(() => {
-    if (!visible || paused || interacting || reducedMotion || initialProjects.length < 2) return
+    if (!visible || interacting || reducedMotion || initialProjects.length < 2) return
     const timer = setInterval(() => {
       if (!document.hidden) setIndex(current => (current + 1) % initialProjects.length)
     }, 7000)
     return () => clearInterval(timer)
-  }, [visible, paused, interacting, reducedMotion, initialProjects.length])
+  }, [visible, interacting, reducedMotion, initialProjects.length, index])
   const active = initialProjects[index]
   if (!active) return null
   return <section id="projects" className="py-12 sm:py-20 bg-gradient-to-b from-gray-900 to-black">
@@ -49,8 +48,7 @@ export default function Projects({ initialProjects }: { initialProjects: Item[] 
           </div>
         </Link>
         {initialProjects.length > 1 && <div className="absolute inset-x-0 bottom-3 flex flex-wrap justify-center items-center gap-1 px-3">
-          {initialProjects.map((project, position) => <button key={project.slug} type="button" className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-black/60" aria-label={`Show featured project ${position + 1}: ${project.title}`} aria-pressed={index === position} onClick={() => { setIndex(position); setPaused(true) }}><span aria-hidden="true" className={`block w-3 h-3 rounded-full ${position === index ? 'bg-green-400' : 'bg-gray-300'}`} /></button>)}
-          {!reducedMotion && <button type="button" className="min-h-11 rounded-full bg-black/70 px-4 text-sm text-white border border-white/20" onClick={() => setPaused(value => !value)} aria-label={paused ? 'Resume featured slideshow' : 'Pause featured slideshow'}>{paused ? 'Resume' : 'Pause'}</button>}
+          {initialProjects.map((project, position) => <button key={project.slug} type="button" className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-black/60" aria-label={`Show featured project ${position + 1}: ${project.title}`} aria-pressed={index === position} onClick={() => setIndex(position)}><span aria-hidden="true" className={`block w-3 h-3 rounded-full ${position === index ? 'bg-green-400' : 'bg-gray-300'}`} /></button>)}
         </div>}
       </div>
     </div>
