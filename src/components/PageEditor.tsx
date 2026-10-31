@@ -32,6 +32,7 @@ function Fields({ value, onChange, name }: { value: any; onChange: (value: any) 
     const makeEntry = () => {
       if (name === 'stats') return { number: '', label: '' };
       if (name === 'toolsCategories') return { title: '', items: [] };
+      if (name === 'photos') return { imageSrc: '', imageAlt: '', position: 'center center', fit: 'contain' };
       return '';
     };
     const move = (index: number, direction: number) => { const next = [...value]; [next[index], next[index + direction]] = [next[index + direction], next[index]]; onChange(next); };

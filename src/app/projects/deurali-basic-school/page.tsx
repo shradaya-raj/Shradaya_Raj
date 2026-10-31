@@ -1,22 +1,31 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import Navigation from '@/components/Navigation'
 import Image from 'next/image'
 
 export default function DeuraliBasicSchoolProject() {
   const [isImageOpen, setIsImageOpen] = useState(false);
+  const mapDialog = useRef<HTMLDialogElement>(null);
+  const mapTrigger = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    if (!isImageOpen) return;
+    const trigger = mapTrigger.current;
+    mapDialog.current?.showModal();
+    return () => trigger?.focus({ preventScroll: true });
+  }, [isImageOpen]);
 
   return (
     <>
       <Navigation />
       {isImageOpen && (
-        <div 
-          className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
-          onClick={() => setIsImageOpen(false)}
+        <dialog ref={mapDialog} aria-label="School catchment area map" data-media-surface
+          className="m-auto bg-black/95 text-white border border-white/20 rounded-xl p-4 backdrop:bg-black/80"
+          onCancel={() => setIsImageOpen(false)}
+          onClick={event => { if (event.target === event.currentTarget) setIsImageOpen(false) }}
         >
-          <div 
-            className="relative w-[90vw] h-[90vh] max-w-7xl"
+          <div
+            className="relative w-[82vw] sm:w-[90vw] h-[85vh] max-w-7xl"
             onClick={(e) => e.stopPropagation()}
           >
             <Image
@@ -27,8 +36,8 @@ export default function DeuraliBasicSchoolProject() {
               quality={100}
               priority
             />
-            <button
-              className="absolute top-4 right-4 text-white bg-black/50 hover:bg-black/70 rounded-full p-2"
+            <button type="button" autoFocus aria-label="Close map"
+              className="absolute top-4 right-4 min-h-11 min-w-11 text-white bg-black/50 hover:bg-black/70 rounded-full p-2"
               onClick={() => setIsImageOpen(false)}
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -36,9 +45,9 @@ export default function DeuraliBasicSchoolProject() {
               </svg>
             </button>
           </div>
-        </div>
+        </dialog>
       )}
-      <main className="min-h-screen bg-black text-white py-20">
+      <main id="main-content" tabIndex={-1} className="min-h-screen bg-black text-white py-20">
         <div className="max-w-6xl mx-auto px-4">
           <div className="relative aspect-[21/9] w-full mb-8 rounded-xl overflow-hidden">
             <Image
@@ -48,7 +57,7 @@ export default function DeuraliBasicSchoolProject() {
               className="object-cover"
               priority
             />
-            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent p-8">
+            <div data-media-surface className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent p-8">
               <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">Deurali Basic School Project</h1>
               <div className="flex flex-wrap gap-2">
                 {["Education", "Community Development", "Infrastructure", "Transportation", "Social Impact"].map(tag => (
@@ -66,7 +75,7 @@ export default function DeuraliBasicSchoolProject() {
                 A comprehensive study and implementation project at Deurali Basic School in Lahachok, Machhapuchhre Rural Municipality-4, Nepal, focusing on improving student accessibility through school bus service restoration and analyzing enrollment growth potential.
               </p>
             </div>
-            
+
             <div>
               <h2 className="text-2xl font-bold mt-8 mb-4">School Background</h2>
               <p className="text-gray-300">
@@ -111,7 +120,7 @@ export default function DeuraliBasicSchoolProject() {
                   <div>
                     <h3 className="text-xl font-semibold text-gray-300 mb-6">Catchment Area Analysis</h3>
                     <div className="flex flex-col md:flex-row items-center gap-8">
-                      <div 
+                      <button type="button" ref={mapTrigger} aria-label="Enlarge school catchment area map"
                         className="w-full md:w-1/2 relative aspect-[10/10] rounded-xl overflow-hidden bg-white/5 cursor-pointer transition-transform hover:scale-[1.02]"
                         onClick={() => setIsImageOpen(true)}
                       >
@@ -121,7 +130,7 @@ export default function DeuraliBasicSchoolProject() {
                           fill
                           className="object-contain"
                         />
-                      </div>
+                      </button>
                       <div className="w-full md:w-1/2 space-y-4">
                         <p className="text-gray-300">
                           Our detailed analysis of the school&apos;s catchment area reveals significant potential for enrollment growth across different zones. The study utilized advanced GIS mapping to identify optimal transportation routes and student distribution patterns.
@@ -169,4 +178,4 @@ export default function DeuraliBasicSchoolProject() {
       </main>
     </>
   )
-} 
+}

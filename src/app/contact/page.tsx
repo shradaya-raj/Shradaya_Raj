@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import Navigation from '@/components/Navigation'
-import { motion } from 'framer-motion'
+import { motion, MotionConfig } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
 import Script from 'next/script'
@@ -19,6 +19,7 @@ declare global {
 export default function Contact() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [turnstileToken, setTurnstileToken] = useState('')
+  const [mailReady, setMailReady] = useState<boolean | null>(null)
   const [siteContact, setSiteContact] = useState<{
     heading?: string
     imageSrc?: string
@@ -29,6 +30,7 @@ export default function Contact() {
   } | null>(null)
 
   useEffect(() => {
+    fetch('/api/contact/health').then(response => response.json()).then(health => setMailReady(health.smtpConfigured === true)).catch(() => setMailReady(false))
     const fetchSiteContact = async () => {
       try {
         const res = await fetch('/api/site/contact')
@@ -43,10 +45,10 @@ export default function Contact() {
   }, [])
 
   const heading = siteContact?.heading ?? 'Contact Me'
-  const imageSrc = siteContact?.imageSrc ?? '/profile.jpg'
-  const imageAlt = siteContact?.imageAlt ?? 'Contact page featured image'
+  const imageSrc = siteContact?.imageSrc ?? '/profile-professional-2026.png'
+  const imageAlt = siteContact?.imageAlt ?? 'Professional portrait of Shradaya Raj Poudel'
   const email = siteContact?.email ?? 'shradayarajpoudel@gmail.com'
-  const location = siteContact?.location ?? 'Pokhara, Nepal'
+  const location = siteContact?.location ?? 'Kathmandu, Nepal'
   const linkedin = siteContact?.social?.linkedin ?? 'https://www.linkedin.com/in/shradaya-raj-poudel-b11454273/'
   const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY
 
@@ -61,6 +63,10 @@ export default function Contact() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    if (mailReady !== true) {
+      toast.error('Please use the email link below to get in touch.')
+      return
+    }
     if (turnstileSiteKey && !turnstileToken) {
       toast.error('Please complete security verification.')
       return
@@ -108,7 +114,7 @@ export default function Contact() {
   }
 
   return (
-    <>
+    <MotionConfig reducedMotion="user">
       <Navigation />
       <Toaster position="top-center" />
       {turnstileSiteKey ? (
@@ -118,11 +124,11 @@ export default function Contact() {
           defer
         />
       ) : null}
-      <main className="min-h-screen bg-gradient-to-b from-black to-gray-900 flex items-center justify-center overflow-hidden">
-        <div className="w-full max-w-6xl mx-auto px-4 py-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-10 items-center">
+      <main id="main-content" tabIndex={-1} className="contact-page min-h-screen bg-gradient-to-b from-black to-gray-900 flex items-center justify-center pt-20 pb-6">
+        <div className="w-full max-w-6xl mx-auto px-4 py-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-10 items-stretch">
             {/* Left side - Image */}
-            <div className="relative h-[420px] md:h-[520px] lg:h-[560px] bg-gray-900/50 rounded-xl overflow-hidden">
+            <div className="contact-portrait relative h-[260px] md:h-auto bg-gray-900/50 rounded-xl overflow-hidden">
               <Image
                 src={imageSrc}
                 alt={imageAlt}
@@ -136,14 +142,15 @@ export default function Contact() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1.2, ease: 'easeOut' }}
-              className="bg-gray-900/50 p-8 rounded-lg backdrop-blur-sm border border-gray-800 space-y-8"
+              transition={{ duration: 0.35, ease: 'easeOut' }}
+              className="contact-form-card bg-gray-900/50 p-5 sm:p-6 rounded-xl backdrop-blur-sm border border-gray-800 space-y-5"
             >
-              <h1 className="text-4xl font-bold mb-12 text-white">{heading}</h1>
+              <h1 className="text-3xl font-bold text-white">{heading}</h1>
               
-              <form 
+              {mailReady === false && <div role="status" className="rounded-xl border border-blue-500/30 bg-blue-500/10 p-5 space-y-3"><h2 className="text-xl font-semibold">Let’s talk about your project</h2><p className="text-gray-300">The contact form is temporarily unavailable. You can reach me directly by email.</p><a className="inline-flex min-h-11 items-center rounded-lg bg-blue-600 px-5 py-3 font-semibold text-white" href={`mailto:${email}`}>Email me directly</a></div>}
+              {mailReady !== false && <form
                 onSubmit={handleSubmit}
-                className="space-y-6"
+                className="space-y-4"
               >
                 {/* Honeypot field for bots; must stay empty */}
                 <input
@@ -155,8 +162,12 @@ export default function Contact() {
                   aria-hidden="true"
                 />
 
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
+                  <label htmlFor="contact-name" className="block text-sm font-medium text-gray-200 mb-2">Full name</label>
                   <input
+                    id="contact-name"
+                    autoComplete="name"
                     type="text"
                     name="name"
                     placeholder="Full Name"
@@ -167,7 +178,10 @@ export default function Contact() {
                 </div>
                 
                 <div>
+                  <label htmlFor="contact-email" className="block text-sm font-medium text-gray-200 mb-2">Email address</label>
                   <input
+                    id="contact-email"
+                    autoComplete="email"
                     type="email"
                     name="email"
                     placeholder="E-mail"
@@ -176,9 +190,12 @@ export default function Contact() {
                     disabled={isSubmitting}
                   />
                 </div>
-                
+                </div>
+
                 <div>
+                  <label htmlFor="contact-message" className="block text-sm font-medium text-gray-200 mb-2">Message</label>
                   <textarea
+                    id="contact-message"
                     name="message"
                     placeholder="Message"
                     rows={4}
@@ -208,26 +225,18 @@ export default function Contact() {
                   className={`w-full bg-blue-500 text-white px-8 py-3 rounded-md text-lg font-semibold transition-colors ${
                     isSubmitting ? 'opacity-70 cursor-not-allowed' : 'hover:bg-blue-600'
                   }`}
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || mailReady !== true}
                 >
-                  {isSubmitting ? 'Sending...' : 'Send Message'}
+                  {isSubmitting ? 'Sending...' : mailReady === null ? 'Checking availability…' : 'Send Message'}
                 </motion.button>
-              </form>
+              </form>}
 
-              <div className="mt-12 text-white flex justify-center items-center space-x-12">
-                <div className="text-center">
-                  <h2 className="text-2xl font-semibold">Contact</h2>
-                  <p className="text-gray-300">{email}</p>
-                </div>
-
-                <div className="text-center">
-                  <h2 className="text-2xl font-semibold">Based in</h2>
+              <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 border-t border-gray-800 pt-4 text-sm">
+                <div className="min-w-0 space-y-2">
+                  <a href={`mailto:${email}`} className="block text-gray-300 break-all underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-400">{email}</a>
                   <p className="text-gray-300">{location}</p>
                 </div>
-              </div>
-
-              <div className="flex justify-center space-x-6 mt-8">
-                <Link href={linkedin} target="_blank" rel="noopener noreferrer" className="p-3 rounded-full bg-gray-800 text-white hover:bg-blue-600 transition-all">
+                <Link href={linkedin} target="_blank" rel="noopener noreferrer" aria-label="View LinkedIn profile (opens in a new tab)" className="p-3 rounded-full bg-gray-800 text-white hover:bg-blue-600 transition-all focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-400">
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
                     <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
                   </svg>
@@ -237,6 +246,6 @@ export default function Contact() {
           </div>
         </div>
       </main>
-    </>
+    </MotionConfig>
   )
-} 
+}

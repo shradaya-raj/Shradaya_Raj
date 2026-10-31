@@ -1,6 +1,7 @@
 import { getAllItems } from '@/lib/data';
 import ItemCard from '@/app/components/ItemCard';
 import Navigation from '@/components/Navigation';
+import PortfolioMotion from '@/components/PortfolioMotion';
 import { getPrimaryImagePath } from '@/lib/media';
 
 function sortByDateDesc<T extends { date: string }>(items: T[]): T[] {
@@ -23,15 +24,15 @@ export default async function AchievementsPage() {
   return (
     <>
       <Navigation />
-      <main className="min-h-screen bg-black pt-20 pb-16">
+      <main id="main-content" tabIndex={-1} className="min-h-screen bg-black pt-20 pb-16">
         <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
+          <PortfolioMotion className="text-center mb-12">
             <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">Achievements</h1>
             <div className="w-24 h-1 bg-blue-500 mx-auto mb-8"></div>
             <p className="text-gray-300 max-w-3xl mx-auto">
               Professional trainings, certifications, and academic involvements in the field of Geomatics and Geospatial Engineering.
             </p>
-          </div>
+          </PortfolioMotion>
 
           <div className="mb-20">
             <h2 className="text-3xl font-bold text-blue-500 mb-8 px-2">Trainings & Certifications</h2>

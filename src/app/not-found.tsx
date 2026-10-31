@@ -1,17 +1,12 @@
 'use client'
 
 import Link from 'next/link'
-import { motion } from 'framer-motion'
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-black">
+    <main id="main-content" tabIndex={-1} className="min-h-screen flex items-center justify-center bg-black">
       <div className="text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.2, ease: 'easeOut' }}
-        >
+        <div>
           <h1 className="text-6xl font-bold text-white mb-4">404</h1>
           <h2 className="text-2xl text-gray-300 mb-8">Page Not Found</h2>
           <Link
@@ -20,8 +15,8 @@ export default function NotFound() {
           >
             Go Home
           </Link>
-        </motion.div>
+        </div>
       </div>
-    </div>
+    </main>
   )
-} 
+}

@@ -23,22 +23,23 @@ export default function AirliftKailasCleanupCampaign() {
   return (
     <>
       <Navigation />
-      <main className="min-h-screen bg-black text-white py-20">
+      <main id="main-content" tabIndex={-1} className="min-h-screen bg-black text-white py-20">
         <div className="max-w-6xl mx-auto px-4">
           {/* Hero */}
           <section className={`${sectionShell} mb-12`}>
             <div className={innerBorder} />
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-0">
-              <div className="relative lg:col-span-3 aspect-[16/10] lg:h-[360px] rounded-2xl lg:rounded-r-none overflow-hidden">
+              <div className="relative lg:col-span-3 aspect-[16/10] lg:aspect-auto lg:min-h-[420px] self-stretch overflow-hidden">
                 <Image
                   src="/images/Manaslu/Mount Manaslu.jpg"
-                  alt="Mount Manaslu – Airlift Kailas Cleanup Campaign"
+                  alt="Mount Manaslu – Airlift Kailas Manaslu Cleanup Campaign"
                   fill
-                  className="object-cover"
+                  className="object-cover object-center"
+                  sizes="(min-width: 1152px) 672px, (min-width: 1024px) 60vw, 100vw"
                   priority
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent" />
-                <div className="absolute bottom-4 left-4 right-4 flex flex-wrap items-center justify-between gap-2">
+                <div data-media-surface className="absolute bottom-4 left-4 right-4 flex flex-wrap items-center justify-between gap-2">
                   <span className="px-3 py-1 rounded-full bg-black/55 border border-white/10 text-xs text-gray-100 backdrop-blur">
                     Mt. Manaslu • 8,163 m
                   </span>
@@ -51,7 +52,7 @@ export default function AirliftKailasCleanupCampaign() {
               <div className="lg:col-span-2 p-6 sm:p-8 flex flex-col gap-5">
                 <div>
                   <h1 className="text-3xl sm:text-4xl font-bold leading-tight">
-                    Airlift Kailas Cleanup Campaign
+                    Airlift Kailas Manaslu Cleanup Campaign
                   </h1>
                   <p className="text-gray-300 mt-3 text-sm">
                     High-altitude drone logistics and environmental reconnaissance expedition at Mt. Manaslu,
@@ -99,7 +100,7 @@ export default function AirliftKailasCleanupCampaign() {
               <div className="relative p-8 space-y-6">
                 <h2 className="text-3xl font-bold mb-2 text-blue-400">Executive Summary</h2>
                 <p className="text-gray-300 text-lg leading-relaxed">
-                  The Airlift Kailas Cleanup Campaign (September 4–27, 2025) advanced high-altitude drone logistics
+                  The Airlift Kailas Manaslu Cleanup Campaign (September 4–27, 2025) advanced high-altitude drone logistics
                   and environmental reconnaissance at Mt. Manaslu (8,163 m). Although full-scale waste transport
                   between Base Camp and Camp 1 was deferred due to technical constraints, the expedition delivered
                   detailed terrain mapping, validated operational envelopes, and produced geospatial datasets that
@@ -137,7 +138,7 @@ export default function AirliftKailasCleanupCampaign() {
                       className="object-cover"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
-                    <p className="absolute bottom-3 left-4 text-xs text-gray-200">
+                    <p data-media-surface className="absolute bottom-3 left-4 text-xs text-gray-200">
                       View towards Birendra Lake catchment and upper Manaslu massif from Base Camp.
                     </p>
                   </div>
@@ -171,8 +172,8 @@ export default function AirliftKailasCleanupCampaign() {
                       className="object-cover"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/10 to-transparent" />
-                    <p className="absolute bottom-3 left-4 text-xs text-gray-200">
-                      Technical team for Manaslu during the Airlift Kailas Cleanup Campaign.
+                    <p data-media-surface className="absolute bottom-3 left-4 text-xs text-gray-200">
+                      Technical team for Manaslu during the Airlift Kailas Manaslu Cleanup Campaign.
                     </p>
                   </div>
                 </div>
@@ -240,7 +241,7 @@ export default function AirliftKailasCleanupCampaign() {
                       className="object-cover"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
-                    <p className="absolute bottom-3 left-4 text-xs text-gray-200">
+                    <p data-media-surface className="absolute bottom-3 left-4 text-xs text-gray-200">
                       FC30 pre-flight checks at Base Camp launch pad.
                     </p>
                   </div>
@@ -511,7 +512,7 @@ export default function AirliftKailasCleanupCampaign() {
                       className="object-cover"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
-                    <p className="absolute bottom-3 left-4 text-xs text-gray-200">
+                    <p data-media-surface className="absolute bottom-3 left-4 text-xs text-gray-200">
                       Field validation of FC30 performance in low-pressure, low-temperature conditions.
                     </p>
                   </div>
@@ -586,7 +587,7 @@ export default function AirliftKailasCleanupCampaign() {
               <div className="relative p-8 space-y-4">
                 <h2 className="text-3xl font-bold text-blue-400 mb-2">Conclusion</h2>
                 <p className="text-gray-300 leading-relaxed">
-                  The Airlift Kailas Cleanup Campaign transitioned high-altitude drone logistics from experimental
+                  The Airlift Kailas Manaslu Cleanup Campaign transitioned high-altitude drone logistics from experimental
                   testing to systematic field deployment. While waste transport between camps remains contingent on
                   further technical refinement, the expedition established a replicable model for extreme-environment
                   reconnaissance and system validation.

@@ -24,5 +24,5 @@ export default function HeroGlow() {
     window.addEventListener('pointermove', move, { passive: true });
     return () => { window.removeEventListener('pointermove', move); cancelAnimationFrame(frame); };
   }, []);
-  return <div ref={glow} aria-hidden="true" className="pointer-events-none absolute left-0 top-0 h-[480px] w-[480px] rounded-full motion-reduce:hidden" style={{ background: 'radial-gradient(circle, rgba(59,130,246,.22), transparent 70%)', willChange: 'transform' }} />;
+  return <div ref={glow} aria-hidden="true" className="hero-pointer-glow pointer-events-none absolute left-0 top-0 h-[480px] w-[480px] rounded-full motion-reduce:hidden" style={{ background: 'radial-gradient(circle, rgba(92,127,157,.08), transparent 70%)', willChange: 'transform' }} />;
 }

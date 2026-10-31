@@ -9,7 +9,7 @@ export default async function ECAPage() {
     return (
         <>
             <Navigation />
-            <main className="min-h-screen bg-black pt-20 pb-16">
+            <main id="main-content" tabIndex={-1} className="min-h-screen bg-black pt-20 pb-16">
                 <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center mb-12">
                         <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">Extra-Curricular Activities</h1>

@@ -3,19 +3,25 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import Providers from '../components/Providers'
+import DetailBackLink from '../components/DetailBackLink'
+import PortfolioTheme from '../components/PortfolioTheme'
 import Script from 'next/script'
+import homeContent from '../../data/site/home.json'
+import { siteUrl } from '@/lib/metadata'
 
 const inter = Inter({ subsets: ['latin'] })
+const siteDescription = `${homeContent.name}, ${homeContent.role}. Projects and field experience in ${homeContent.highlights.join(', ')}.`
 
 const metadataBase = process.env.NODE_ENV === 'production'
-  ? 'https://shradayarajpoudel.com.np'
-  : 'http://localhost:3001'
+  ? siteUrl
+  : 'http://localhost:3000'
 
 export const metadata: Metadata = {
   metadataBase: new URL(metadataBase),
-  title: 'Shradaya Raj Poudel',
-  description: 'Welcome to my portfolio website showcasing my work as a developer and designer. Explore my projects, skills, and achievements.',
-  keywords: 'portfolio, developer, designer, web development, projects',
+  title: homeContent.name,
+  alternates: { canonical: '/' },
+  description: siteDescription,
+  keywords: homeContent.highlights,
   authors: [{ name: 'Shradaya Raj Poudel' }],
   icons: {
     icon: '/icon.svg',
@@ -23,23 +29,21 @@ export const metadata: Metadata = {
     apple: '/profile1.jpg',
   },
   openGraph: {
-    title: 'Shradaya Raj Poudel | Developer & Designer',
-    description: 'Welcome to my portfolio website showcasing my work as a developer and designer.',
+    title: `${homeContent.name} | ${homeContent.role}`,
+    description: siteDescription,
     type: 'website',
     images: [
       {
-        url: '/og-image.jpg',
-        width: 1200,
-        height: 630,
+        url: homeContent.profileImage,
         alt: 'Shradaya Raj Poudel - Portfolio'
       }
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Shradaya Raj Poudel | Developer & Designer',
-    description: 'Welcome to my portfolio website showcasing my work as a developer and designer.',
-    images: ['/og-image.jpg'],
+    title: `${homeContent.name} | ${homeContent.role}`,
+    description: siteDescription,
+    images: [homeContent.profileImage],
   },
 }
 
@@ -49,16 +53,17 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className="scroll-smooth">
+    <html lang="en" className="scroll-smooth" suppressHydrationWarning>
       <head>
-        <link
-          rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-        />
+        <script dangerouslySetInnerHTML={{ __html: `try{document.documentElement.dataset.portfolioTheme=localStorage.getItem('portfolio-theme')==='dark'?'dark':'light'}catch{document.documentElement.dataset.portfolioTheme='light'}` }} />
       </head>
       <body className={`${inter.className} bg-black text-white antialiased`}>
+        <a href="#main-content" className="skip-navigation">Skip to content</a>
         <Providers>
-          {children}
+          <PortfolioTheme>
+            {children}
+            <DetailBackLink />
+          </PortfolioTheme>
         </Providers>
       </body>
     </html>

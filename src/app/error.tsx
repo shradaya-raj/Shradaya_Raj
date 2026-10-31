@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect } from 'react'
-import { motion } from 'framer-motion'
 
 export default function Error({
   error,
@@ -15,13 +14,9 @@ export default function Error({
   }, [error])
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-black">
+    <main id="main-content" tabIndex={-1} className="min-h-screen flex items-center justify-center bg-black">
       <div className="text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.2, ease: 'easeOut' }}
-        >
+        <div>
           <h2 className="text-2xl font-bold text-white mb-4">Something went wrong!</h2>
           <button
             onClick={reset}
@@ -30,8 +25,8 @@ export default function Error({
             Try again
           </button>
           <button onClick={() => window.location.reload()} className="block mx-auto mt-4 text-blue-300 underline">Reload page files</button>
-        </motion.div>
+        </div>
       </div>
-    </div>
+    </main>
   )
 }

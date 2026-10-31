@@ -7,8 +7,10 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Item } from '@/lib/types';
 import { formatDate } from '@/lib/dateFormatter';
 import Navigation from '@/components/Navigation';
+import PortfolioMotion from '@/components/PortfolioMotion';
 import { getAttachmentPaths, getPrimaryImagePath } from '@/lib/media';
-import DynamicVisualizations from './DynamicVisualizations';
+import dynamic from 'next/dynamic';
+const DynamicVisualizations = dynamic(() => import('./DynamicVisualizations'));
 
 interface ItemDetailProps {
     item: Item;
@@ -64,7 +66,7 @@ export default function ItemDetail({ item }: ItemDetailProps) {
             <Navigation />
             {lightbox && (
                 <div
-                    className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
+                    data-media-surface className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
                     onClick={() => setLightbox(null)}
                     role="dialog"
                     aria-modal="true"
@@ -93,8 +95,9 @@ export default function ItemDetail({ item }: ItemDetailProps) {
                     </div>
                 </div>
             )}
-            <main className="min-h-screen bg-black text-white pt-24 pb-16">
+            <main id="main-content" tabIndex={-1} className="min-h-screen bg-black text-white pt-24 pb-16">
                 <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <PortfolioMotion>
                     <header className="mb-12">
                         {item.featured && (
                             <span className="inline-block px-3 py-1 rounded-full bg-green-500/20 border border-green-500/30 text-green-300 text-xs font-bold uppercase tracking-wider mb-4">
@@ -108,6 +111,7 @@ export default function ItemDetail({ item }: ItemDetailProps) {
                             <span className="capitalize">{item.category}</span>
                         </div>
                     </header>
+                    </PortfolioMotion>
 
                     {coverImage && (
                         <div className="relative aspect-video w-full overflow-hidden rounded-2xl mb-12 ring-1 ring-white/10">

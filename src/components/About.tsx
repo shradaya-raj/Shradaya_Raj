@@ -1,48 +1,42 @@
 'use client'
 
 import React, { useState, useEffect, useRef } from 'react'
-import { motion, AnimatePresence, useReducedMotion, useInView } from 'framer-motion'
-import Link from 'next/link'
+import { motion, MotionConfig, AnimatePresence, useReducedMotion, useInView } from 'framer-motion'
 import Image from 'next/image'
-import type { Project } from '@/lib/projects'
+export type AboutPhoto = { imageSrc: string; imageAlt: string; position: string; fit?: string }
+export type AboutContent = { heading: string; paragraphs: string[]; skills: string[]; photos?: AboutPhoto[] }
 
 interface AboutProps {
-  initialProjects: Project[]
+  initialContent: AboutContent
 }
 
-const About = ({ initialProjects }: AboutProps) => {
+const About = ({ initialContent }: AboutProps) => {
   const smoothTransition = { duration: 0.4, ease: 'easeOut' }
-  const [siteAbout, setSiteAbout] = useState<{
-    heading?: string
-    paragraphs?: string[]
-    skills?: string[]
-  } | null>(null)
+  const [siteAbout, setSiteAbout] = useState<AboutContent>(initialContent)
 
   useEffect(() => {
-    const fetchSiteAbout = async () => {
-      try {
-        const res = await fetch('/api/site/about')
-        if (!res.ok) return
-        const data = await res.json()
-        setSiteAbout(data)
-      } catch {
-        // ignore; use defaults
-      }
+    let active = true
+    const refresh = () => {
+      fetch('/api/site/about', { cache: 'no-store' }).then(response => response.ok ? response.json() : null).then(content => { if (active && content) setSiteAbout(content) }).catch(() => {})
     }
-    fetchSiteAbout()
+    const onVisible = () => { if (!document.hidden) refresh() }
+    refresh()
+    window.addEventListener('focus', refresh)
+    document.addEventListener('visibilitychange', onVisible)
+    return () => { active = false; window.removeEventListener('focus', refresh); document.removeEventListener('visibilitychange', onVisible) }
   }, [])
 
   const heading = siteAbout?.heading ?? 'About Me'
   const paragraphs =
     siteAbout?.paragraphs ?? [
-      "Welcome to my digital space! I’m a passionate and driven Geomatics Engineer with a deep interest in geospatial science, mapping technologies, and the innovative use of spatial data to solve real-world challenges. My work revolves around the integration of GIS, remote sensing, GNSS, and surveying to deliver accurate, insightful, and practical solutions across various sectors.",
-      "Whether it’s monitoring the environment, supporting infrastructure planning, or conducting spatial analysis, I work on turning complex geographic data into clear, actionable insights. I’m especially interested in the intersection of technology and geography—using tools like QGIS, ArcGIS, and Python for geospatial processing and visualization.",
-      'This website showcases my work, ongoing projects, and ideas around geomatics, spatial data science, and how we can better understand the world through data.',
+      "I'm a Geomatics Engineering graduate from Tribhuvan University, based in Kathmandu, Nepal. My work combines drone surveying, GIS, GNSS, photogrammetry, 3D modeling and 360° mapping to turn field data into practical spatial solutions.",
+      "My experience includes high-resolution mapping with Airlift Technology, drone-delivery assistance and flood-impact mapping on Mt. Manaslu. I've also handled drone-delivery operations following the Rasuwa-Bhotekoshi flood in Nepal, operating DJI FlyCart 100 and FlyCart 30 drones.",
+      "My field-mapping experience with Galli Maps includes 360° capture across Pokhara, Butwal, Chitwan and Lumbini, alongside virtual-tour creation. I've also developed WebGIS solutions, including utility management with metric house numbering. Using tools such as DJI Terra, DJI Modify, DJI Reality, QGIS and ArcGIS, I focus on careful fieldwork and useful spatial data for infrastructure, environmental assessment and disaster response.",
     ]
   const skills = siteAbout?.skills ?? ['GNSS', 'GIS', 'Remote Sensing', '3D Mapping', '3D Modeling', 'Drone Mapping']
 
   return (
-    <section id="about" className="py-20 bg-gradient-to-b from-black to-gray-900">
+    <MotionConfig reducedMotion="user"><section id="about" className="py-20 bg-black">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -51,20 +45,20 @@ const About = ({ initialProjects }: AboutProps) => {
           viewport={{ once: true }}
           className="text-center mb-12"
         >
-          <h2 className="text-4xl font-bold mb-4">{heading}</h2>
+          <h1 className="text-4xl font-bold mb-4">{heading}</h1>
           <div className="w-24 h-1 bg-blue-500 mx-auto"></div>
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
           <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
             transition={{ ...smoothTransition, delay: 0.09 }}
             viewport={{ once: true }}
             className="space-y-6"
           >
             {paragraphs.map((p) => (
-              <p key={p} className="text-xl text-gray-300 text-justify">
+              <p key={p} className="text-lg sm:text-xl text-gray-300 text-left sm:text-justify">
                 {p}
               </p>
             ))}
@@ -76,167 +70,49 @@ const About = ({ initialProjects }: AboutProps) => {
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
             transition={{ ...smoothTransition, delay: 0.1 }}
             viewport={{ once: true }}
             className="h-full"
           >
-            {initialProjects.length > 0 && <ProjectsSection projects={initialProjects} />}
+            {!!siteAbout.photos?.length && <PhotoGallery key={JSON.stringify(siteAbout.photos)} photos={siteAbout.photos} />}
           </motion.div>
         </div>
       </div>
-    </section>
+    </section></MotionConfig>
   )
 }
 
-interface ProjectsSectionProps {
-  projects: Project[]
-}
-
-const ProjectsSection = ({ projects }: ProjectsSectionProps) => {
-  const carouselRef = useRef<HTMLDivElement>(null)
-  const visible = useInView(carouselRef)
+function PhotoGallery({ photos }: { photos: AboutPhoto[] }) {
+  const gallery = useRef<HTMLDivElement>(null)
+  const visible = useInView(gallery)
   const reduceMotion = useReducedMotion()
-
-  const [currentIndex, setCurrentIndex] = useState(0)
-  const [imageErrorMap, setImageErrorMap] = useState<Record<string, boolean>>({})
-  const slideTransition = { duration: 0.35, ease: 'easeInOut' }
-  const slideOffset = reduceMotion ? 0 : 24
-
-  const goToPrevious = () => {
-    setCurrentIndex((prevIndex) =>
-      prevIndex === 0 ? projects.length - 1 : prevIndex - 1
-    )
-  }
-
-  const goToNext = () => {
-    setCurrentIndex((prevIndex) =>
-      prevIndex === projects.length - 1 ? 0 : prevIndex + 1
-    )
-  }
+  const [index, setIndex] = useState(0)
+  const [paused, setPaused] = useState(false)
+  const touchStart = useRef<number | null>(null)
+  const active = photos[index]
 
   useEffect(() => {
-    if (projects.length <= 1 || !visible || reduceMotion) return
-    const timer = setInterval(() => {
-      if (document.hidden) return
-      setCurrentIndex((prevIndex) =>
-        prevIndex === projects.length - 1 ? 0 : prevIndex + 1
-      )
-    }, 7000)
-
+    if (photos.length < 2 || !visible || reduceMotion || paused) return
+    const timer = setInterval(() => { if (!document.hidden) setIndex(current => (current + 1) % photos.length) }, 7000)
     return () => clearInterval(timer)
-  }, [projects.length, visible, reduceMotion])
+  }, [photos.length, visible, reduceMotion, paused, index])
 
-  const getProjectImage = (project: Project) => {
-    if (project.image) {
-      return project.image
-    }
+  const move = (direction: number) => setIndex(current => (current + direction + photos.length) % photos.length)
+  return <div ref={gallery} data-media-surface role="region" tabIndex={0} aria-label="Photos of Shradaya Raj Poudel" aria-roledescription="carousel" aria-describedby="about-photo-instructions"
+    onKeyDown={event => { if (event.key === 'ArrowRight') { event.preventDefault(); move(1) } else if (event.key === 'ArrowLeft') { event.preventDefault(); move(-1) } else if (event.key === ' ') { event.preventDefault(); setPaused(value => !value) } }}
+    onTouchStart={event => { touchStart.current = event.touches[0].clientX }}
+    onTouchEnd={event => { if (touchStart.current === null) return; const delta = event.changedTouches[0].clientX - touchStart.current; if (Math.abs(delta) > 40) move(delta < 0 ? 1 : -1); touchStart.current = null }}
+    className="relative h-[500px] overflow-hidden rounded-2xl border border-white/10 bg-gray-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-400">
+    <p id="about-photo-instructions" className="sr-only">Use left and right arrow keys or swipe to browse photos. Space pauses or resumes the slideshow.</p>
+    <AnimatePresence mode="wait" initial={false}>
+      <motion.div key={active.imageSrc} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: reduceMotion ? 0 : 0.25 }} className="absolute inset-0">
+        <Image src={active.imageSrc} alt={active.imageAlt} fill sizes="(max-width: 1024px) 100vw, 600px" priority={index === 0} className={active.fit === 'contain' ? 'object-contain' : 'object-cover'} style={{ objectPosition: active.position }} />
+      </motion.div>
+    </AnimatePresence>
 
-    switch (project.slug) {
-      case 'utility-management-system':
-        return '/images/UMS/webportal.png'
-      case 'deurali-basic-school':
-        return '/images/deurali-basic-school/deurali-basic-school.png'
-      case 'drone-mapping':
-        return '/images/drone-mapping/drone-mapping.jpg'
-      case 'lidar-scanning':
-        return '/images/lidar-scanning/lidar-scan.jpg'
-      case 'gis-mapping':
-        return '/images/gis-mapping/gis-mapping.jpg'
-      case 'airlift-kailas-cleanup-campaign':
-        return '/images/Manaslu/Mount Manaslu.jpg'
-      default:
-        return '/images/project-placeholder.svg'
-    }
-  }
-
-  const activeProject = projects[currentIndex]
-  const activeImageSrc = activeProject ? getProjectImage(activeProject) : '/images/project-placeholder.svg'
-  const displayImageSrc =
-    imageErrorMap[activeImageSrc] || !activeImageSrc ? '/images/project-placeholder.svg' : activeImageSrc
-
-  return (
-    <div ref={carouselRef} className="relative h-[500px] overflow-hidden rounded-xl">
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={currentIndex}
-          initial={{ opacity: 0, x: slideOffset }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -slideOffset }}
-          transition={slideTransition}
-          className="absolute inset-0"
-        >
-          <Link href={`/projects/${activeProject.slug}`} className="block h-full">
-            <div className="relative h-full w-full bg-gray-800 rounded-xl overflow-hidden group">
-              <div className="absolute inset-0">
-                <Image
-                  src={displayImageSrc}
-                  alt={activeProject.title}
-                  fill
-                  sizes="(max-width: 1024px) 100vw, 600px"
-                  className="object-cover transition-transform duration-700 group-hover:scale-105"
-                  priority
-                  onError={() => {
-                    setImageErrorMap((prev) => ({ ...prev, [activeImageSrc]: true }))
-                  }}
-                />
-                <div className="absolute inset-0 bg-black/60 transition-opacity duration-500 group-hover:bg-black/40" />
-              </div>
-              <div className="relative h-full w-full p-8 flex flex-col justify-between z-10">
-                <div>
-                  <h3 className="text-2xl font-bold mb-4">{activeProject.title}</h3>
-                  <p className="text-gray-300 text-lg mb-6">{activeProject.description}</p>
-                  <div className="flex flex-wrap gap-2">
-                    {activeProject.technologies.map((tech: string, index: number) => (
-                      <span
-                        key={index}
-                        className="px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-sm backdrop-blur-sm"
-                      >
-                        {tech}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </Link>
-        </motion.div>
-      </AnimatePresence>
-
-      <div className="pointer-events-none absolute inset-x-0 bottom-4 flex items-center justify-center gap-4 px-8 z-20">
-        <button
-          type="button"
-          aria-label="Previous project"
-          onClick={goToPrevious}
-          className="pointer-events-auto inline-flex h-10 w-10 items-center justify-center rounded-full bg-black/60 border border-white/20 text-white hover:bg-black/75 backdrop-blur-sm"
-        >
-          ‹
-        </button>
-
-        <div className="pointer-events-auto flex justify-center space-x-2">
-          {projects.map((_: Project, index: number) => (
-            <button
-              key={index}
-              onClick={() => setCurrentIndex(index)}
-              className={`w-3 h-3 rounded-full transition-colors duration-200 ${
-                index === currentIndex ? 'bg-blue-500' : 'bg-gray-600'
-              }`}
-            />
-          ))}
-        </div>
-
-        <button
-          type="button"
-          aria-label="Next project"
-          onClick={goToNext}
-          className="pointer-events-auto inline-flex h-10 w-10 items-center justify-center rounded-full bg-black/60 border border-white/20 text-white hover:bg-black/75 backdrop-blur-sm"
-        >
-          ›
-        </button>
-      </div>
-    </div>
-  )
+  </div>
 }
 
 const Skill = ({ children }: { children: React.ReactNode }) => (

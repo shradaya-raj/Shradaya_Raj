@@ -1,20 +1,72 @@
 {
   "slug": "webgis-utility-management-system-unified-june-1-2024",
   "title": "WebGIS Utility Management System (Unified)",
-  "description": "Developed a WebGIS Utility Management System Integrated with Metric House Number",
-  "fullText": "This project developed a WebGIS-based utility management system integrated with metric house numbering for Ward No. 8, Shuklagandaki Municipality (Nepal). It supports better planning and service delivery by centralizing verified field data and making it easy to explore, query, and update.",
+  "description": "A WebGIS system for mapping utilities, assigning metric house numbers and managing resident reports in Shuklagandaki Municipality, Ward No. 8.",
+  "fullText": "PROJECT CONTEXT\nWe developed this system as our final-year Geomatics Engineering project at Tribhuvan University. Our focus was Ward No. 8 of Shuklagandaki Municipality, where utility information and household addresses needed a more organized approach. We combined field surveys, GIS mapping and web development to bring this information into one portal.\n\nMY ROLE\nI led the project and was responsible for backend development and database management. I worked on the Python services and data storage behind the portal, alongside teammates handling the interface, mapping and fieldwork. One of the portal features was a comment and complaint system, where residents could submit issues for administrators to manage.\n\nFIELDWORK AND SPATIAL DATABASE\nWe mapped buildings and roads from satellite imagery, then collected household details, building gate locations and utility information in the field. We used ODK Collect for household surveys and Kobo Collect for electric poles. HOTOSM, FMTM, Bing imagery and JOSM supported the remote mapping work. We then cleaned and organized the layers in QGIS, covering roads, buildings, electricity, water supply and public facilities.\n\nMETRIC HOUSE NUMBERING\nWe generated metric house numbers for 1,416 permanent buildings. A house number is based on the distance in metres from the start of its road to the building gate, rounded up to a whole number. We used odd numbers on the left side of the road and even numbers on the right. For buildings reached by foot trails, we also recorded the offset distance from the road. The sample below shows how these numbers appear alongside the mapped buildings.\n\nWEBGIS IMPLEMENTATION\nUsers can explore utility layers on the map, view survey charts and submit questions or complaints. Administrators can manage the submissions through a separate dashboard. We built the interface with ReactJS and used MapTiler for satellite and vector maps. Django and Flask handled the backend services, SQLite3 stored query records, and GeoJSON files prepared in QGIS supplied the map layers.\n\nSURVEY RESULTS\nWe mapped 1,977 structures, including 1,416 permanent buildings and 561 temporary structures. Our household survey covered the permanent buildings and recorded a population of 6,586: 3,095 male and 3,491 female. Internet access was available in 1,315 households, while 101 had no access. For water supply, 1,230 households used private connections and 186 relied on communal supply.\n\nKEY FINDINGS\nPermanent buildings accounted for 71.6% of the mapped structures. These formed the basis of our household survey and house numbering work.\nInternet access reached 92.9% of surveyed households. A web portal could therefore serve many residents, but the 101 households without access would still need another way to report problems.\nWater supply was not the same across the ward: 186 households depended on communal supply. Keeping this information with the mapped buildings makes those differences easier to see.\nThe completed prototype combined house numbers, utility layers, survey charts and resident reports in one place. It showed how the field data could be used beyond a static map.\n\nSCOPE AND NEXT STEPS\nWe built and demonstrated this as an undergraduate project. Further work could use drone imagery to improve building maps and automate more of the house numbering process. Regular use would also need a way to update records when buildings, roads or utility connections change.\n\nTEAM AND SUPERVISION\nOur team included Binish Shrestha, Prameshwar Adhikari, Sameer Shrestha, Subash Rimal and me, with supervision from Asst. Prof. Er. Bikash Sherchan. Binish handled frontend development, Sameer supported resource management, and Prameshwar and Subash assisted with the field survey.\n\nPROJECT VISUALS\nThe images show our portal, study area, survey form and mapping workflow. The video demonstrates the portal.\n\nPROJECT VIDEO\nhttps://lnkd.in/p/g3yRjdjy",
   "date": "2024-06-01",
   "tags": [
-    "QGIS",
-    "Python",
-    "FMTM",
     "WebGIS",
-    "MAPTILER",
-    "Metric House Number"
+    "Metric House Numbering",
+    "QGIS",
+    "ReactJS",
+    "Python",
+    "Django",
+    "Flask",
+    "SQLite3",
+    "HOTOSM / FMTM",
+    "ODK Collect"
   ],
   "featured": true,
   "category": "projects",
   "images": [
     "/images/UMS/webportal.png"
+  ],
+  "attachments": [
+    "/images/UMS/webportal.png",
+    "/images/UMS/Study_Area.png",
+    "/images/UMS/Main Methodology.png",
+    "/images/UMS/House Numbering FLowchart.png",
+    "/images/UMS/field-collection-form.jpg",
+    "/images/UMS/project-demonstration.mp4",
+    "/images/UMS/MHN-sample.png",
+    "/images/UMS/Poster for ums.png"
+  ],
+  "visualizations": [
+    {
+      "title": "Surveyed structures (1,977 total)",
+      "type": "bar",
+      "labels": [
+        "Permanent buildings",
+        "Temporary structures"
+      ],
+      "values": [
+        1416,
+        561
+      ]
+    },
+    {
+      "title": "Survey population (6,586 total)",
+      "type": "pie",
+      "labels": [
+        "Male",
+        "Female"
+      ],
+      "values": [
+        3095,
+        3491
+      ]
+    },
+    {
+      "title": "Internet access among 1,416 households",
+      "type": "pie",
+      "labels": [
+        "With internet access",
+        "Without internet access"
+      ],
+      "values": [
+        1315,
+        101
+      ]
+    }
   ]
 }

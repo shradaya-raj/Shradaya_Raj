@@ -1,10 +1,72 @@
 {
   "heading": "About Me",
   "paragraphs": [
-    "Welcome to my digital space! I’m a passionate and driven Geomatics Engineer with a deep interest in geospatial science, mapping technologies, and the innovative use of spatial data to solve real-world challenges. My work revolves around the integration of GIS, remote sensing, GNSS, and surveying to deliver accurate, insightful, and practical solutions across various sectors.",
-    "Whether it’s monitoring the environment, supporting infrastructure planning, or conducting spatial analysis, I work on turning complex geographic data into clear, actionable insights. I’m especially interested in the intersection of technology and geography—using tools like QGIS, ArcGIS, and Python for geospatial processing and visualization.",
-    "This website showcases my work, ongoing projects, and ideas around geomatics, spatial data science, and how we can better understand the world through data."
+    "I'm a Geomatics Engineering graduate from Tribhuvan University, based in Kathmandu, Nepal. My work combines drone surveying, GIS, GNSS, photogrammetry, 3D modeling and 360° mapping to turn field data into practical spatial solutions.",
+    "My experience includes high-resolution mapping with Airlift Technology, drone-delivery assistance and flood-impact mapping on Mt. Manaslu. I've also handled drone-delivery operations following the Rasuwa-Bhotekoshi flood in Nepal, operating DJI FlyCart 100 and FlyCart 30 drones.",
+    "My field-mapping experience with Galli Maps includes 360° capture across Pokhara, Butwal, Chitwan and Lumbini, alongside virtual-tour creation. I've also developed WebGIS solutions, including utility management with metric house numbering. Using tools such as DJI Terra, DJI Modify, DJI Reality, QGIS and ArcGIS, I focus on careful fieldwork and useful spatial data for infrastructure, environmental assessment and disaster response."
   ],
-  "skills": ["GNSS", "GIS", "Remote Sensing", "3D Mapping", "3D Modeling", "Drone Mapping"]
+  "skills": [
+    "GNSS",
+    "GIS",
+    "Remote Sensing",
+    "3D Mapping",
+    "3D Modeling",
+    "Drone Mapping"
+  ],
+  "photos": [
+    {
+      "imageSrc": "/profile1.jpg",
+      "imageAlt": "Shradaya Raj Poudel outside the Geomatics Engineering department",
+      "position": "center center",
+      "fit": "cover"
+    },
+    {
+      "imageSrc": "/images/rasuwa/featured-field-operation.webp",
+      "imageAlt": "Shradaya Raj Poudel with a cargo drone during field operations in Rasuwa",
+      "position": "center center",
+      "fit": "cover"
+    },
+    {
+      "imageSrc": "/images/rasuwa/field-portrait.webp",
+      "imageAlt": "Shradaya Raj Poudel holding a radio beside a cargo drone in the field",
+      "position": "25% center",
+      "fit": "cover"
+    },
+    {
+      "imageSrc": "/images/about/field-survey-tripod.jpeg",
+      "imageAlt": "Field survey team setting up a tripod-mounted surveying instrument outdoors",
+      "position": "center center",
+      "fit": "cover"
+    },
+    {
+      "imageSrc": "/images/Manaslu/Me with drone.jpg",
+      "imageAlt": "Drone fieldwork beside a cargo drone at Manaslu",
+      "position": "center center",
+      "fit": "contain"
+    },
+    {
+      "imageSrc": "/images/Manaslu/Team Image.jpg",
+      "imageAlt": "Manaslu field team preparing equipment for the expedition",
+      "position": "center center",
+      "fit": "contain"
+    },
+    {
+      "imageSrc": "/images/banchare-danda/field-team.webp",
+      "imageAlt": "Drone mapping field team at Banchare Danda",
+      "position": "center center",
+      "fit": "contain"
+    },
+    {
+      "imageSrc": "/images/mustang-reconnaissance/assessment-team.webp",
+      "imageAlt": "Reconnaissance team beside the river gorge in Mustang",
+      "position": "center center",
+      "fit": "contain"
+    },
+    {
+      "imageSrc": "/images/rasuwa/response-team-and-aircraft.webp",
+      "imageAlt": "Rasuwa relief field team beside a cargo drone and helicopter",
+      "position": "center center",
+      "fit": "contain"
+    }
+  ]
 }
-

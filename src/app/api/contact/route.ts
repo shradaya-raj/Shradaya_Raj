@@ -67,6 +67,13 @@ function isRateLimited(key: string): boolean {
 function validatePayload(payload: ContactPayload):
   | { ok: false; reason: string }
   | { ok: true; name: string; email: string; message: string } {
+  if (!payload || typeof payload !== 'object' || Array.isArray(payload) ||
+      ['name', 'email', 'message', 'company', 'turnstileToken'].some(key => {
+        const value = payload[key as keyof ContactPayload]
+        return value !== undefined && typeof value !== 'string'
+      })) {
+    return { ok: false, reason: 'Please provide valid contact fields.' }
+  }
   const name = (payload.name || '').trim()
   const email = (payload.email || '').trim().toLowerCase()
   const message = (payload.message || '').trim()
@@ -158,15 +165,24 @@ async function sendViaSmtp({
     replyTo: email,
     subject: `New Contact Form Submission - ${name}`,
     text: `Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`,
-    html: `<p><strong>Name:</strong> ${name}</p><p><strong>Email:</strong> ${email}</p><p><strong>Message:</strong></p><p>${message.replace(/\n/g, '<br/>')}</p>`,
+    html: `<p><strong>Name:</strong> ${escapeHtml(name)}</p><p><strong>Email:</strong> ${escapeHtml(email)}</p><p><strong>Message:</strong></p><p>${escapeHtml(message).replace(/\n/g, '<br/>')}</p>`,
   })
 
   return { ok: true as const }
 }
 
+function escapeHtml(value: string): string {
+  return value.replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[character]!))
+}
+
 export async function POST(req: NextRequest) {
   try {
-    const payload = (await req.json()) as ContactPayload
+    let payload: ContactPayload
+    try {
+      payload = (await req.json()) as ContactPayload
+    } catch {
+      return NextResponse.json({ success: false, message: 'Invalid request body.' }, { status: 400 })
+    }
     const validation = validatePayload(payload)
 
     if (!validation.ok) {

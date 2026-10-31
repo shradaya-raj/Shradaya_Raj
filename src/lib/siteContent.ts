@@ -8,7 +8,7 @@ export const siteTemplates = {
     toolsCategories: [{ title: '', items: [''] }],
     cta: { primary: { text: '', href: '' }, secondary: { text: '', href: '' } },
   },
-  about: { heading: '', paragraphs: [''], skills: [''] },
+  about: { heading: '', paragraphs: [''], skills: [''], photos: [{ imageSrc: '', imageAlt: '', position: '', fit: '' }] },
   contact: { heading: '', imageSrc: '', imageAlt: '', email: '', location: '', social: { linkedin: '' } },
 };
 
@@ -39,6 +39,10 @@ function validateShape(value: any, template: any, field: string): void {
 
 export function validateSiteContent(page: SitePage, value: any): void {
   const { featuredProjects, ...content } = value ?? {};
+  if (page === 'about') {
+    if (content.photos === undefined) content.photos = [];
+    if (Array.isArray(content.photos)) content.photos = content.photos.map((photo: any) => photo && typeof photo === 'object' && !Array.isArray(photo) ? { fit: 'cover', ...photo } : photo);
+  }
   validateShape(content, siteTemplates[page], page);
   if (featuredProjects !== undefined) {
     if (page !== 'home') throw new Error('Featured settings belong to Home.');

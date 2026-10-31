@@ -1,34 +1,36 @@
 {
-  "profileImage": "/profile1.jpg",
+  "profileImage": "/profile-professional-2026.png",
   "profileAlt": "Shradaya Raj Poudel",
   "name": "Shradaya Raj Poudel",
   "role": "Geomatics Engineer",
-  "highlights": ["GNSS", "GIS", "360 Mapping", "3D Modeling", "Drone Mapping"],
+  "highlights": ["GNSS", "GIS", "360 Mapping", "3D Modeling", "Drone Mapping", "Drone Delivery", "Disaster Response"],
   "intro": {
     "headingPrefix": "Mapping with",
     "headingHighlight": "heart, precision, and purpose.",
-    "paragraph": "Hi! I’m a Geomatics Engineering graduate from Tribhuvan University with a big passion for everything geospatial. From 3D Modeling, GIS and 360° mapping to drone surveys, fieldwork, GNSS technologies and remote sensing, I love working with tools and technologies that help us better understand the world around us. I’m always eager to learn, explore new ideas, and be part of projects that make a real impact through smart mapping and spatial solutions."
+    "paragraph": "I'm a Geomatics Engineering graduate from Tribhuvan University with experience in drone surveying, GIS, GNSS, 3D modeling and 360° mapping. My work includes high-resolution mapping with Airlift Technology, drone-delivery assistance and flood-impact mapping on Mt. Manaslu, and field capture and virtual tours with Galli Maps. I've also handled drone-delivery operations following the Rasuwa-Bhotekoshi flood in Nepal, operating DJI FlyCart 100 and FlyCart 30 drones. Alongside WebGIS development, I combine fieldwork and spatial analysis to support infrastructure, environmental assessment and disaster response."
   },
   "stats": [
     { "number": "10+", "label": "Months of Experience" },
     { "number": "5+", "label": "Projects Completed" },
-    { "number": "5+", "label": "Training Attended" },
-    { "number": "1", "label": "Artical Published" }
+    { "number": "5+", "label": "Trainings Attended" },
+    { "number": "1", "label": "Article Published" }
   ],
   "toolsTitle": "Gadgets & Software",
   "toolsCategories": [
-    { "title": "Photogrammetry", "items": ["Pix 4D", "AgiSoft Metashape", "DJI Terra", "DJI Modify"] },
-    { "title": "GIS & Mapping", "items": ["ArcGIS", "QGIS", "uMap", "OpenRoute Service"] },
+    { "title": "Drones", "items": ["DJI Neo 2", "DJI Mavic 3E", "DJI Matrice 4E", "DJI FlyCart 30", "DJI FlyCart 100", "DJI Phantom 4 RTK", "DJI Mini 4 Pro", "DJI Matrice 350"] },
+    { "title": "Photogrammetry", "items": ["Pix 4D", "AgiSoft Metashape", "DJI Terra", "DJI Modify", "DJI Reality"] },
+    { "title": "GIS & Mapping", "items": ["ArcGIS", "QGIS"] },
     {
       "title": "Surveying",
       "items": [
         "Total Station",
-        "Drones (Mavic 3E, Phantom 4 RTK)",
+        "Drones",
         "DJI FlightHub2",
         "DRTK",
         "DGPS",
         "Kobo Collect",
-        "ODK Collect"
+        "ODK Collect",
+        "SW Maps"
       ]
     },
     { "title": "Designing", "items": ["Revit", "Canva"] },
