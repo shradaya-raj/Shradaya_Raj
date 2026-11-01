@@ -669,3 +669,12 @@ html:not([data-portfolio-theme="dark"]) .portfolio-public .webgis-chart-title,
 html:not([data-portfolio-theme="dark"]) .portfolio-public .webgis-chart-total { color: #233f35; }
 html:not([data-portfolio-theme="dark"]) .portfolio-public .webgis-chart-eyebrow { color: #5c7469; }
 html:not([data-portfolio-theme="dark"]) .portfolio-public .webgis-chart-row { color: #3c574b; border-color: #d6e4dc; }
+
+/* Keep case-study facts legible on the warm light surface. */
+html:not([data-portfolio-theme="dark"]) .portfolio-public dl [class*="bg-black/"] {
+  background-color: #edf4ee;
+  border-color: #d4e4d7;
+}
+html:not([data-portfolio-theme="dark"]) .portfolio-public dl[class*="bg-black/"] {
+  background-color: #f3f7f1;
+}

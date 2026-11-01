@@ -64,7 +64,7 @@ export default function DynamicVisualizations({ visualizations, compact = false 
   const grid = dark ? 'rgba(173,199,215,0.12)' : 'rgba(49,79,65,0.1)';
   if (!visualizations?.length) return null;
 
-  if (compact) return <section aria-label="Interactive survey charts" className="webgis-charts grid gap-5 lg:grid-cols-3">
+  if (compact) return <section aria-label="Interactive survey charts" className="webgis-charts grid min-w-0 grid-cols-1 gap-5 lg:grid-cols-3">
     {visualizations.map((viz) => {
       const total = viz.values.reduce((sum, value) => sum + value, 0);
       // Neutral population categories; teal/access and amber/access gap.
@@ -84,10 +84,10 @@ export default function DynamicVisualizations({ visualizations, compact = false 
           tooltip: { backgroundColor: '#12283a', titleColor: '#ffffff', bodyColor: '#e4eef3', padding: 12, cornerRadius: 8, displayColors: true },
         },
       };
-      return <article key={viz.title} className="webgis-chart-card rounded-2xl p-5 sm:p-6 flex flex-col">
+      return <article key={viz.title} className="webgis-chart-card min-w-0 rounded-2xl p-4 sm:p-6 flex flex-col">
         <p className="webgis-chart-eyebrow text-xs uppercase tracking-widest mb-3">Field survey</p>
         <h3 className="webgis-chart-title text-lg font-semibold leading-snug min-h-[3.5rem]">{viz.title}</h3>
-        <div className="relative h-[230px] my-5">
+        <div className="relative min-w-0 w-full h-[230px] my-5">
           {viz.type === 'pie' && <><Doughnut data={data} options={{ ...options, cutout: '76%' }} aria-label={viz.title} role="img" /><div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center"><span className="webgis-chart-total text-3xl font-semibold tracking-tight">{total.toLocaleString('en-US')}</span><span className="webgis-chart-eyebrow text-xs mt-1">Total surveyed</span></div></>}
           {viz.type === 'bar' && <Bar data={data} options={{ ...options, scales: { x: { grid: { display: false }, border: { display: false }, ticks: { color: ink, font: { size: 11 }, callback: (_value, index) => `0${index + 1}` } }, y: { beginAtZero: true, border: { display: false }, grid: { color: grid }, ticks: { color: ink, maxTicksLimit: 5, precision: 0 } } } }} aria-label={viz.title} role="img" />}
           {viz.type === 'line' && <Line data={data} options={options} aria-label={viz.title} role="img" />}

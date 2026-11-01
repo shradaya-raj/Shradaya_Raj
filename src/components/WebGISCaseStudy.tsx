@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Image, { getImageProps } from 'next/image'
 import DeferredVideo from '@/components/DeferredVideo'
 import Navigation from '@/components/Navigation'
@@ -23,6 +23,11 @@ const chapterNames: Record<string, string> = {
 
 export default function WebGISCaseStudy({ item }: { item: Item }) {
   const [image, setImage] = useState<string | null>(null)
+  const imageTrigger = useRef<HTMLElement | null>(null)
+  const openImage = (src: string) => {
+    imageTrigger.current = document.activeElement instanceof HTMLElement ? document.activeElement : null
+    setImage(src)
+  }
   const chapters = (item.fullText ?? '').split('\n\n').map((block) => {
     const [heading, ...body] = block.split('\n')
     return { heading, body: body.join('\n') }
@@ -43,7 +48,11 @@ export default function WebGISCaseStudy({ item }: { item: Item }) {
       if (event.key === 'Tab') event.preventDefault()
     }
     window.addEventListener('keydown', close)
-    return () => { document.body.style.overflow = previous; window.removeEventListener('keydown', close) }
+    return () => {
+      document.body.style.overflow = previous
+      window.removeEventListener('keydown', close)
+      imageTrigger.current?.focus({ preventScroll: true })
+    }
   }, [image])
 
   return <>
@@ -52,7 +61,7 @@ export default function WebGISCaseStudy({ item }: { item: Item }) {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 space-y-10">
         <header className={shell}>
           <div className="grid lg:grid-cols-5">
-            <button type="button" onClick={() => setImage(item.images[0])} className="relative lg:col-span-3 min-h-[260px] lg:min-h-[440px] bg-white" aria-label="Enlarge WebGIS project dashboard">
+            <button type="button" onClick={() => openImage(item.images[0])} className="relative lg:col-span-3 min-h-[260px] lg:min-h-[440px] bg-white" aria-label="Enlarge WebGIS project dashboard">
               <Image src={item.images[0]} alt="WebGIS utility management dashboard" fill sizes="(min-width: 1024px) 650px, 100vw" className="object-contain p-3" priority />
             </button>
             <div className="lg:col-span-2 p-6 sm:p-8 space-y-5">
@@ -77,7 +86,7 @@ export default function WebGISCaseStudy({ item }: { item: Item }) {
               {chapter.heading === 'KEY FINDINGS'
                 ? <ul className="space-y-4 text-gray-300 text-base sm:text-lg leading-relaxed list-disc pl-5 marker:text-blue-300">{chapter.body.split('\n').filter(Boolean).map((finding) => <li key={finding} className="pl-1">{finding}</li>)}</ul>
                 : <p className="text-gray-300 text-base sm:text-lg leading-relaxed whitespace-pre-wrap w-full">{chapter.body}</p>}
-              {['FIELDWORK AND SPATIAL DATABASE', 'METRIC HOUSE NUMBERING'].includes(chapter.heading) && <div className="mt-8 grid sm:grid-cols-2 gap-6">{visuals.filter((src) => chapter.heading === 'METRIC HOUSE NUMBERING' ? /FLowchart|MHN-sample/.test(src) : /Methodology/.test(src)).map((src) => <button key={src} type="button" onClick={() => setImage(src)} className="relative h-[420px] rounded-xl bg-white overflow-hidden focus-visible:outline focus-visible:outline-blue-400" aria-label={`Enlarge ${src.split('/').pop()}`}><Image src={src} alt={src.includes('FLowchart') ? 'Metric house numbering workflow' : src.includes('MHN-sample') ? 'Metric house numbers assigned to buildings along Khaireyghari Marga' : 'Main project methodology'} fill sizes="(min-width: 640px) 480px, 90vw" className="object-contain p-4" /></button>)}</div>}
+              {['FIELDWORK AND SPATIAL DATABASE', 'METRIC HOUSE NUMBERING'].includes(chapter.heading) && <div className="mt-8 grid sm:grid-cols-2 gap-6">{visuals.filter((src) => chapter.heading === 'METRIC HOUSE NUMBERING' ? /FLowchart|MHN-sample/.test(src) : /Methodology/.test(src)).map((src) => <button key={src} type="button" onClick={() => openImage(src)} className="relative h-[420px] rounded-xl bg-white overflow-hidden focus-visible:outline focus-visible:outline-blue-400" aria-label={`Enlarge ${src.split('/').pop()}`}><Image src={src} alt={src.includes('FLowchart') ? 'Metric house numbering workflow' : src.includes('MHN-sample') ? 'Metric house numbers assigned to buildings along Khaireyghari Marga' : 'Main project methodology'} fill sizes="(min-width: 640px) 480px, 90vw" className="object-contain p-4" /></button>)}</div>}
               {chapter.heading === 'SURVEY RESULTS' && item.visualizations && <div id="results" className="mt-8 scroll-mt-24"><DynamicVisualizations visualizations={item.visualizations} compact /></div>}
             </section>
           </PortfolioMotion>
@@ -86,7 +95,7 @@ export default function WebGISCaseStudy({ item }: { item: Item }) {
         <section id="gallery" className={`${shell} p-6 sm:p-8 scroll-mt-24`}>
           <h2 className="text-2xl sm:text-3xl font-semibold text-blue-300 mb-3">Project images</h2>
           <p className="text-gray-300 mb-6">Our portal, study area and survey form. Select an image for a closer look.</p>
-          <div className="grid sm:grid-cols-2 gap-6">{visuals.filter((src) => !/Methodology|FLowchart|MHN-sample|poster/i.test(src)).map((src) => <button key={src} type="button" onClick={() => setImage(src)} className="rounded-xl overflow-hidden border border-blue-900/35 text-left focus-visible:outline focus-visible:outline-blue-400"><div className="relative h-[280px] bg-white"><Image src={src} alt={src.split('/').pop()?.replaceAll('-', ' ') ?? 'Project image'} fill sizes="(min-width: 640px) 480px, 90vw" className="object-contain p-3" /></div><p className="px-4 py-3 text-sm text-blue-300">{src.includes('webportal') ? 'Interactive utility portal' : src.includes('Study_Area') ? 'Study area: Shuklagandaki Ward No. 8' : 'FMTM field-collection form'}</p></button>)}</div>
+          <div className="grid sm:grid-cols-2 gap-6">{visuals.filter((src) => !/Methodology|FLowchart|MHN-sample|poster/i.test(src)).map((src) => <button key={src} type="button" onClick={() => openImage(src)} className="rounded-xl overflow-hidden border border-blue-900/35 text-left focus-visible:outline focus-visible:outline-blue-400"><div className="relative h-[280px] bg-white"><Image src={src} alt={src.split('/').pop()?.replaceAll('-', ' ') ?? 'Project image'} fill sizes="(min-width: 640px) 480px, 90vw" className="object-contain p-3" /></div><p className="px-4 py-3 text-sm text-blue-300">{src.includes('webportal') ? 'Interactive utility portal' : src.includes('Study_Area') ? 'Study area: Shuklagandaki Ward No. 8' : 'FMTM field-collection form'}</p></button>)}</div>
         </section>
 
         {posterSrc && <section id="poster" className={`${shell} p-6 sm:p-8 scroll-mt-24`}>
@@ -94,8 +103,8 @@ export default function WebGISCaseStudy({ item }: { item: Item }) {
             <h2 className="text-2xl sm:text-3xl font-semibold text-blue-300">Project poster</h2>
           </div>
           <p className="text-gray-300 mb-6">Our project poster, covering the study area, mapping workflow, house numbering and results.</p>
-          <button type="button" onClick={() => setImage(posterSrc)} className="relative block w-full aspect-[7/5] rounded-xl overflow-hidden bg-white focus-visible:outline focus-visible:outline-blue-400" aria-label="Enlarge project poster"><Image src={posterSrc} alt="Academic poster: Developing Utility Management System through WebGIS and Metric House Numbering in Shuklagandaki Municipality Ward No. 8" fill sizes="(min-width: 1152px) 1056px, 90vw" className="object-contain" /></button>
-          <div className="flex flex-wrap gap-4 mt-5"><button type="button" onClick={() => setImage(posterSrc)} className="rounded-full border border-blue-900/35 text-blue-300 px-5 py-3 font-semibold">View full-size poster</button></div>
+          <button type="button" onClick={() => openImage(posterSrc)} className="relative block w-full aspect-[7/5] rounded-xl overflow-hidden bg-white focus-visible:outline focus-visible:outline-blue-400" aria-label="Enlarge project poster"><Image src={posterSrc} alt="Academic poster: Developing Utility Management System through WebGIS and Metric House Numbering in Shuklagandaki Municipality Ward No. 8" fill sizes="(min-width: 1152px) 1056px, 90vw" className="object-contain" /></button>
+          <div className="flex flex-wrap gap-4 mt-5"><button type="button" onClick={() => openImage(posterSrc)} className="rounded-full border border-blue-900/35 text-blue-300 px-5 py-3 font-semibold">View full-size poster</button></div>
         </section>}
 
         {videoUrl && <section id="video" className={`${shell} p-6 sm:p-8 scroll-mt-24`}>
