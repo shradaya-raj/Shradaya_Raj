@@ -671,6 +671,10 @@ html:not([data-portfolio-theme="dark"]) .portfolio-public .webgis-chart-eyebrow 
 html:not([data-portfolio-theme="dark"]) .portfolio-public .webgis-chart-row { color: #3c574b; border-color: #d6e4dc; }
 
 /* Keep case-study facts legible on the warm light surface. */
+.webgis-charts { --survey-color-0: #277c70; --survey-color-1: #587eac; --survey-color-2: #96651d; --survey-color-3: #82749e; }
+.survey-donut-centre { background: #f5f9f6; }
+html[data-portfolio-theme="dark"] .webgis-charts { --survey-color-0: #73cec1; --survey-color-1: #89afe0; --survey-color-2: #dbb67a; --survey-color-3: #9f91b8; }
+html[data-portfolio-theme="dark"] .survey-donut-centre { background: #192d3d; }
 html:not([data-portfolio-theme="dark"]) .portfolio-public dl [class*="bg-black/"] {
   background-color: #edf4ee;
   border-color: #d4e4d7;

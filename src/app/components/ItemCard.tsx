@@ -38,7 +38,7 @@ export default function ItemCard({ slug, title, description, image, tags = [], f
                 <h3 className="text-xl font-semibold text-white mb-2 line-clamp-1">{title}</h3>
                 <p className="text-gray-300 text-sm line-clamp-2 mb-3">{description}</p>
                 <div className="flex flex-wrap gap-2">
-                    {tags.map((tag) => (
+                    {tags.slice(0, 3).map((tag) => (
                         <span key={tag} className="portfolio-tag px-2.5 py-1 rounded-md text-xs">
                             {tag}
                         </span>

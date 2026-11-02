@@ -5,8 +5,7 @@ import Image, { getImageProps } from 'next/image'
 import DeferredVideo from '@/components/DeferredVideo'
 import Navigation from '@/components/Navigation'
 import PortfolioMotion from '@/components/PortfolioMotion'
-import dynamic from 'next/dynamic'
-const DynamicVisualizations = dynamic(() => import('@/app/components/DynamicVisualizations'))
+import SurveyCharts from '@/components/SurveyCharts'
 import type { Item } from '@/lib/types'
 
 const chapterNames: Record<string, string> = {
@@ -87,7 +86,7 @@ export default function WebGISCaseStudy({ item }: { item: Item }) {
                 ? <ul className="space-y-4 text-gray-300 text-base sm:text-lg leading-relaxed list-disc pl-5 marker:text-blue-300">{chapter.body.split('\n').filter(Boolean).map((finding) => <li key={finding} className="pl-1">{finding}</li>)}</ul>
                 : <p className="text-gray-300 text-base sm:text-lg leading-relaxed whitespace-pre-wrap w-full">{chapter.body}</p>}
               {['FIELDWORK AND SPATIAL DATABASE', 'METRIC HOUSE NUMBERING'].includes(chapter.heading) && <div className="mt-8 grid sm:grid-cols-2 gap-6">{visuals.filter((src) => chapter.heading === 'METRIC HOUSE NUMBERING' ? /FLowchart|MHN-sample/.test(src) : /Methodology/.test(src)).map((src) => <button key={src} type="button" onClick={() => openImage(src)} className="relative h-[420px] rounded-xl bg-white overflow-hidden focus-visible:outline focus-visible:outline-blue-400" aria-label={`Enlarge ${src.split('/').pop()}`}><Image src={src} alt={src.includes('FLowchart') ? 'Metric house numbering workflow' : src.includes('MHN-sample') ? 'Metric house numbers assigned to buildings along Khaireyghari Marga' : 'Main project methodology'} fill sizes="(min-width: 640px) 480px, 90vw" className="object-contain p-4" /></button>)}</div>}
-              {chapter.heading === 'SURVEY RESULTS' && item.visualizations && <div id="results" className="mt-8 scroll-mt-24"><DynamicVisualizations visualizations={item.visualizations} compact /></div>}
+              {chapter.heading === 'SURVEY RESULTS' && item.visualizations && <div id="results" className="mt-8 scroll-mt-24"><SurveyCharts visualizations={item.visualizations} /></div>}
             </section>
           </PortfolioMotion>
         })}

@@ -4,7 +4,7 @@ export const siteTemplates = {
   home: {
     profileImage: '', profileAlt: '', name: '', role: '', highlights: [''],
     intro: { headingPrefix: '', headingHighlight: '', paragraph: '' },
-    stats: [{ number: '', label: '' }], toolsTitle: '',
+    stats: [{ number: '', label: '' }], sectionOrder: [''], toolsTitle: '',
     toolsCategories: [{ title: '', items: [''] }],
     cta: { primary: { text: '', href: '' }, secondary: { text: '', href: '' } },
   },
@@ -39,6 +39,13 @@ function validateShape(value: any, template: any, field: string): void {
 
 export function validateSiteContent(page: SitePage, value: any): void {
   const { featuredProjects, ...content } = value ?? {};
+  if (page === 'home') {
+    content.sectionOrder ??= ['intro', 'projects', 'tools'];
+    if (!Array.isArray(content.sectionOrder) || content.sectionOrder.length !== 3 ||
+      new Set(content.sectionOrder).size !== 3 || content.sectionOrder.some((entry: string) => !['intro', 'projects', 'tools'].includes(entry))) {
+      throw new Error('Section order must contain intro, projects and tools exactly once.');
+    }
+  }
   if (page === 'about') {
     if (content.photos === undefined) content.photos = [];
     if (Array.isArray(content.photos)) content.photos = content.photos.map((photo: any) => photo && typeof photo === 'object' && !Array.isArray(photo) ? { fit: 'cover', ...photo } : photo);

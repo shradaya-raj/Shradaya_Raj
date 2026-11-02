@@ -168,6 +168,8 @@ export default function Contact() {
                   <input
                     id="contact-name"
                     autoComplete="name"
+                    minLength={2}
+                    maxLength={80}
                     type="text"
                     name="name"
                     placeholder="Full Name"
@@ -182,6 +184,7 @@ export default function Contact() {
                   <input
                     id="contact-email"
                     autoComplete="email"
+                    maxLength={254}
                     type="email"
                     name="email"
                     placeholder="E-mail"
@@ -197,6 +200,8 @@ export default function Contact() {
                   <textarea
                     id="contact-message"
                     name="message"
+                    minLength={10}
+                    maxLength={2000}
                     placeholder="Message"
                     rows={4}
                     className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white resize-none"

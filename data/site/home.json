@@ -14,6 +14,7 @@
     { "number": "12+", "label": "Projects Completed" },
     { "number": "5+", "label": "Trainings Attended" }
   ],
+  "sectionOrder": ["intro", "projects", "tools"],
   "toolsTitle": "Gadgets & Software",
   "toolsCategories": [
     { "title": "Drones", "items": ["DJI Neo 2", "DJI Mavic 3E", "DJI Matrice 4E", "DJI FlyCart 30", "DJI FlyCart 100", "DJI Phantom 4 RTK", "DJI Mini 4 Pro", "DJI Matrice 350"] },

@@ -1,20 +1,12 @@
 'use client'
 
 import React from 'react'
-import { motion, MotionConfig } from 'framer-motion'
 import ResponsiveBackdrop from '@/components/ResponsiveBackdrop'
 import Navigation from '@/components/Navigation'
 import Link from 'next/link'
 import Image from 'next/image' // Changed from next/legacy/image to next/image
 
 
-const fadeInUp = {
-  initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.4, ease: 'easeOut' }
-}
-
-const smoothTransition = { duration: 0.4, ease: 'easeOut' }
 export type HomeContent = {
   profileImage: string
   profileAlt: string
@@ -23,6 +15,7 @@ export type HomeContent = {
   highlights: string[]
   intro: { headingPrefix: string; headingHighlight: string; paragraph: string }
   stats: { number: string; label: string }[]
+  sectionOrder?: string[]
   toolsTitle: string
   toolsCategories: { title: string; items: string[] }[]
   cta: { primary: { text: string; href: string }; secondary: { text: string; href: string } }
@@ -82,8 +75,145 @@ export default function HomePageClient({ initialProjects, initialContent }: {
 
 
 
+  const sections: Record<string, React.ReactNode> = {
+    intro: (<section className="py-16 bg-black">
+          <div
+            className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8"
+          >
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold mb-8 text-white">
+                {homeContent.intro.headingPrefix}{' '}
+                <span className="text-blue-400">{homeContent.intro.headingHighlight}</span>
+              </h2>
+              <div className="text-gray-300 max-w-3xl mx-auto space-y-5 text-center leading-relaxed">
+                {homeContent.intro.paragraph.split(/\n\s*\n/).map((paragraph, index) => (
+                  <p key={index}>{paragraph}</p>
+                ))}
+              </div>
+            </div>
+
+            {/* Key Stats */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 sm:gap-10 mb-6">
+              {homeContent.stats.map((stat) => (
+                <div
+                  key={stat.label}
+                  className="text-center"
+                >
+                  <h3 className="text-4xl md:text-5xl font-bold text-blue-400 mb-4">
+                    {stat.number}
+                  </h3>
+                  <p className="text-gray-300 text-lg">{stat.label}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>),
+    projects: (<section className="py-16 bg-black">
+          <div
+            className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8"
+          >
+            <div className="text-center mb-10">
+              <h2 className="text-3xl md:text-4xl font-bold mb-8 text-white">
+                Featured Projects
+              </h2>
+              <div className="w-24 h-1 bg-blue-500 mx-auto mb-8"></div>
+              <Link
+                href="/projects"
+                className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-blue-500/15 border border-blue-500/30 text-blue-100 text-sm font-medium hover:bg-blue-500/20 transition-colors"
+              >
+                View all projects
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                </svg>
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+              {projects.map((project) => (
+                <Link
+                  key={project.link}
+                  href={project.link}
+                  className="bg-gray-900 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all group cursor-pointer"
+                >
+                  <div className="aspect-[4/3] relative bg-gray-800 overflow-hidden">
+                    <Image
+                      src={project.image}
+                      alt={project.title}
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                      style={{ objectFit: 'cover' }}
+                      fill
+                      className="group-hover:scale-110 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  </div>
+                  <div className="p-8">
+                    <h3 className="text-2xl font-bold mb-3 text-white">
+                      {project.title}
+                    </h3>
+                    <p className="text-gray-300 mb-4 line-clamp-2">
+                      {project.description}
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {project.tags.slice(0, 3).map((tag: string) => (
+                        <span
+                          key={tag}
+                          className="project-specialty-tag px-3 py-1 rounded-full text-sm font-medium"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>),
+    tools: (<section className="py-16 bg-black">
+          <div
+            className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8"
+          >
+            <div className="text-center mb-10">
+              <h2 className="text-3xl md:text-4xl font-bold mb-8 text-white">{homeContent.toolsTitle}</h2>
+              <div className="w-24 h-1 bg-blue-500 mx-auto mb-8"></div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {homeContent.toolsCategories.map((category) => (
+                <div
+                  key={category.title}
+                  className="tool-card relative overflow-hidden rounded-2xl border border-blue-900/40 bg-gradient-to-br from-gray-900/90 via-gray-900/70 to-gray-950 shadow-[0_20px_60px_rgba(0,0,0,0.35)]"
+                >
+                  <div className="absolute inset-px rounded-[18px] border border-blue-500/10" />
+                  <div className="absolute -right-10 -top-12 w-44 h-44 bg-gradient-to-br from-blue-500/25 via-purple-500/20 to-pink-500/10 blur-3xl opacity-60 group-hover:opacity-80 transition-opacity" />
+                  <div className="relative p-6 space-y-4">
+                    <div className="flex items-center justify-between gap-3">
+                      <h3 className="text-xl font-semibold text-white">{category.title}</h3>
+                      <span className="text-xs px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-100">
+                        {category.items.length} {category.title.trim().toLowerCase() === 'drones' ? (category.items.length === 1 ? 'drone' : 'drones') : (category.items.length === 1 ? 'tool' : 'tools')}
+                      </span>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {category.items.map(item => (
+                        <span
+                          key={item}
+                          className="px-3 py-1 rounded-full bg-gradient-to-r from-blue-600/30 via-purple-500/25 to-blue-400/20 border border-blue-500/30 text-blue-50 text-sm shadow-[0_0_0_1px_rgba(92,127,157,0.12)]"
+                        >
+                          {item}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>),
+  }
+  const order = homeContent.sectionOrder ?? ['intro', 'projects', 'tools']
+
   return (
-    <MotionConfig reducedMotion="user">
+    <>
       <Navigation />
       <main id="main-content" tabIndex={-1} className="relative bg-black">
         {/* Hero Section */}
@@ -160,162 +290,8 @@ export default function HomePageClient({ initialProjects, initialContent }: {
           </div>
         </section>
 
-        {/* Quick Introduction */}
-        <section className="py-16 bg-black">
-          <motion.div
-            initial="initial"
-            whileInView="animate"
-            viewport={{ once: true }}
-            variants={{
-              initial: { opacity: 0 },
-              animate: { opacity: 1, transition: { staggerChildren: 0.2 } }
-            }}
-            className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8"
-          >
-            <motion.div variants={fadeInUp} className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold mb-8 text-white">
-                {homeContent.intro.headingPrefix}{' '}
-                <span className="text-blue-400">{homeContent.intro.headingHighlight}</span>
-              </h2>
-              <div className="text-gray-300 max-w-3xl mx-auto space-y-5 text-center leading-relaxed">
-                {homeContent.intro.paragraph.split(/\n\s*\n/).map((paragraph, index) => (
-                  <p key={index}>{paragraph}</p>
-                ))}
-              </div>
-            </motion.div>
-
-            {/* Key Stats */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 sm:gap-10 mb-6">
-              {homeContent.stats.map((stat) => (
-                <motion.div
-                  key={stat.label}
-                  variants={fadeInUp}
-                  className="text-center"
-                >
-                  <h3 className="text-4xl md:text-5xl font-bold text-blue-400 mb-4">
-                    {stat.number}
-                  </h3>
-                  <p className="text-gray-300 text-lg">{stat.label}</p>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
-        </section>
-
-        {/* Tools & Platforms */}
-        <section className="py-16 bg-black">
-          <motion.div
-            initial="initial"
-            whileInView="animate"
-            viewport={{ once: true }}
-            variants={{
-              initial: { opacity: 0 },
-              animate: { opacity: 1, transition: { staggerChildren: 0.15 } }
-            }}
-            className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8"
-          >
-            <motion.div variants={fadeInUp} className="text-center mb-10">
-              <h2 className="text-3xl md:text-4xl font-bold mb-8 text-white">{homeContent.toolsTitle}</h2>
-              <div className="w-24 h-1 bg-blue-500 mx-auto mb-8"></div>
-            </motion.div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {homeContent.toolsCategories.map((category, idx) => (
-                <motion.div
-                  key={category.title}
-                  variants={fadeInUp}
-                  className="tool-card relative overflow-hidden rounded-2xl border border-blue-900/40 bg-gradient-to-br from-gray-900/90 via-gray-900/70 to-gray-950 shadow-[0_20px_60px_rgba(0,0,0,0.35)]"
-                  transition={{ ...smoothTransition, delay: idx * 0.05 }}
-                >
-                  <div className="absolute inset-px rounded-[18px] border border-blue-500/10" />
-                  <div className="absolute -right-10 -top-12 w-44 h-44 bg-gradient-to-br from-blue-500/25 via-purple-500/20 to-pink-500/10 blur-3xl opacity-60 group-hover:opacity-80 transition-opacity" />
-                  <div className="relative p-6 space-y-4">
-                    <div className="flex items-center justify-between gap-3">
-                      <h3 className="text-xl font-semibold text-white">{category.title}</h3>
-                      <span className="text-xs px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-100">
-                        {category.items.length} {category.title.trim().toLowerCase() === 'drones' ? (category.items.length === 1 ? 'drone' : 'drones') : (category.items.length === 1 ? 'tool' : 'tools')}
-                      </span>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      {category.items.map(item => (
-                        <span
-                          key={item}
-                          className="px-3 py-1 rounded-full bg-gradient-to-r from-blue-600/30 via-purple-500/25 to-blue-400/20 border border-blue-500/30 text-blue-50 text-sm shadow-[0_0_0_1px_rgba(92,127,157,0.12)]"
-                        >
-                          {item}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
-        </section>
-
-        {/* Featured Projects */}
-        <section className="py-16 bg-black">
-          <div
-            className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8"
-          >
-            <div className="text-center mb-10">
-              <h2 className="text-3xl md:text-4xl font-bold mb-8 text-white">
-                Featured Projects
-              </h2>
-              <div className="w-24 h-1 bg-blue-500 mx-auto mb-8"></div>
-              <Link
-                href="/projects"
-                className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-blue-500/15 border border-blue-500/30 text-blue-100 text-sm font-medium hover:bg-blue-500/20 transition-colors"
-              >
-                View all projects
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
-                </svg>
-              </Link>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-              {projects.map((project) => (
-                <Link
-                  key={project.link}
-                  href={project.link}
-                  className="bg-gray-900 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all group cursor-pointer"
-                >
-                  <div className="aspect-[4/3] relative bg-gray-800 overflow-hidden">
-                    <Image
-                      src={project.image}
-                      alt={project.title}
-                      sizes="(max-width: 768px) 100vw, 33vw"
-                      style={{ objectFit: 'cover' }}
-                      fill
-                      className="group-hover:scale-110 transition-transform duration-500"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  </div>
-                  <div className="p-8">
-                    <h3 className="text-2xl font-bold mb-3 text-white">
-                      {project.title}
-                    </h3>
-                    <p className="text-gray-300 mb-4 line-clamp-2">
-                      {project.description}
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {project.tags.map((tag: string) => (
-                        <span
-                          key={tag}
-                          className="project-specialty-tag px-3 py-1 rounded-full text-sm font-medium"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </section>
+        {order.map(section => <React.Fragment key={section}>{sections[section]}</React.Fragment>)}
       </main>
-    </MotionConfig>
+    </>
   )
 }

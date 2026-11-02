@@ -43,7 +43,7 @@ export default function Projects({ initialProjects }: { initialProjects: Item[] 
             <div className="featured-project-copy max-w-2xl">
               <div className="inline-flex items-center gap-2 mb-4"><span className="px-3 py-1 rounded-full bg-green-500/20 border border-green-500/30 text-green-200 text-xs font-bold uppercase tracking-wider">Featured</span><span className="text-xs text-gray-300 bg-black/30 border border-white/10 px-3 py-1 rounded-full">{active.date.slice(0, 4)}</span></div>
               <h3 className="text-xl sm:text-2xl font-bold mb-2 text-white">{active.title}</h3><p className="text-gray-200 text-sm sm:text-base mb-4">{active.description}</p>
-              <div className="flex flex-wrap gap-2">{active.tags.map(tag => <span key={tag} className="featured-project-tag px-3 py-1 rounded-full text-sm">{tag}</span>)}</div>
+              <div className="flex flex-wrap gap-2">{active.tags.slice(0, 4).map(tag => <span key={tag} className="featured-project-tag px-3 py-1 rounded-full text-sm">{tag}</span>)}</div>
             </div>
           </div>
         </Link>

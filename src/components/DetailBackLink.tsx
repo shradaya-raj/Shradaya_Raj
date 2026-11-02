@@ -17,12 +17,12 @@ export default function DetailBackLink() {
   if (segments.length !== 2 || !label) return null
 
   return (
-    <Link
+    <div className="px-4 py-6 sm:p-0"><Link
       href={`/${segments[0]}`}
       aria-label={`Back to ${label}`}
-      className="portfolio-back-link fixed bottom-[max(1rem,env(safe-area-inset-bottom))] right-4 z-40 inline-flex min-h-11 items-center justify-center rounded-xl border border-white/15 bg-slate-900/95 px-5 py-3 text-sm font-medium text-slate-200 shadow-[0_8px_30px_rgba(0,0,0,0.3)] backdrop-blur-xl transition-colors hover:border-blue-400/50 hover:bg-slate-800 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-300 sm:right-6"
+      className="portfolio-back-link relative sm:fixed sm:bottom-[max(1rem,env(safe-area-inset-bottom))] sm:right-6 z-40 inline-flex min-h-11 items-center justify-center rounded-xl border border-white/15 bg-slate-900/95 px-5 py-3 text-sm font-medium text-slate-200 shadow-[0_8px_30px_rgba(0,0,0,0.3)] transition-colors hover:border-blue-400/50 hover:bg-slate-800 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-300"
     >
       <span>Back to {label}</span>
-    </Link>
+    </Link></div>
   )
 }
