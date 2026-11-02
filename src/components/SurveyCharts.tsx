@@ -24,7 +24,7 @@ export default function SurveyCharts({ visualizations }: { visualizations: Visua
             {viz.values.map((value, index) => {
               const slot = 210 / Math.max(viz.values.length, 1)
               const height = value / maximum * 170
-              return <g key={viz.labels[index]}><title>{viz.labels[index]}: {value.toLocaleString('en-US')}</title><rect x={44 + slot * index} y={190 - height} width={slot * .7} height={height} rx="5" fill={`var(--survey-color-${index % 4})`} /><text x={44 + slot * (index + .35)} y="213" textAnchor="middle" fill="currentColor" fontSize="11">{String(index + 1).padStart(2, '0')}</text></g>
+              return <g key={viz.labels[index]}><title>{`${viz.labels[index]}: ${value.toLocaleString('en-US')}`}</title><rect x={44 + slot * index} y={190 - height} width={slot * .7} height={height} rx="5" fill={`var(--survey-color-${index % 4})`} /><text x={44 + slot * (index + .35)} y="213" textAnchor="middle" fill="currentColor" fontSize="11">{String(index + 1).padStart(2, '0')}</text></g>
             })}
           </svg>}
         </div>
