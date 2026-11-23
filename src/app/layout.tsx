@@ -1,6 +1,6 @@
 import React from 'react'
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Syne, Source_Sans_3 } from 'next/font/google'
 import './globals.css'
 import Providers from '../components/Providers'
 import DetailBackLink from '../components/DetailBackLink'
@@ -9,7 +9,17 @@ import Script from 'next/script'
 import homeContent from '../../data/site/home.json'
 import { siteUrl } from '@/lib/metadata'
 
-const inter = Inter({ subsets: ['latin'] })
+const syne = Syne({
+  subsets: ['latin'],
+  variable: '--font-syne',
+  display: 'swap',
+})
+
+const sourceSans = Source_Sans_3({
+  subsets: ['latin'],
+  variable: '--font-source-sans',
+  display: 'swap',
+})
 const siteDescription = `${homeContent.name}, ${homeContent.role}. Projects and field experience in ${homeContent.highlights.join(', ')}.`
 
 const metadataBase = process.env.NODE_ENV === 'production'
@@ -57,7 +67,7 @@ export default function RootLayout({
       <head>
         <script dangerouslySetInnerHTML={{ __html: `try{document.documentElement.dataset.portfolioTheme=localStorage.getItem('portfolio-theme')==='dark'?'dark':'light'}catch{document.documentElement.dataset.portfolioTheme='light'}` }} />
       </head>
-      <body className={`${inter.className} bg-black text-white antialiased`}>
+      <body className={`${syne.variable} ${sourceSans.variable} font-sans bg-black text-white antialiased`}>
         <a href="#main-content" className="skip-navigation">Skip to content</a>
         <Providers>
           <PortfolioTheme>

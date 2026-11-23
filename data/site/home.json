@@ -12,7 +12,7 @@
   "stats": [
     { "number": "Response", "label": "Disaster & flood geospatial support" },
     { "number": "Mapping", "label": "Infrastructure & municipal work" },
-    { "number": "Drone operations", "label": "Survey, logistics & delivery" }
+    { "number": "Drones", "label": "Survey, logistics & delivery" }
   ],
   "sectionOrder": ["intro", "projects", "tools"],
   "toolsTitle": "Field tools & software",

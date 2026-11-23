@@ -36,7 +36,7 @@ const defaultHomeContent: HomeContent = {
   stats: [
     { number: 'Response', label: 'Disaster & flood geospatial support' },
     { number: 'Mapping', label: 'Infrastructure & municipal work' },
-    { number: 'Drone operations', label: 'Survey, logistics & delivery' },
+    { number: 'Drones', label: 'Survey, logistics & delivery' },
   ],
   toolsTitle: 'Field tools & software',
   toolsCategories: [
