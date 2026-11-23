@@ -20,15 +20,16 @@ export default async function ProjectsPage() {
     <>
       <Navigation />
       <main id="main-content" tabIndex={-1} className="min-h-screen bg-black pt-20 pb-16">
-        <Projects initialProjects={featured} />
-        <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 border-t border-white/10 pt-16">
+        <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <PortfolioMotion className="text-center mb-12">
             <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">Projects</h1>
             <p className="text-gray-300 max-w-3xl mx-auto">
               Explore my engineering projects, from WebGIS and 3D modeling to drone surveys and environmental campaigns.
             </p>
           </PortfolioMotion>
-
+        </section>
+        <Projects initialProjects={featured} />
+        <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 border-t border-white/10 pt-16">
           <ProjectArchive items={archive} />
         </section>
       </main>
