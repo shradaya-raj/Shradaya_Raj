@@ -1107,3 +1107,32 @@ Until persistent production storage is chosen, extend the existing workflow: loc
 - Checks: local `/` and `/projects` returned 200; served `layout.css` included Syne and Source Sans 3 with no Inter family; heading rule used `--font-syne`. Home HTML showed `Drones` with unchanged label; "Drone operations" absent. Lint/build not run for this change set.
 - Limitations: no browser automation in-session — desktop/mobile/light/dark visual appearance of the new fonts and whether three theme labels align after shortening to "Drones" were Not verified visually (owner manual check recommended).
 - Next work (optional): owner visual UAT of fonts and theme-row alignment; optional CSS equal-height titles if a future long theme word wraps again; PROJECT_RECORD follow-up after confirmed production deploy if desired.
+
+### 2026-11-23 — Flood-response blue theme (option S)
+
+- Owner chose palette **S (Flood-response blue)** for field / disaster-ops first impression (over moss greens and classic cartography).
+- Implemented color system: `tailwind.config.js` remaps `blue` to flood teal-blue scale (accent `#0e7490`, ink `#0b3a4a`), `purple` to sand chips (`#c4a574`) for highlight variety, `brand.accent` / hover to `#0e7490` / `#0c627a`, page black token to `#0b3a4a`.
+- Light theme overrides in `src/app/globals.css` updated from moss greens (`#f4f7f4` / `#1e4634`) to flood wash (`#eef6f8` / `#d5ebf2`), hero radial, nav borders, specialty tags, prose links, theme toggle. Hero title soft depth shadows and primary CTA shadow added. Dark theme accent shifted to `#5ec4d4` for night ops consistency.
+- Fonts unchanged (Fraunces + Source Sans 3). No content JSON edits. No layout structure change.
+- Checks: local `http://127.0.0.1:3010/` returned 200 after change; Playwright screenshots of applied light hero and intro saved under `Desktop\color-palette-mockups\site-applied-S.png` (and intro companion). Lint/build not run for this token-only change.
+- Limitations: production not updated until commit/push/deploy. Survey-art line colors may still lean green in component CSS — optional follow-up if owner wants diagrams fully recolored. Dark-mode full-page UAT not exhaustively walked.
+- Next work (awaiting owner): visual UAT on Home/Projects; approve commit/push if satisfied; optional survey-art recolor; optional Classic Cartography (R) archive of unused mockups only.
+
+### 2026-11-23 — Flood-response blue polish (S consistency)
+
+- Kept Fraunces + Source Sans 3 and Flood-response blue (S). Polished leftovers that still read moss/sand:
+  - `Navigation.tsx`: logo single flood-ink (`text-blue-700` + light CSS `#0b3a4a`); active/mobile nav flood tint only (removed `to-purple` sand gradient).
+  - `Projects.tsx`, `ItemCard.tsx`, `ItemDetail.tsx`: Featured badge + carousel active dot remapped from bright green to flood blue tokens.
+  - `globals.css`: survey-art `--scene-line/#label` to flood teal; skip-nav, reading-progress, webgis h2, parcel stroke, portrait outline/glow, dark cinematic accents, gradient-text end stop; dark nav logo rule without `bg-clip-text`.
+- Checks: Playwright on `http://127.0.0.1:3000` Home/Projects light+dark (screenshots under Desktop\color-palette-mockups\polish-*.png); computed logo no dual-tone gradient; scene-line flood. Lint/build not run.
+- Limitations: contact form still unavailable (pre-existing). Admin success greens left as semantic status colors. Not committed/pushed — awaiting owner approval.
+- Next work: owner approve commit/push; optional About/Achievements quick visual pass.
+
+### 2026-11-23 — Hybrid light mode (dark hero + mature sections)
+
+- Owner chose Option C (hybrid) to address soft/childish full-page light mode while keeping Flood-response S + Fraunces/Source Sans 3.
+- `src/app/globals.css`: light page wash matured to `#e2e8ed` / cards `#f4f7f9`; sand highlight chips muted to mist; dark translucent nav in light theme; `.portfolio-hero` under light theme forced to night radial (`#152033`→`#0a1018`), dark glass panels, off-white name, cyan role/CTA `#5ec4d4`, flood survey-art in hero.
+- `tailwind.config.js`: `brand.base` aligned to `#e2e8ed`. No HomePageClient markup change (CSS-only).
+- Checks: Playwright `http://127.0.0.1:3010` — light hero dark radial confirmed; main wash `rgb(226,232,237)`; name `rgb(241,245,249)`; Projects light wash + dark theme OK. Screenshots: Desktop\color-palette-mockups\hybrid-*.png. Lint/build not run.
+- Limitations: light-mode nav is dark sitewide (by design for hero cohesion). Contact form still unavailable. Not committed/pushed.
+- Next work: owner visual UAT; approve commit/push of S + polish + hybrid together.

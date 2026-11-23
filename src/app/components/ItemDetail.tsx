@@ -100,7 +100,7 @@ export default function ItemDetail({ item }: ItemDetailProps) {
                     <PortfolioMotion>
                     <header className="mb-12">
                         {item.featured && (
-                            <span className="inline-block px-3 py-1 rounded-full bg-green-500/20 border border-green-500/30 text-green-300 text-xs font-bold uppercase tracking-wider mb-4">
+                            <span className="inline-block px-3 py-1 rounded-full bg-blue-500/20 border border-blue-500/30 text-blue-200 text-xs font-bold uppercase tracking-wider mb-4">
                                 Featured Project
                             </span>
                         )}

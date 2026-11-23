@@ -15,7 +15,7 @@ const Navigation = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex-shrink-0">
-            <Link href="/" className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
+            <Link href="/" className="text-xl font-bold text-blue-700">
               Shradaya Raj
             </Link>
           </div>
@@ -75,7 +75,7 @@ const NavLink = ({ href, children, isActive }: { href: string; children: React.R
     aria-current={isActive ? 'page' : undefined}
     className={`portfolio-nav-link relative px-3 py-2 rounded-md text-sm font-medium transition-colors duration-150 ${
       isActive
-        ? 'text-white bg-gradient-to-r from-blue-500/20 to-purple-500/20 shadow-lg shadow-blue-500/10'
+        ? 'text-white bg-blue-500/20 shadow-lg shadow-blue-500/10'
         : 'text-gray-300 hover:text-white hover:bg-blue-500/10'
     }`}
   >
@@ -89,7 +89,7 @@ const MobileNavLink = ({ href, children, isActive }: { href: string; children: R
     aria-current={isActive ? 'page' : undefined}
     className={`block px-3 py-2 rounded-md text-base font-medium transition-all duration-300 ${
       isActive
-        ? 'text-white bg-gradient-to-r from-blue-500/20 to-purple-500/20 shadow-lg shadow-blue-500/10'
+        ? 'text-white bg-blue-500/20 shadow-lg shadow-blue-500/10'
         : 'text-gray-300 hover:text-white hover:bg-blue-500/10'
     }`}
   >

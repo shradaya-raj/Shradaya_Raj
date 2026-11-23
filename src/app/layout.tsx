@@ -1,6 +1,6 @@
 import React from 'react'
 import type { Metadata } from 'next'
-import { Syne, Source_Sans_3 } from 'next/font/google'
+import { Fraunces, Source_Sans_3 } from 'next/font/google'
 import './globals.css'
 import Providers from '../components/Providers'
 import DetailBackLink from '../components/DetailBackLink'
@@ -9,9 +9,9 @@ import Script from 'next/script'
 import homeContent from '../../data/site/home.json'
 import { siteUrl } from '@/lib/metadata'
 
-const syne = Syne({
+const fraunces = Fraunces({
   subsets: ['latin'],
-  variable: '--font-syne',
+  variable: '--font-fraunces',
   display: 'swap',
 })
 
@@ -67,7 +67,7 @@ export default function RootLayout({
       <head>
         <script dangerouslySetInnerHTML={{ __html: `try{document.documentElement.dataset.portfolioTheme=localStorage.getItem('portfolio-theme')==='dark'?'dark':'light'}catch{document.documentElement.dataset.portfolioTheme='light'}` }} />
       </head>
-      <body className={`${syne.variable} ${sourceSans.variable} font-sans bg-black text-white antialiased`}>
+      <body className={`${fraunces.variable} ${sourceSans.variable} font-sans bg-black text-white antialiased`}>
         <a href="#main-content" className="skip-navigation">Skip to content</a>
         <Providers>
           <PortfolioTheme>

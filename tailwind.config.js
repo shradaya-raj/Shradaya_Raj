@@ -1,8 +1,31 @@
-// Forest-green shades unify existing portfolio accent utilities.
-const steel = {
-  50: '#f0f7f2', 100: '#dfede3', 200: '#bfd8c7', 300: '#95baa2',
-  400: '#669476', 500: '#427656', 600: '#305f43', 700: '#244c35',
-  800: '#203f2d', 900: '#1c3427', 950: '#0e1d15',
+// Flood-response field palette (option S): deep teal-blue ink + ops cyan accent.
+// Purple scale = sand chips for highlight variety (≤3 color jobs).
+const flood = {
+  50: '#eef6f8',
+  100: '#d5ebf2',
+  200: '#a8d5e3',
+  300: '#6bb8cd',
+  400: '#1490ad',
+  500: '#0e7490',
+  600: '#0c627a',
+  700: '#0b3a4a',
+  800: '#092f3c',
+  900: '#072530',
+  950: '#04151c',
+}
+
+const sand = {
+  50: '#f8f3eb',
+  100: '#f0e6d4',
+  200: '#e2cfb0',
+  300: '#d4b88c',
+  400: '#c4a574',
+  500: '#b89560',
+  600: '#9a7a4c',
+  700: '#7a5f3c',
+  800: '#5c4730',
+  900: '#3f3122',
+  950: '#241c14',
 }
 
 /** @type {import('tailwindcss').Config} */
@@ -16,13 +39,13 @@ module.exports = {
     extend: {
       fontFamily: {
         sans: ['var(--font-source-sans)', 'system-ui', 'sans-serif'],
-        display: ['var(--font-syne)', 'system-ui', 'sans-serif'],
+        display: ['var(--font-fraunces)', 'system-ui', 'serif'],
       },
       colors: {
-        black: '#0b1220',
-        blue: steel,
-        purple: steel,
-        brand: { base: '#faf9f6', accent: '#244c35', 'accent-hover': '#193b28' },
+        black: '#0b3a4a',
+        blue: flood,
+        purple: sand,
+        brand: { base: '#e2e8ed', accent: '#0e7490', 'accent-hover': '#0c627a' },
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
