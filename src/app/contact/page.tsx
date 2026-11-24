@@ -151,17 +151,21 @@ export default function Contact() {
               {mailReady === false && <div role="status" className="rounded-xl border border-blue-500/30 bg-blue-500/10 p-5 space-y-3"><h2 className="text-xl font-semibold">Let’s talk about your project</h2><p className="text-gray-300">The contact form is temporarily unavailable. You can reach me directly by email.</p><a className="inline-flex min-h-11 items-center rounded-lg bg-blue-600 px-5 py-3 font-semibold text-white" href={`mailto:${email}`}>Email me directly</a></div>}
               {mailReady !== false && <form
                 onSubmit={handleSubmit}
-                className="space-y-4"
+                className="relative space-y-4"
               >
-                {/* Honeypot field for bots; must stay empty */}
-                <input
-                  type="text"
-                  name="company"
-                  tabIndex={-1}
-                  autoComplete="off"
-                  className="hidden"
+                {/* Honeypot: off-screen (not display:none); must stay empty */}
+                <div
+                  className="pointer-events-none absolute h-px w-px overflow-hidden whitespace-nowrap opacity-0"
+                  style={{ left: '-10000px', top: 'auto' }}
                   aria-hidden="true"
-                />
+                >
+                  <input
+                    type="text"
+                    name="company"
+                    tabIndex={-1}
+                    autoComplete="off"
+                  />
+                </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>

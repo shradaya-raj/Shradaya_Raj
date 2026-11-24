@@ -23,6 +23,13 @@ export async function GET() {
     smtp.host && smtp.port && smtp.user && smtp.pass && smtp.from && smtp.to
   const turnstileConfigured = turnstile.siteKey && turnstile.secretKey
 
+  let message = 'Missing required SMTP env values.'
+  if (smtpConfigured && turnstileConfigured) {
+    message = 'Contact mail and Turnstile are configured.'
+  } else if (smtpConfigured) {
+    message = 'Contact mail is configured. Turnstile keys are not both set.'
+  }
+
   return NextResponse.json({
     ok: smtpConfigured,
     smtpConfigured,
@@ -31,8 +38,6 @@ export async function GET() {
       smtp,
       turnstile,
     },
-    message: smtpConfigured
-      ? 'Contact mail is configured.'
-      : 'Missing required SMTP env values.',
+    message,
   })
 }
