@@ -2,12 +2,28 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Reduce layout jump when theme toggle or scrollbar visibility changes. */
+html {
+  scrollbar-gutter: stable;
+}
+
 .skip-navigation { position: fixed; top: .5rem; left: .5rem; transform: translateY(-150%); z-index: 1000; padding: .75rem 1rem; background: #fff; color: #0b3a4a; border: 2px solid #0e7490; border-radius: .5rem; }
 .skip-navigation:focus { transform: translateY(0); }
 #main-content { scroll-margin-top: 5rem; }
 .portfolio-public :where(a, button, input, select, textarea):focus-visible { outline: 2px solid #60a5fa; outline-offset: 4px; }
 .portfolio-public .project-specialty-tag { color: #e2f5f1; background: #203e4a; }
 html:not([data-portfolio-theme="dark"]) .portfolio-public .project-specialty-tag { color: #0b3a4a; background: #d5dee5; }
+/* Home tool chips: solid flood wash (no blue→sand gradient) in both themes. */
+.portfolio-public .tool-item-chip {
+  color: #d7eef3;
+  background: #1a3a48;
+  border: 1px solid #2f5f70;
+}
+html:not([data-portfolio-theme="dark"]) .portfolio-public .tool-item-chip {
+  color: #0b3a4a;
+  background: #d5ebf2;
+  border-color: #9ec5d1;
+}
 
 :root {
   --foreground-rgb: 255, 255, 255;
@@ -108,8 +124,11 @@ html:not([data-portfolio-theme="dark"]) .portfolio-public nav {
   color: #e8eef5;
 }
 html:not([data-portfolio-theme="dark"]) .portfolio-public nav .text-gray-300 { color: #adbdce; }
+/* Nav stays dark in light theme — keep active/hover labels light (do not inherit page ink). */
+html:not([data-portfolio-theme="dark"]) .portfolio-public nav .text-white { color: #f1f5f9; }
 html:not([data-portfolio-theme="dark"]) .portfolio-public nav .hover\:text-white:hover { color: #fff; }
-html:not([data-portfolio-theme="dark"]) .portfolio-public nav .bg-blue-500\/20 { background-color: rgb(94 196 212 / 18%); }
+html:not([data-portfolio-theme="dark"]) .portfolio-public nav .bg-blue-500\/20 { background-color: rgb(94 196 212 / 28%); }
+html:not([data-portfolio-theme="dark"]) .portfolio-public nav a[aria-current="page"] { color: #f1f5f9; }
 html:not([data-portfolio-theme="dark"]) .portfolio-public nav a:first-child { color: #e8eef5; }
 html:not([data-portfolio-theme="dark"]) .portfolio-public .theme-toggle {
   border-color: #304357;
@@ -140,6 +159,12 @@ html:not([data-portfolio-theme="dark"]) .portfolio-public :is(.bg-blue-500, .bg-
 html:not([data-portfolio-theme="dark"]) .portfolio-public .bg-purple-600 { color: #fff; background-color: #0e7490; }
 html:not([data-portfolio-theme="dark"]) .portfolio-public .gradient-text { background-image: none; color: #0b3a4a; }
 html:not([data-portfolio-theme="dark"]) .portfolio-public .prose-invert { --tw-prose-body: #3d5a66; --tw-prose-headings: #0b3a4a; --tw-prose-bold: #0b3a4a; --tw-prose-links: #0e7490; --tw-prose-bullets: #6bb8cd; }
+/* prose-p:text-gray-300 / prose-headings:text-white set raw colors (not .text-* classes) — force ink on light surfaces. */
+html:not([data-portfolio-theme="dark"]) .portfolio-public .prose.prose-invert :where(p, li) { color: #3d5a66; }
+html:not([data-portfolio-theme="dark"]) .portfolio-public .prose.prose-invert :where(h1, h2, h3, h4, h5, h6, strong) { color: #0b3a4a; }
+html:not([data-portfolio-theme="dark"]) .portfolio-public .prose.prose-invert :where(a) { color: #0e7490; }
+html:not([data-portfolio-theme="dark"]) .portfolio-public .prose.prose-invert :where(em) { color: #5a7380; }
+html:not([data-portfolio-theme="dark"]) .portfolio-public .prose.prose-invert :where(li) :where(strong) { color: #0e7490; }
 /* Text over photography and the image viewer stays light for legibility. */
 html:not([data-portfolio-theme="dark"]) .portfolio-public [data-media-surface] { color: #fff; }
 html:not([data-portfolio-theme="dark"]) .portfolio-public [data-media-surface] :is(.text-white, .text-gray-100, .text-gray-200, .text-gray-300, .text-gray-400) { color: #f5f5f4; }
@@ -149,6 +174,19 @@ html:not([data-portfolio-theme="dark"]) .portfolio-public [data-media-surface] .
 html:not([data-portfolio-theme="dark"]) .portfolio-public .hover\:bg-slate-800:hover { background-color: #d5dee5; }
 html:not([data-portfolio-theme="dark"]) .portfolio-public [class*="from-black"][class*="to-gray-900"] { --tw-gradient-from: #e2e8ed var(--tw-gradient-from-position); }
 html:not([data-portfolio-theme="dark"]) .portfolio-public [class*="border-blue-900/"] { border-color: #c5d0d8; }
+/* Case-study cards: clear containers in light mode (match Manaslu-style section shells). */
+html:not([data-portfolio-theme="dark"]) .portfolio-public .case-study-shell {
+  background: #ffffff;
+  background-image: none;
+  border-color: #9eb3c0;
+  box-shadow: 0 16px 44px rgb(11 58 74 / 10%);
+}
+html:not([data-portfolio-theme="dark"]) .portfolio-public .case-study-shell > .absolute.inset-px {
+  border-color: rgb(14 116 144 / 12%);
+}
+html[data-portfolio-theme="dark"] .portfolio-public .case-study-shell {
+  box-shadow: 0 22px 70px rgb(0 0 0 / 35%);
+}
 
 /* Hybrid: dark field hero inside light theme (first impression). */
 html:not([data-portfolio-theme="dark"]) .portfolio-public .portfolio-hero {
@@ -752,9 +790,14 @@ html:not([data-portfolio-theme="dark"]) .portfolio-public .webgis-chart-row { co
 html[data-portfolio-theme="dark"] .webgis-charts { --survey-color-0: #73cec1; --survey-color-1: #89afe0; --survey-color-2: #dbb67a; --survey-color-3: #9f91b8; }
 html[data-portfolio-theme="dark"] .survey-donut-centre { background: #192d3d; }
 html:not([data-portfolio-theme="dark"]) .portfolio-public dl [class*="bg-black/"] {
-  background-color: #edf4ee;
-  border-color: #d4e4d7;
+  background-color: #eef4f7;
+  border-color: #c5d0d8;
 }
 html:not([data-portfolio-theme="dark"]) .portfolio-public dl[class*="bg-black/"] {
-  background-color: #f3f7f1;
+  background-color: #f2f6f8;
+}
+/* Case-study section chips / list cards that keep bg-blue-500/5 over light shells. */
+html:not([data-portfolio-theme="dark"]) .portfolio-public [class*="bg-blue-500/5"],
+html:not([data-portfolio-theme="dark"]) .portfolio-public [class*="bg-blue-500\/5"] {
+  background-color: rgb(14 116 144 / 6%);
 }

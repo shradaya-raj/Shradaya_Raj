@@ -1136,3 +1136,39 @@ Until persistent production storage is chosen, extend the existing workflow: loc
 - Checks: Playwright `http://127.0.0.1:3010` — light hero dark radial confirmed; main wash `rgb(226,232,237)`; name `rgb(241,245,249)`; Projects light wash + dark theme OK. Screenshots: Desktop\color-palette-mockups\hybrid-*.png. Lint/build not run.
 - Limitations: light-mode nav is dark sitewide (by design for hero cohesion). Contact form still unavailable. Not committed/pushed.
 - Next work: owner visual UAT; approve commit/push of S + polish + hybrid together.
+
+### 2026-11-23 — Production contact email (P0-1) verified
+
+- Owner configured Production SMTP on the existing Vercel project `shradaya-raj` using Gmail App Password (2-Step Verification required; App Passwords were unavailable until 2-Step was enabled). Secrets were entered only in Vercel; none recorded here.
+- Initial Production health after first redeploy briefly remained unconfigured until env + redeploy settled; later `/api/contact/health` reported `smtpConfigured: true` with all SMTP checks true. Turnstile left unconfigured (optional).
+- First live form submit returned HTTP 500 after ~10s (`POST /api/contact` in Request Logs), matching SMTP connection timeout on `SMTP_PORT=465` / `SMTP_SECURE=true`.
+- Owner switched Production env to `SMTP_PORT=587` and `SMTP_SECURE=false`, redeployed, and confirmed a real test enquiry arrived in Gmail. Application source was not changed for this outcome.
+- Updated `CONTACT_EMAIL_SETUP.md` to recommend the verified 587 / STARTTLS values and note the 465 timeout observed on Vercel.
+- Verification: live health `smtpConfigured: true`; owner-confirmed inbox receipt. No credentials, app passwords, or message contents stored in this record.
+- Limitations: Turnstile still off; Runtime Logs stay quiet because the contact route catch path does not console-log SMTP errors. Custom domain / SITE_URL unchanged.
+- Next work: P0-2 owner visual UAT of Flood-response / hybrid theme on phone and desktop (light/dark); then P0-3 navigation order / ECA visibility decision.
+
+### 2026-11-24 — Light-mode project detail, nav active, Deurali layout
+
+- Owner UAT (P0-2): project case-study body text blended into light backgrounds; active nav label blended into the dark hybrid nav; Deurali Basic School used a plain custom page instead of the shared case-study shell.
+- Cause: light-theme remaps `.text-white` / `.text-gray-*` classes, but Markdown `prose-p:text-gray-300` / `prose-headings:text-white` set raw colors that stayed pale on light shells. Active nav also used remapped dark `text-white` on the intentionally dark nav bar.
+- Fixes in `src/app/globals.css`: keep nav active/hover labels light; force readable ink on `.prose.prose-invert` paragraphs/headings/links/lists; align fact-card light surfaces to the flood wash.
+- Deurali: moved narrative into `data/projects/deurali-basic-school.json` (sections, catchment image, facts) and switched `src/app/projects/deurali-basic-school/page.tsx` to shared `MappingCaseStudy` like other mapping projects. Layout metadata route unchanged. Existing media paths preserved.
+- Verification (2026-11-24 local): HTTP 200 for Home/Projects/Deurali/Rasuwa/Bagmati on :3010. Playwright light-mode checks: Deurali uses MappingCaseStudy (8 sections); body ink `rgb(61,90,102)` (~6:1 on card wash); active Projects nav `rgb(241,245,249)` on dark bar (~17:1). Screenshots under Desktop/color-palette-mockups/uat-*-light.png. ESLint passed. Owner also confirmed visually. Not committed/pushed in this pass.
+- Next work: commit/push when owner approves; then P0-3 nav order / ECA visibility.
+
+### 2026-11-24 — Solid Home tool chips (no gradient)
+
+- Owner asked to remove the blue-to-tan gradient on Home “Field tools & software” item pills; it did not suit light or dark mode.
+- Replaced gradient classes with a shared `.tool-item-chip` solid fill in `HomePageClient.tsx` / `globals.css` (flood teal wash; dark `#1a3a48`, light `#d5ebf2`). Softened the card corner glow to a single blue blur (no purple/pink gradient).
+- Verification: pending owner refresh on Home tools section in both themes. No content JSON changes.
+- Next work: owner confirm; include in the same commit/push batch as the contrast/Deurali fixes when approved.
+
+### 2026-11-24 — Theme shift, case-study containers, smoothness check
+
+- Owner reported slight content position jump on light/dark toggle, and Deurali lacking clear Manaslu-like section containers.
+- Theme toggle: fixed desktop width (`w-[5.75rem]` + label `w-10`) so Light/Dark text no longer shifts the nav; `html { scrollbar-gutter: stable; }` reduces scrollbar jump.
+- Added shared `.case-study-shell` on Mapping/Rasuwa/Manaslu/WebGIS/UMS shells; light mode uses white cards, clearer border, and soft shadow so Deurali sections read as containers.
+- Local Playwright (http://127.0.0.1:3010): theme toggle width/x delta 0; Deurali 9 shells with shadow; Manaslu 8 shells; routes Home/Projects/About/Achievements/Contact/ECA/Deurali/Rasuwa 200; mobile menu open→About→closes; tool chips solid (`backgroundImage: none`). Fail list empty.
+- Reminder: live Vercel still lacks these edits until commit/push.
+- Next work: owner confirm on localhost:3010; then commit/push when approved; P0-3 nav/ECA after that.

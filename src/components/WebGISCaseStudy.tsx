@@ -36,7 +36,7 @@ export default function WebGISCaseStudy({ item }: { item: Item }) {
   const videoPoster = item.images[0] ? getImageProps({ src: item.images[0], alt: '', width: 960, height: 540, quality: 65 }).props.src : undefined
   const visuals = item.attachments?.filter((src) => /\.(png|jpe?g|webp)$/i.test(src)) ?? []
   const posterSrc = visuals.find((src) => /poster/i.test(src))
-  const shell = 'rounded-2xl border border-blue-900/35 bg-gray-900/60 overflow-hidden'
+  const shell = 'case-study-shell rounded-2xl border border-blue-900/35 bg-gray-900/60 overflow-hidden'
 
   useEffect(() => {
     if (!image) return

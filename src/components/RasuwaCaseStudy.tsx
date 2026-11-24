@@ -6,8 +6,8 @@ import { Item } from '@/lib/types';
 import { getAttachmentPaths, getPrimaryImagePath, isVideoFile } from '@/lib/media';
 import FieldVideo from '@/components/FieldVideo';
 
-const sectionShell = 'relative overflow-hidden rounded-2xl border border-blue-900/35 bg-gradient-to-br from-gray-950 via-gray-950/85 to-gray-900/70 shadow-[0_22px_70px_rgba(0,0,0,0.35)]';
-const innerBorder = 'absolute inset-px rounded-[15px] border border-blue-500/10 pointer-events-none';
+const sectionShell = 'case-study-shell relative overflow-hidden rounded-2xl border border-blue-900/35 bg-gradient-to-br from-gray-950 via-gray-950/85 to-gray-900/70 shadow-[0_22px_70px_rgba(0,0,0,0.35)]'
+const innerBorder = 'absolute inset-px rounded-[15px] border border-blue-500/10 pointer-events-none'
 const prose = 'prose prose-invert max-w-none prose-headings:text-white prose-p:text-gray-300 prose-p:leading-relaxed prose-a:text-blue-300 prose-strong:text-white prose-em:text-gray-400 prose-li:text-gray-300';
 
 export default function RasuwaCaseStudy({ item }: { item: Item }) {

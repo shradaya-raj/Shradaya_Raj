@@ -185,7 +185,7 @@ export default function HomePageClient({ initialProjects, initialContent }: {
                   className="tool-card relative overflow-hidden rounded-2xl border border-blue-900/40 bg-gradient-to-br from-gray-900/90 via-gray-900/70 to-gray-950 shadow-[0_20px_60px_rgba(0,0,0,0.35)]"
                 >
                   <div className="absolute inset-px rounded-[18px] border border-blue-500/10" />
-                  <div className="absolute -right-10 -top-12 w-44 h-44 bg-gradient-to-br from-blue-500/25 via-purple-500/20 to-pink-500/10 blur-3xl opacity-60 group-hover:opacity-80 transition-opacity" />
+                  <div className="absolute -right-10 -top-12 w-44 h-44 rounded-full bg-blue-500/20 blur-3xl opacity-50 group-hover:opacity-70 transition-opacity" />
                   <div className="relative p-6 space-y-4">
                     <div className="flex items-center justify-between gap-3">
                       <h3 className="text-xl font-semibold text-white">{category.title}</h3>
@@ -195,10 +195,7 @@ export default function HomePageClient({ initialProjects, initialContent }: {
                     </div>
                     <div className="flex flex-wrap gap-2">
                       {category.items.map(item => (
-                        <span
-                          key={item}
-                          className="px-3 py-1 rounded-full bg-gradient-to-r from-blue-600/30 via-purple-500/25 to-blue-400/20 border border-blue-500/30 text-blue-50 text-sm shadow-[0_0_0_1px_rgba(92,127,157,0.12)]"
-                        >
+                        <span key={item} className="tool-item-chip px-3 py-1 rounded-full text-sm">
                           {item}
                         </span>
                       ))}
