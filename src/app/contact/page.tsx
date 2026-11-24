@@ -7,6 +7,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import Script from 'next/script'
 import { Toaster, toast } from 'react-hot-toast'
+import contactDefaults from '../../../data/site/contact.json'
 
 declare global {
   interface Window {
@@ -27,7 +28,7 @@ export default function Contact() {
     email?: string
     location?: string
     social?: { linkedin?: string }
-  } | null>(null)
+  } | null>(contactDefaults)
 
   useEffect(() => {
     fetch('/api/contact/health').then(response => response.json()).then(health => setMailReady(health.smtpConfigured === true)).catch(() => setMailReady(false))
@@ -44,12 +45,12 @@ export default function Contact() {
     fetchSiteContact()
   }, [])
 
-  const heading = siteContact?.heading ?? 'Contact Me'
-  const imageSrc = siteContact?.imageSrc ?? '/profile-professional-2026.png'
-  const imageAlt = siteContact?.imageAlt ?? 'Professional portrait of Shradaya Raj Poudel'
-  const email = siteContact?.email ?? 'shradayarajpoudel@gmail.com'
-  const location = siteContact?.location ?? 'Kathmandu, Nepal'
-  const linkedin = siteContact?.social?.linkedin ?? 'https://www.linkedin.com/in/shradaya-raj-poudel-b11454273/'
+  const heading = siteContact?.heading ?? contactDefaults.heading
+  const imageSrc = siteContact?.imageSrc ?? contactDefaults.imageSrc
+  const imageAlt = siteContact?.imageAlt ?? contactDefaults.imageAlt
+  const email = siteContact?.email ?? contactDefaults.email
+  const location = siteContact?.location ?? contactDefaults.location
+  const linkedin = siteContact?.social?.linkedin ?? contactDefaults.social.linkedin
   const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY
 
   useEffect(() => {

@@ -1172,3 +1172,11 @@ Until persistent production storage is chosen, extend the existing workflow: loc
 - Local Playwright (http://127.0.0.1:3010): theme toggle width/x delta 0; Deurali 9 shells with shadow; Manaslu 8 shells; routes Home/Projects/About/Achievements/Contact/ECA/Deurali/Rasuwa 200; mobile menu open→About→closes; tool chips solid (`backgroundImage: none`). Fail list empty.
 - Reminder: live Vercel still lacks these edits until commit/push.
 - Next work: owner confirm on localhost:3010; then commit/push when approved; P0-3 nav/ECA after that.
+
+### 2026-11-24 — Contact heading flash fix
+
+- Owner saw “Contact Me” briefly before “Get in Touch” on `/contact` because the client fallback string was outdated while `/api/site/contact` loaded.
+- `src/app/contact/page.tsx` now initializes from `data/site/contact.json` and uses that heading as the fallback, so the first paint matches the stored heading.
+- Browser status-bar URL on link hover left unchanged (normal browser behavior; sites should not hide it).
+- Verification: fallback now matches `data/site/contact.json` heading (“Get in Touch”). Owner approved publish.
+- Next work: P0-3 nav order / ECA visibility after deploy confirms.
