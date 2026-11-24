@@ -2,7 +2,7 @@
 
 This repository contains **two** Next.js projects:
 
-- **Root app (DEPLOY THIS)**: this directory (`./`) — Next.js 14
+- **Root app (DEPLOY THIS)**: this directory (`./`) — Next.js 15.5.28
 - **Nested app (do not deploy)**: `./personal-website/` — separate Next.js 15 experiment
 
 The hosted site at `https://shradaya-raj.vercel.app/` should be configured in Vercel to build from the **root app**.
