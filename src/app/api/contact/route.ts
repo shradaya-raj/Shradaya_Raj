@@ -26,6 +26,7 @@ const BLOCKED_DOMAINS = new Set([
 
 const WINDOW_MS = 10 * 60 * 1000
 const MAX_REQUESTS_PER_WINDOW = 8
+const DEFAULT_SITEVERIFY_URL = 'https://challenges.cloudflare.com/turnstile/v0/siteverify'
 
 type RateState = { count: number; resetAt: number }
 
@@ -62,6 +63,18 @@ function isRateLimited(key: string): boolean {
   state.count += 1
   rateLimitStore.set(key, state)
   return false
+}
+
+function getTurnstileConfig(): { secret: string; siteKey: string; configured: boolean } {
+  const secret = process.env.TURNSTILE_SECRET_KEY?.trim() || ''
+  const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY?.trim() || ''
+  return { secret, siteKey, configured: Boolean(secret && siteKey) }
+}
+
+function siteverifyUrl(): string {
+  // Tests may point at a local mock. Do not set TURNSTILE_SITEVERIFY_URL in Vercel Production.
+  const override = process.env.TURNSTILE_SITEVERIFY_URL?.trim()
+  return override || DEFAULT_SITEVERIFY_URL
 }
 
 function validatePayload(payload: ContactPayload):
@@ -103,17 +116,15 @@ function validatePayload(payload: ContactPayload):
   return { ok: true, name, email, message }
 }
 
-async function verifyTurnstile(token: string, ip: string): Promise<boolean> {
-  const secret = process.env.TURNSTILE_SECRET_KEY
-  if (!secret) return true
-  if (!token) return false
+async function verifyTurnstile(token: string, ip: string, secret: string): Promise<boolean> {
+  if (!token.trim()) return false
 
   const body = new URLSearchParams()
   body.set('secret', secret)
   body.set('response', token)
-  body.set('remoteip', ip)
+  if (ip && ip !== 'unknown') body.set('remoteip', ip)
 
-  const response = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+  const response = await fetch(siteverifyUrl(), {
     method: 'POST',
     body,
     headers: {
@@ -201,12 +212,26 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const turnstileOk = await verifyTurnstile(payload.turnstileToken || '', ip)
-    if (!turnstileOk) {
+    const { secret, configured } = getTurnstileConfig()
+    const isProduction = process.env.NODE_ENV === 'production'
+
+    // Production fails closed when either Turnstile key is missing.
+    if (isProduction && !configured) {
       return NextResponse.json(
-        { success: false, message: 'Security verification failed. Please try again.' },
-        { status: 400 }
+        { success: false, message: 'Contact form security is not configured.' },
+        { status: 503 }
       )
+    }
+
+    // Local/dev: skip Siteverify only when no secret is configured (keeps SMTP tests usable).
+    if (secret) {
+      const turnstileOk = await verifyTurnstile(payload.turnstileToken || '', ip, secret)
+      if (!turnstileOk) {
+        return NextResponse.json(
+          { success: false, message: 'Security verification failed. Please try again.' },
+          { status: 400 }
+        )
+      }
     }
 
     const smtpResult = await sendViaSmtp({

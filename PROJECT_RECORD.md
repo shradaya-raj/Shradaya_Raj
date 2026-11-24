@@ -1180,3 +1180,15 @@ Until persistent production storage is chosen, extend the existing workflow: loc
 - Browser status-bar URL on link hover left unchanged (normal browser behavior; sites should not hide it).
 - Verification: fallback now matches `data/site/contact.json` heading (“Get in Touch”). Owner approved publish.
 - Next work: P0-3 nav order / ECA visibility after deploy confirms.
+
+### 2026-11-24 — Contact Turnstile hardening (fail closed)
+
+- Owner approved Turnstile hardening (not email-ownership double opt-in). Goal: resist automated spam while preserving SMTP and form design.
+- `src/app/api/contact/route.ts`: Production rejects submissions with HTTP 503 when either `NEXT_PUBLIC_TURNSTILE_SITE_KEY` or `TURNSTILE_SECRET_KEY` is missing. Valid tokens are checked via Cloudflare Siteverify (or `TURNSTILE_SITEVERIFY_URL` mock for local tests only). Invalid/empty/unsuccessful tokens return 400. No secrets/tokens/message bodies logged. SMTP send path unchanged. In-memory rate limit kept as best-effort. Origin allowlist not added (preview/localhost risk of false rejects); documented instead.
+- `src/app/contact/page.tsx`: honeypot `company` field moved off-screen (not `display:none` / Tailwind `hidden`); still `aria-hidden`, `tabIndex={-1}`, `autocomplete=off`; server still rejects filled honeypot.
+- `src/app/api/contact/health/route.ts`: still boolean-only checks; message clarifies when SMTP is up but Turnstile keys are incomplete.
+- `tests/contact-smtp.cjs`: expanded coverage — valid mocked Turnstile + SMTP success; missing/invalid token; Siteverify HTTP failure; honeypot; invalid email; short message; SMTP failure; missing production Turnstile config (503). Rejected paths assert zero SMTP messages.
+- Docs: `CONTACT_EMAIL_SETUP.md` updated for Managed Turnstile, hostnames, env names, fail-closed Production behavior, local/test expectations, rate-limit limits, spam-vs-ownership distinction. No secret values recorded.
+- Checks: see implementation report (contact tests + lint). Not committed/pushed/deployed in this pass.
+- Limitations: live Production still has Turnstile unset until owner adds both keys and redeploys — until then Production will fail closed (503) after this code ships. Rate limit remains per-instance. Email ownership verification is still not implemented.
+- Next work: owner Cloudflare widget + Vercel Turnstile env + redeploy; then live health `turnstileConfigured: true` and one marked test send; commit/push when owner approves.
